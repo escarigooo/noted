@@ -1,0 +1,41 @@
+.breadcrumb {
+  width: 100%;
+  /*padding: 0 1rem;*/
+  font-size: 0.9rem;
+  text-align: left;
+  margin-top: 1rem;
+}
+
+.breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.breadcrumb-item a {
+  color: var(--color-black);
+  text-decoration: underline;
+  font-weight: normal;
+}
+
+.breadcrumb-item span {
+  color: var(--color-black);
+}
+
+.separator {
+  margin: 0 0.5rem;
+  color: var(--color-black);
+}
+
+@media screen and (max-width: 768px) {
+  .breadcrumb {
+    margin-top: 0;
+  }
+  .breadcrumb-list{
+    margin-top: 2rem;
+    justify-content: center;
+  }
+}

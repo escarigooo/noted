@@ -1,0 +1,286 @@
+{% extends "pages/admin/base.html" %}
+
+{% block admin_page_title %}users{% endblock %}
+{% block page_title %}users{% endblock %}
+
+{% block admin_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/users.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_table.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/notifications.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/button_loading.css') }}">
+{% endblock %}
+
+{% block admin_content %}
+<section class="admin-wrapper">
+
+
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3 id="total-users">--</h3>
+            <p>Total Users</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="total-admins">--</h3>
+            <p>Admin Users</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="recent-registrations">--</h3>
+            <p>Recent Registrations</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="users-with-orders">--</h3>
+            <p>Users with Orders</p>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <button id="refreshDataBtn" class="btn btn-primary" onclick="refreshAnalytics()">Refresh Data</button>
+        <button id="addUserBtn" class="btn btn-secondary" onclick="openAddUserModal()">New User</button>
+        <button id="exportUsersBtn" class="btn btn-secondary" onclick="exportUsers()">Export</button>
+    </div>
+
+    <!-- Table Section -->
+    {% set table_config = {
+    'table_id': 'users-table',
+    'table_name': 'Users',
+    'columns': [
+    {'key': 'id', 'label': 'ID', 'width': '80px'},
+    {'key': 'name', 'label': 'Name'},
+    {'key': 'email', 'label': 'Email'},
+    {'key': 'role', 'label': 'Role', 'width': '100px', 'format': 'role'},
+    {'key': 'order_count', 'label': 'Orders', 'width': '100px', 'class': 'text-center'},
+    {'key': 'noted_cash', 'label': 'Noted Cash', 'width': '120px', 'format': 'currency', 'class': 'text-right'},
+    {'key': 'created_at', 'label': 'Created', 'width': '120px', 'format': 'date'}
+    ],
+    'filters': [
+    {'value': 'admin', 'label': 'Admin Users'},
+    {'value': 'customer', 'label': 'Customer Users'}
+    ],
+    'actions': [
+    {'key': 'view', 'label': 'View', 'icon': 'View', 'class': 'btn-view'},
+    {'key': 'edit', 'label': 'Edit', 'icon': 'Edit', 'class': 'btn-edit'},
+    {'key': 'delete', 'label': 'Delete', 'icon': 'Delete', 'class': 'btn-delete'}
+    ]
+    } %}
+    {% include 'partials/admin_table.html' %}
+
+    <!-- Last updated info -->
+    <p class="last-updated">
+        Last updated: <span id="last-updated">--</span>
+    </p>
+</section>
+{% endblock %}
+
+{% block admin_scripts %}
+<!-- Admin Tables JS -->
+<script src="{{ url_for('static', filename='js/admin/admin_tables.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/button_loading.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize users table
+        initializeTable('users-table', {
+            apiEndpoint: '/api/admin/table/users',
+            deleteEndpoint: '/api/admin/table/users',
+            itemName: 'user',
+            columns: [
+                { key: 'id', label: 'ID', sortable: true },
+                { key: 'name', label: 'Name', sortable: true },
+                { key: 'email', label: 'Email', sortable: true },
+                { key: 'role', label: 'Role', sortable: true, format: 'role' },
+                { key: 'order_count', label: 'Orders', sortable: true },
+                { key: 'noted_cash', label: 'Noted Cash', sortable: true, format: 'currency' },
+                { key: 'created_at', label: 'Created', sortable: true, format: 'date' }
+            ],
+            actions: [
+                {
+                    key: 'view',
+                    label: 'View',
+                    icon: 'View',
+                    class: 'btn-view'
+                    // Uses default view handler
+                },
+                {
+                    key: 'edit',
+                    label: 'Edit',
+                    icon: 'Edit',
+                    class: 'btn-edit'
+                    // Uses default edit handler
+                },
+                {
+                    key: 'delete',
+                    label: 'Delete',
+                    icon: 'Delete',
+                    class: 'btn-delete'
+                    // Uses default delete handler
+                }
+            ]
+        });
+
+        // Load user statistics
+        loadUserStats();
+
+        // Update the last updated timestamp
+        updateLastUpdated();
+    });
+
+    // Load user statistics from analytics data
+    async function loadUserStats() {
+        try {
+            const response = await fetch('/static/data/analytics.json');
+            const data = await response.json();
+
+            // Update stat cards with real data
+            if (data.users) {
+                document.getElementById('total-users').textContent = data.users.total_users || 0;
+                document.getElementById('total-admins').textContent = Math.round(data.users.total_admins || 0);
+                document.getElementById('recent-registrations').textContent = data.users.recent_registrations || 0;
+                document.getElementById('users-with-orders').textContent = data.users.users_with_orders || 0;
+            }
+        } catch (error) {
+            console.error('Error loading user stats:', error);
+            // Set fallback values if data loading fails
+            document.getElementById('total-users').textContent = '0';
+            document.getElementById('total-admins').textContent = '0';
+            document.getElementById('recent-registrations').textContent = '0';
+            document.getElementById('users-with-orders').textContent = '0';
+        }
+    }
+
+    // Analytics refresh function
+    function refreshAnalytics() {
+        withButtonLoading('refreshDataBtn', async () => {
+            await loadUserStats();
+            refreshTable('users-table');
+            updateLastUpdated();
+            return Promise.resolve();
+        }, {
+            loadingText: 'Refreshing...',
+            successNotification: 'Users data refreshed!',
+            errorNotification: 'Error refreshing users data'
+        });
+    }
+
+    // Add new user function
+    function openAddUserModal() {
+        const modal = document.getElementById('users-table-edit-modal');
+        const titleEl = modal.querySelector('.modal-header h3');
+        const contentEl = modal.querySelector('.form-content');
+        const saveBtn = document.getElementById('users-table-edit-save');
+
+        if (!modal) return;
+
+        // Update modal for adding new user
+        titleEl.textContent = 'Add New User';
+        contentEl.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label for="new-user-name">Full Name</label>
+                <input type="text" id="new-user-name" name="name" placeholder="Enter full name" required>
+            </div>
+            <div class="form-group">
+                <label for="new-user-email">Email</label>
+                <input type="email" id="new-user-email" name="email" placeholder="user@example.com" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="new-user-password">Password</label>
+                <input type="password" id="new-user-password" name="password" placeholder="Enter password" required>
+            </div>
+            <div class="form-group">
+                <label for="new-user-role">Role</label>
+                <select id="new-user-role" name="role" required>
+                    <option value="2">Customer</option>
+                    <option value="1">Admin</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="new-user-address">Address</label>
+            <textarea id="new-user-address" name="address" placeholder="Enter address (optional)" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="new-user-noted-cash">Initial Noted Cash</label>
+            <input type="number" step="0.01" id="new-user-noted-cash" name="noted_cash" value="0.00">
+            <div class="form-help">Initial balance for the user's Noted Cash account</div>
+        </div>
+    `;
+
+        modal.style.display = 'flex';
+
+        // Setup save handler for new user
+        saveBtn.onclick = () => saveNewUser();
+
+        // Focus on the first input
+        document.getElementById('new-user-name').focus();
+    }
+
+    // Save new user function
+    async function saveNewUser() {
+        const formData = {
+            name: document.getElementById('new-user-name').value.trim(),
+            email: document.getElementById('new-user-email').value.trim(),
+            password: document.getElementById('new-user-password').value,
+            role: parseInt(document.getElementById('new-user-role').value),
+            address: document.getElementById('new-user-address').value.trim(),
+            noted_cash: parseFloat(document.getElementById('new-user-noted-cash').value) || 0
+        };
+
+        // Validate required fields
+        if (!formData.name || !formData.email || !formData.password) {
+            showNotification('Please fill in all required fields', 'error');
+            return;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            showNotification('Please enter a valid email address', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/admin/table/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success || response.ok) {
+                showNotification('User created successfully', 'success');
+                closeModal('users-table-edit');
+                refreshTable('users-table');
+            } else {
+                showNotification(result.message || 'Failed to create user', 'error');
+            }
+        } catch (error) {
+            console.error('Error creating user:', error);
+            showNotification('Error creating user', 'error');
+        }
+    }
+
+    // Export users function
+    function exportUsers() {
+        withButtonLoading('exportUsersBtn', async () => {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            showNotification('Export feature coming soon!', 'info');
+        });
+    }
+
+    // Update last updated timestamp
+    function updateLastUpdated() {
+        const now = new Date();
+        const timeString = now.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('last-updated').textContent = timeString;
+    }
+</script>
+{% endblock %}

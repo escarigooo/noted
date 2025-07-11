@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order #{{ order.id }} - Print</title>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 12pt;
+                line-height: 1.5;
+            }
+            .print-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
+            .header-logo {
+                max-width: 200px;
+            }
+            .order-info {
+                text-align: right;
+            }
+            .order-info h1 {
+                font-size: 24pt;
+                margin: 0;
+            }
+            .order-details {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 30px;
+            }
+            .order-col {
+                width: 48%;
+            }
+            .address-box {
+                border: 1px solid #ddd;
+                padding: 10px;
+                margin-bottom: 20px;
+            }
+            .order-items {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+            }
+            .order-items th {
+                background-color: #f5f5f5;
+                text-align: left;
+                padding: 10px;
+                border-bottom: 1px solid #ddd;
+            }
+            .order-items td {
+                padding: 10px;
+                border-bottom: 1px solid #eee;
+            }
+            .text-right {
+                text-align: right;
+            }
+            .totals {
+                width: 100%;
+                margin-top: 20px;
+            }
+            .totals-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 5px;
+            }
+            .totals-label {
+                width: 70%;
+                text-align: right;
+                font-weight: normal;
+            }
+            .totals-value {
+                width: 30%;
+                text-align: right;
+            }
+            .total {
+                font-weight: bold;
+                font-size: 16px;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        
+        /* Screen styles */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .no-print {
+            background-color: #f0f0f0;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .print-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        /* Same styles as print for the rest */
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header-logo {
+            max-width: 200px;
+        }
+        .order-info {
+            text-align: right;
+        }
+        .order-info h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .order-col {
+            width: 48%;
+        }
+        .address-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .order-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .order-items th {
+            background-color: #f5f5f5;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .order-items td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .totals {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .totals-label {
+            width: 70%;
+            text-align: right;
+            font-weight: normal;
+        }
+        .totals-value {
+            width: 30%;
+            text-align: right;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <h2>Order Print Preview</h2>
+        <p>Use your browser's print function or click the button below to print this order.</p>
+        <button class="print-button" onclick="window.print()">Print Order</button>
+    </div>
+    
+    <div class="print-header">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Noted" class="header-logo">
+        <div class="order-info">
+            <h1>ORDER</h1>
+            <p>#{{ order.id }}</p>
+            <p>{{ order.order_date.strftime('%d/%m/%Y') }}</p>
+        </div>
+    </div>
+    
+    <div class="order-details">
+        <div class="order-col">
+            {% if 'customer-info' in print_options %}
+            <h3>Customer Information</h3>
+            <div class="address-box">
+                <p><strong>{{ order.customer_name }}</strong></p>
+                <p>Email: {{ order.customer_email }}</p>
+                {% if order.user_id %}
+                <p>Account ID: {{ order.user_id }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            {% if 'shipping-address' in print_options and shipping %}
+            <h3>Shipping Address</h3>
+            <div class="address-box">
+                <p><strong>{{ shipping.first_name }} {{ shipping.last_name }}</strong></p>
+                <p>{{ shipping.street_address }}</p>
+                <p>{{ shipping.city }}, {{ shipping.state }} {{ shipping.zip_code }}</p>
+                <p>{{ shipping.country }}</p>
+                <p>Phone: {{ shipping.phone }}</p>
+            </div>
+            {% endif %}
+            
+            {% if order.shipping_method %}
+            <p><strong>Shipping Method:</strong> {{ order.shipping_method }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="order-col">
+            <h3>Order Summary</h3>
+            <div class="address-box">
+                <p><strong>Order Status:</strong> 
+                    <span>{{ order.status.upper() }}</span>
+                </p>
+                <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+                {% if order.tracking_number %}
+                <p><strong>Tracking Number:</strong> {{ order.tracking_number }}</p>
+                {% endif %}
+            </div>
+            
+            {% if 'payment-info' in print_options %}
+            <h3>Payment Information</h3>
+            <div class="address-box">
+                <p><strong>Payment Method:</strong> {{ order.payment_method }}</p>
+                <p><strong>Total Paid:</strong> €{{ "%.2f"|format(order.total|float) }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if 'order-items' in print_options %}
+    <h3>Order Items</h3>
+    <table class="order-items">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th class="text-right">Unit Price</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <strong>{{ item.product_name }}</strong>
+                    {% if item.product_description %}
+                    <br>
+                    <small>{{ item.product_description }}</small>
+                    {% endif %}
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td class="text-right">€{{ "%.2f"|format(item.unit_price|float) }}</td>
+                <td class="text-right">€{{ "%.2f"|format((item.unit_price|float) * (item.quantity|int)) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    
+    {% if 'pricing-details' in print_options %}
+    <div class="totals">
+        {% set subtotal = 0 %}
+        {% for item in items %}
+            {% set subtotal = subtotal + ((item.unit_price|float) * (item.quantity|int)) %}
+        {% endfor %}
+        
+        <div class="totals-row">
+            <div class="totals-label">Subtotal:</div>
+            <div class="totals-value">€{{ "%.2f"|format(subtotal) }}</div>
+        </div>
+        
+        {% if order.shipping_cost and order.shipping_cost|float > 0 %}
+        <div class="totals-row">
+            <div class="totals-label">Shipping:</div>
+            <div class="totals-value">€{{ "%.2f"|format(order.shipping_cost|float) }}</div>
+        </div>
+        {% endif %}
+        
+        {% if order.discount_amount and order.discount_amount|float > 0 %}
+        <div class="totals-row">
+            <div class="totals-label">Discount:</div>
+            <div class="totals-value">-€{{ "%.2f"|format(order.discount_amount|float) }}</div>
+        </div>
+        {% endif %}
+        
+        {% if order.tax_amount and order.tax_amount|float > 0 %}
+        <div class="totals-row">
+            <div class="totals-label">VAT ({{ "%.0f"|format(order.tax_rate|float) }}%):</div>
+            <div class="totals-value">€{{ "%.2f"|format(order.tax_amount|float) }}</div>
+        </div>
+        {% endif %}
+        
+        <div class="totals-row total">
+            <div class="totals-label">Total:</div>
+            <div class="totals-value">€{{ "%.2f"|format(order.total|float) }}</div>
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if 'notes' in print_options and order.admin_notes %}
+    <div class="notes">
+        <h3>Order Notes</h3>
+        <p>{{ order.admin_notes }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>

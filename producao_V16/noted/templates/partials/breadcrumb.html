@@ -1,0 +1,16 @@
+<nav class="breadcrumb">
+  <ul class="breadcrumb-list">
+    {% for crumb in breadcrumbs %}
+      <li class="breadcrumb-item">
+        {% if crumb.url %}
+          <a href="{{ crumb.url }}">{{ crumb.label | lower }}</a>
+        {% else %}
+          <span>{{ crumb.label | lower }}</span>
+        {% endif %}
+      </li>
+      {% if not loop.last %}
+        <li class="separator">/</li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

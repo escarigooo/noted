@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block title %}thank you | noted;{% endblock %}
+
+{% block body_class %}thank-you{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/categories.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/info.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/thank-you.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="categories-wrapper">
+  <div class="pages-header">
+    <h1 class="page-title">thank you</h1>
+  </div>
+  
+  <div class="info-content">
+    {% if order and order.user %}
+    <div class="thank-you-main">
+      <div class="success-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15.2765 5.25098L15.5744 5.26562C16.7514 5.35992 17.7344 5.90479 18.4474 6.7002L11.2716 10.6885C10.5476 11.0908 10.2864 12.0044 10.6886 12.7285C11.0909 13.4526 12.0045 13.7137 12.7287 13.3115L19.6916 9.44238C19.7781 10.0463 19.7697 10.6752 19.6554 11.3008L19.5959 11.584C19.1985 13.28 17.8767 14.7872 16.5695 15.9365C15.5716 16.8139 14.5148 17.5409 13.7111 18.0469L13.0031 18.4766C12.4186 18.8181 11.7157 18.8397 11.1164 18.541L10.9972 18.4766C10.1967 18.0087 8.76141 17.1064 7.43082 15.9365C7.30755 15.8281 7.1854 15.7152 7.06266 15.6006L5.60269 16.4121L5.14762 16.6641L5.3859 16.7119C5.79201 16.7932 6.05501 17.1886 5.97379 17.5947C5.89258 18.0008 5.49798 18.2646 5.09195 18.1836L2.85269 17.7354C2.65183 17.6951 2.47599 17.5744 2.36637 17.4014C2.25673 17.2281 2.22296 17.0173 2.27262 16.8184L2.77262 14.8184C2.87307 14.4166 3.28003 14.1722 3.6818 14.2725C4.08351 14.3729 4.32799 14.7799 4.22769 15.1816L4.14664 15.5039L4.87418 15.1006L5.98746 14.4814C5.3275 13.7022 4.77345 12.832 4.48941 11.8994L4.40445 11.584C4.05186 10.0783 4.31758 8.52733 5.07535 7.33203C5.8402 6.1257 7.11613 5.2749 8.72379 5.25098L8.90152 5.25C10.2025 5.25006 11.3127 5.8956 11.9152 6.32422L11.9543 6.3418C11.9978 6.35384 12.0514 6.34813 12.0851 6.32422L12.3341 6.15527C12.968 5.74461 13.9603 5.2501 15.0988 5.25C15.1587 5.25 15.2182 5.25011 15.2765 5.25098Z" fill="white"/>
+        <path d="M20.0002 5.25C20.4143 5.25005 20.7502 5.58582 20.7502 6V6.99512L21.713 7.28125L21.7853 7.30664C22.1371 7.45085 22.3292 7.84055 22.2189 8.21289C22.1086 8.58525 21.735 8.80799 21.3615 8.7373L21.2873 8.71875L20.089 8.36328L12.3644 12.6553C12.0024 12.8564 11.5461 12.7262 11.3449 12.3643C11.1438 12.0022 11.2739 11.5459 11.6359 11.3447L19.2502 7.11426V6C19.2502 5.58579 19.5859 5.25 20.0002 5.25Z" fill="white"/>
+        </svg>
+      </div>
+      <h2 class="appreciation-title">hello {{ order.user.name.split()[0] }},</h2>
+      <p class="intro-text">thank you for choosing noted; for your digital notebook needs. your order has been confirmed and we're preparing everything with care.</p>
+      
+      <div class="order-summary">
+        <div class="order-header">
+          <span class="order-number">order #{{ order.id }}</span>
+          <span class="order-date">{{ order.order_date.strftime('%d.%m.%Y') }}</span>
+        </div>
+        
+        <div class="order-total">
+          <span>total paid</span>
+          <span class="amount">{{ "%.2f"|format(order.total) }}€</span>
+        </div>
+      </div>
+      
+      <div class="delivery-info">
+        <h3>delivery information</h3>
+        {% if order.shipping_method %}
+        <div class="delivery-method">
+          <span class="label">shipping method:</span>
+          <span class="value">{{ order.shipping_method }}</span>
+        </div>
+        {% endif %}
+        
+        <div class="delivery-time">
+          <span class="label">estimated delivery:</span>
+          <span class="value">
+            {% if order.shipping_method == 'express' %}
+            1–2 business days
+            {% elif order.shipping_method == 'free' %}
+            5–7 business days
+            {% else %}
+            3–5 business days
+            {% endif %}
+          </span>
+        </div>
+        
+        {% if order.shipping_address %}
+        <div class="delivery-address">
+          <span class="label">shipping to:</span>
+          <div class="address">
+            {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}<br>
+            {{ order.shipping_address.street_address }}<br>
+            {{ order.shipping_address.zip_code }} {{ order.shipping_address.city }}<br>
+            {{ order.shipping_address.country }}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+      
+      <div class="next-steps">
+        <h3>what happens next?</h3>
+        <div class="steps">
+          <div class="step">
+            <span class="step-number">1</span>
+            <span class="step-text">order confirmation sent to your email</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-text">we prepare your items with care</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-text">tracking information provided</span>
+          </div>
+          <div class="step">
+            <span class="step-number">4</span>
+            <span class="step-text">delivered to your doorstep</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="thank-you-actions">
+        <a href="{{ url_for('misc.index') }}" class="btn-primary">continue shopping</a>
+        <a href="{{ url_for('auth.account') }}" class="btn-secondary">view account</a>
+      </div>
+    </div>
+    {% else %}
+    <div class="thank-you-main">
+      <div class="error-icon">?</div>
+      <h2 class="appreciation-title">order not found</h2>
+      <p class="intro-text">we couldn't find your order details. please contact our support team if you need assistance.</p>
+      
+      <div class="thank-you-actions">
+        <a href="{{ url_for('misc.index') }}" class="btn-primary">go to home</a>
+        <a href="{{ url_for('misc.support') }}" class="btn-secondary">contact support</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

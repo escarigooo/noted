@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}login | noted;{% endblock %}
+
+{% block body_class %}auth-page login-page{% endblock %}
+
+{% set auth_page = true %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-form-container">
+    <div class="auth-container">
+      <form method="POST" class="auth-form">
+        <h1>welcome back;</h1>
+        <p class="auth-form-container-v2">access your notes and settings.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="auth-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+      {% if success %}
+        <div class="auth-success">{{ success }}</div>
+      {% endif %}
+      {% if error %}
+        <div class="auth-error">{{ error }}</div>
+      {% endif %}
+
+        <input type="email" name="email" placeholder="email or phone number" required>
+        <input type="password" name="password" placeholder="password" required>
+
+        <div class="auth-options">
+          <a href="{{ url_for('auth.forgot_password') }}">forgot your password?</a>
+        </div>
+
+        <button type="submit">next</button>
+
+        <p class="auth-footer">
+          new here? <a href="{{ url_for('auth.register') }}">create an account</a>.
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-logo first ">
+      <img src="{{ url_for('static', filename='img/logo-n.png') }}" alt="Logo noted" />
+      <div class="footer-icons">
+         <a href="https://www.instagram.com/andreescarigo/" target="_blank" rel="noopener">
+          <img src="{{ url_for('static', filename='img/icons/instagram.png') }}" alt="Instagram" />
+        </a>
+        <a href="mailto:aluno223142@epad.edu.pt" target="_blank" rel="noopener">
+          <img src="{{ url_for('static', filename='img/icons/google.png') }}" alt="Google" />
+        </a>
+        <a href="https://github.com/escarigooo" target="_blank" rel="noopener">
+          <img src="{{ url_for('static', filename='img/icons/github.png') }}" alt="GitHub" />
+        </a>
+        <div class="footer-discord" onclick="copyDiscordTag()" title="Click to copy">
+          <img src="{{ url_for('static', filename='img/icons/discord.png') }}" alt="Discord" />
+          <span id="discord-tooltip" style="display: none;">copied!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h4><em>company</em></h4>
+      <ul>
+        <li><a href="{{ url_for('misc.about') }}">about us</a></li>
+        <li><a href="{{ url_for('misc.terms') }}">terms & <br>privacy</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h4><em>products</em></h4>
+      <ul>
+        <li><a href="{{ url_for('products.product_details', product_name='milestones') }}">milestones</a></li>
+        <li><a href="{{ url_for('products.product_details', product_name='supernote') }}">supernote</a></li>
+        <li><a href="{{ url_for('products.product_details', product_name='vision') }}">vision</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column last">
+      <h4 class="footer-title">thanks for stopping by</h4>
+      <p>we do not sell or share<br />your personal information</p>
+      <p class="copyright">@ 2025 noted; All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  let tooltipStyled = false;
+
+  function copyDiscordTag() {
+    const tag = "escarigo";
+    const tooltip = document.getElementById("discord-tooltip");
+    const container = document.querySelector(".footer-discord");
+
+    // Apply styles only once
+    if (!tooltipStyled && tooltip && container) {
+      // Tooltip styles (right side)
+      Object.assign(tooltip.style, {
+        display: "none",
+        position: "absolute",
+        top: "50%",
+        left: "calc(100% + 8px)", // puts it just to the right
+        transform: "translateY(-50%)",
+        backgroundColor: "#5865F2",
+        color: "white",
+        padding: "4px 8px",
+        borderRadius: "6px",
+        fontSize: "0.75rem",
+        whiteSpace: "nowrap",
+        zIndex: "10",
+        fontFamily: "sans-serif",
+        boxShadow: "0 0 6px rgba(0,0,0,0.2)",
+      });
+
+      // Only this — do NOT touch icon size!
+      container.style.position = "relative";
+      container.style.cursor = "pointer";
+
+      tooltipStyled = true;
+    }
+
+    navigator.clipboard.writeText(tag).then(() => {
+      if (tooltip) {
+        tooltip.textContent = "escarigo copied!";
+        tooltip.style.display = "block";
+        setTimeout(() => {
+          tooltip.style.display = "none";
+        }, 1800);
+      }
+    });
+  }
+</script>

@@ -1,0 +1,82 @@
+{% macro order_summary_table(items, subtotal, shipping_cost=0, total=None, show_images=true) %}
+<div class="order-summary" style="margin: 25px 0;">
+    <h3 style="color: #000; font-size: 18px; font-weight: 600; margin: 0 0 20px 0;">Order Summary</h3>
+    
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #fff; border: 1px solid #f0f0f0; border-radius: 8px;">
+        <!-- Header -->
+        <tr style="background-color: #f8f9fa;">
+            {% if show_images %}<th width="60" style="padding: 15px 10px; text-align: left; font-weight: 600; color: #000; border-bottom: 1px solid #f0f0f0;"></th>{% endif %}
+            <th style="padding: 15px; text-align: left; font-weight: 600; color: #000; border-bottom: 1px solid #f0f0f0;">Product</th>
+            <th width="80" style="padding: 15px 10px; text-align: center; font-weight: 600; color: #000; border-bottom: 1px solid #f0f0f0;">Qty</th>
+            <th width="100" style="padding: 15px; text-align: right; font-weight: 600; color: #000; border-bottom: 1px solid #f0f0f0;">Price</th>
+            <th width="100" style="padding: 15px; text-align: right; font-weight: 600; color: #000; border-bottom: 1px solid #f0f0f0;">Total</th>
+        </tr>
+        
+        <!-- Items -->
+        {% for item in items %}
+        <tr{% if not loop.last %} style="border-bottom: 1px solid #f0f0f0;"{% endif %}>
+            {% if show_images %}
+            <td style="padding: 15px 10px; vertical-align: top;">
+                {% if item.product_image or item.image %}
+                <img src="{{ site_url }}/static/img/products/{{ item.product_image or item.image }}" 
+                     alt="{{ item.product_name or item.name }}" 
+                     style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #f0f0f0;">
+                {% else %}
+                <div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 4px; border: 1px solid #f0f0f0;"></div>
+                {% endif %}
+            </td>
+            {% endif %}
+            <td style="padding: 15px; vertical-align: top;">
+                <div style="font-weight: 600; color: #000; margin-bottom: 5px;">
+                    {{ item.product_name or item.name }}
+                </div>
+                {% if item.product_description or item.description %}
+                <div style="color: #666; font-size: 13px; line-height: 1.4;">
+                    {{ (item.product_description or item.description)[:60] }}{% if (item.product_description or item.description)|length > 60 %}...{% endif %}
+                </div>
+                {% endif %}
+            </td>
+            <td style="padding: 15px 10px; text-align: center; vertical-align: top; color: #000;">
+                {{ item.quantity }}
+            </td>
+            <td style="padding: 15px; text-align: right; vertical-align: top; color: #000;">
+                €{{ "%.2f"|format(item.unit_price or item.price) }}
+            </td>
+            <td style="padding: 15px; text-align: right; vertical-align: top; font-weight: 600; color: #000;">
+                €{{ "%.2f"|format((item.unit_price or item.price) * item.quantity) }}
+            </td>
+        </tr>
+        {% endfor %}
+        
+        <!-- Totals -->
+        <tr style="background-color: #f8f9fa;">
+            <td colspan="{% if show_images %}4{% else %}3{% endif %}" style="padding: 15px; text-align: right; font-weight: 600; color: #000; border-top: 2px solid #f0f0f0;">
+                Subtotal:
+            </td>
+            <td style="padding: 15px; text-align: right; font-weight: 600; color: #000; border-top: 2px solid #f0f0f0;">
+                €{{ "%.2f"|format(subtotal) }}
+            </td>
+        </tr>
+        
+        {% if shipping_cost > 0 %}
+        <tr style="background-color: #f8f9fa;">
+            <td colspan="{% if show_images %}4{% else %}3{% endif %}" style="padding: 15px; text-align: right; color: #000;">
+                Shipping:
+            </td>
+            <td style="padding: 15px; text-align: right; color: #000;">
+                €{{ "%.2f"|format(shipping_cost) }}
+            </td>
+        </tr>
+        {% endif %}
+        
+        <tr style="background-color: #000;">
+            <td colspan="{% if show_images %}4{% else %}3{% endif %}" style="padding: 15px; text-align: right; font-weight: 700; color: #fff; font-size: 16px;">
+                Total:
+            </td>
+            <td style="padding: 15px; text-align: right; font-weight: 700; color: #fff; font-size: 16px;">
+                €{{ "%.2f"|format(total or (subtotal + shipping_cost)) }}
+            </td>
+        </tr>
+    </table>
+</div>
+{% endmacro %}

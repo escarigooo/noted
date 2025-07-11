@@ -1,0 +1,27 @@
+Flask==2.2.5
+Flask-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.46
+
+Flask-WTF==1.1.1
+WTForms==3.0.1
+Flask-Mail==0.9.1
+mysql-connector-python==8.0.33
+
+# PDF generation requirements
+pdfkit==1.0.0
+WeasyPrint==59.0  # Alternative PDF generator if pdfkit doesn't work well
+reportlab==3.6.13  # Another alternative for more complex PDF generation
+
+itsdangerous==2.1.2
+Werkzeug==2.2.3
+
+python-dotenv
+blinker==1.6.2
+typing_extensions
+
+# Jupyter dependencies for admin dashboard
+papermill
+nbconvert
+jupyter
+ipykernel
+pandas

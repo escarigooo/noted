@@ -1,0 +1,43 @@
+# Ambientes virtuais (venv, env, etc.)
+venv/
+env/
+.venv/
+
+# Compilados Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Configs e segurança
+*.env
+.env
+
+# IDEs e editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ficheiros de sistema
+.DS_Store
+Thumbs.db
+
+# Notebooks temporários
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Bases de dados locais (se aplicável)
+*.sqlite3
+instance/
+*.db
+
+# Ficheiros temporários
+*.bak
+*.swp
+*.tmp
+
+# Testes e cache
+pytest_cache/

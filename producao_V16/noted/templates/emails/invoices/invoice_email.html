@@ -1,0 +1,120 @@
+{% extends "emails/base_email.html" %}
+
+{% block email_title %}Your Invoice from noted;{% endblock %}
+
+{% block email_header %}
+<h1 style="font-size:28px; margin:0 0 15px 0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#000000; text-align:center;">
+    Your Invoice is Ready
+</h1>
+{% endblock %}
+
+{% block email_content %}
+<table width="100%" cellpadding="0" cellspacing="0" style="min-width:100%;">
+    <tr>
+        <td style="padding:20px; background-color:#F7F7F7; border-radius:5px;">
+            <p style="font-size:16px; line-height:24px; margin:0 0 20px 0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333;">
+                Dear {{ customer_name }},
+            </p>
+            
+            <p style="font-size:16px; line-height:24px; margin:0 0 20px 0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333;">
+                Thank you for your purchase with noted;. We've attached your invoice <strong>#{{ invoice_number }}</strong> for order <strong>#{{ order_id }}</strong> to this email.
+            </p>
+            
+            <p style="font-size:16px; line-height:24px; margin:0 0 20px 0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333;">
+                Your order has been processed and is being prepared for shipping. You'll receive another notification when it's on the way!
+            </p>
+        </td>
+    </tr>
+</table>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="min-width:100%; margin-top:30px;">
+    <tr>
+        <td style="padding:30px; background-color:#ffffff; border:1px solid #EEEEEE; border-radius:6px;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="padding-bottom:20px; border-bottom:2px solid #000000;">
+                        <h2 style="font-size:22px; margin:0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#000000;">
+                            Invoice Details
+                        </h2>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="padding:20px 0;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="50%" style="padding-bottom:15px;">
+                                    <p style="font-size:15px; line-height:1.4; margin:0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#666666;">
+                                        <strong style="color:#000000;">Invoice Number:</strong>
+                                    </p>
+                                    <p style="font-size:16px; line-height:1.4; margin:5px 0 0 0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#000000;">
+                                        {{ invoice_number }}
+                                    </p>
+                                </td>
+                                <td width="50%" style="padding-bottom:15px;">
+                                    <p style="font-size:15px; line-height:1.4; margin:0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#666666;">
+                                        <strong style="color:#000000;">Order Number:</strong>
+                                    </p>
+                                    <p style="font-size:16px; line-height:1.4; margin:5px 0 0 0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#000000;">
+                                        #{{ order_id }}
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="50%" style="padding-bottom:15px;">
+                                    <p style="font-size:15px; line-height:1.4; margin:0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#666666;">
+                                        <strong style="color:#000000;">Date:</strong>
+                                    </p>
+                                    <p style="font-size:16px; line-height:1.4; margin:5px 0 0 0; font-family:'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#000000;">
+                                        {{ now.strftime('%B %d, %Y') }}
+                                    </p>
+                                </td>
+                                <td width="50%" style="padding-bottom:15px;">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            
+            <p style="font-size:14px; margin:20px 0 0 0; font-family:Arial, sans-serif; color:#777777;">
+                We've attached the invoice to this email as a PDF.
+            </p>
+        </td>
+    </tr>
+</table>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="min-width:100%; margin-top:30px;">
+    <tr>
+        <td style="padding:20px; background-color:#F7F7F7; border-radius:5px;">
+            <h2 style="font-size:20px; margin:0 0 15px 0; font-family:Arial, sans-serif; color:#333333; text-align:center;">
+                Need Help?
+            </h2>
+            
+            <p style="font-size:16px; line-height:24px; margin:0 0 20px 0; font-family:Arial, sans-serif; color:#333333; text-align:center;">
+                If you have any questions about your order or invoice, please contact our customer support:
+            </p>
+            
+            <table width="100%" cellpadding="0" cellspacing="0" style="min-width:100%;">
+                <tr>
+                    <td width="50%" style="text-align:center; padding:10px;">
+                        <p style="font-size:16px; line-height:24px; margin:0; font-family:Arial, sans-serif; color:#333333;">
+                            <strong>Email:</strong> <a href="mailto:support@noted.pt" style="color:#0066CC;">support@noted.pt</a>
+                        </p>
+                    </td>
+                    <td width="50%" style="text-align:center; padding:10px;">
+                        <p style="font-size:16px; line-height:24px; margin:0; font-family:Arial, sans-serif; color:#333333;">
+                            <strong>Phone:</strong> +351 910 000 000
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}
+
+{% block email_footer %}
+<p style="font-size:14px; line-height:20px; margin:20px 0 0 0; color:#777777;">
+    &copy; {{ now.year }} Noted. All rights reserved.
+</p>
+{% endblock %}

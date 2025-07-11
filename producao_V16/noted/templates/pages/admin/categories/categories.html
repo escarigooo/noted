@@ -1,0 +1,307 @@
+{% extends "pages/admin/base.html" %}
+
+{% block admin_page_title %}categories{% endblock %}
+{% block page_title %}categories{% endblock %}
+
+{% block admin_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/categories.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_table.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/notifications.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/button_loading.css') }}">
+{% endblock %}
+
+{% block admin_content %}
+<section class="admin-wrapper">
+
+
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3 id="total-categories">--</h3>
+            <p>Total Categories</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="active-categories">--</h3>
+            <p>Active Categories</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="products-assigned">--</h3>
+            <p>Products Assigned</p>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <button id="refreshDataBtn" class="btn btn-primary" onclick="refreshAnalytics()">Refresh Data</button>
+        <button id="newCategoryBtn" class="btn btn-secondary" onclick="openAddCategoryModal()">New Category</button>
+    </div>
+
+    <!-- Table Section -->
+    {% set table_config = {
+    'table_id': 'categories-table',
+    'table_name': 'Categories',
+    'columns': [
+    {'key': 'id', 'label': 'ID', 'width': '80px'},
+    {'key': 'description', 'label': 'Category Name'},
+    {'key': 'product_count', 'label': 'Products', 'width': '120px', 'class': 'text-center'}
+    ],
+    'filters': [
+    {'value': 'with_products', 'label': 'With Products'},
+    {'value': 'without_products', 'label': 'Without Products'}
+    ],
+    'actions': [
+    {'key': 'edit', 'label': 'Edit', 'icon': 'Edit', 'class': 'btn-edit'},
+    {'key': 'delete', 'label': 'Delete', 'icon': 'Delete', 'class': 'btn-delete'}
+    ]
+    } %}
+    {% include 'partials/admin_table.html' %}
+
+    <!-- Last updated info -->
+    <p class="last-updated">
+        Last updated: <span id="last-updated">--</span>
+    </p>
+</section>
+{% endblock %}
+
+{% block admin_scripts %}
+<!-- Admin Tables JS -->
+<script src="{{ url_for('static', filename='js/admin/admin_tables.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/button_loading.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize categories table
+        initializeTable('categories-table', {
+            apiEndpoint: '/api/admin/table/categories',
+            deleteEndpoint: '/api/admin/table/categories',
+            itemName: 'category',
+            columns: [
+                { key: 'id', label: 'ID', sortable: true },
+                { key: 'description', label: 'Category Name', sortable: true },
+                { key: 'product_count', label: 'Products', sortable: true }
+            ],
+            actions: [
+                {
+                    key: 'edit',
+                    label: 'Edit',
+                    icon: 'Edit',
+                    class: 'btn-edit',
+                    // Custom edit handler to prevent product editing
+                    handler: openCategoryEditModal
+                },
+                {
+                    key: 'delete',
+                    label: 'Delete',
+                    icon: 'Delete',
+                    class: 'btn-delete'
+                    // Uses default delete handler
+                }
+            ]
+        });
+
+        // Load category statistics
+        loadCategoryStats();
+
+        // Update the last updated timestamp
+        updateLastUpdated();
+    });
+
+    // Custom edit handler for categories to prevent product editing
+    function openCategoryEditModal(categoryId) {
+        const modal = document.getElementById('categories-table-edit-modal');
+        const titleEl = modal.querySelector('.modal-header h3');
+        const contentEl = modal.querySelector('.form-content');
+        const saveBtn = document.getElementById('categories-table-edit-save');
+        
+        if (!modal) return;
+        
+        // Show modal and loading state
+        modal.style.display = 'flex';
+        modal.querySelector('.form-loading').style.display = 'block';
+        contentEl.innerHTML = '';
+        
+        // Fetch category data
+        fetch(`/api/admin/categories/${categoryId}`)
+            .then(response => response.json())
+            .then(result => {
+                modal.querySelector('.form-loading').style.display = 'none';
+                
+                if (result.success || result.data) {
+                    const data = result.data || result;
+                    titleEl.textContent = 'Edit Category';
+                    contentEl.innerHTML = `
+                        <div class="form-group">
+                            <label for="edit-category-description">Category Name</label>
+                            <input type="text" id="edit-category-description" name="description" 
+                                   value="${data.description}" placeholder="Enter category name" required>
+                            <div class="form-help">Products can only be assigned to categories from the Products section</div>
+                        </div>
+                    `;
+                    
+                    // Setup save handler
+                    saveBtn.onclick = () => saveCategoryEdit(categoryId);
+                } else {
+                    contentEl.innerHTML = '<p class="text-danger">Failed to load category data</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading category:', error);
+                modal.querySelector('.form-loading').style.display = 'none';
+                contentEl.innerHTML = '<p class="text-danger">Error loading category data</p>';
+            });
+    }
+    
+    // Save category edit (name/description and image path)
+    async function saveCategoryEdit(categoryId) {
+        const descriptionInput = document.getElementById('edit-category-description');
+        const imagePathInput = document.getElementById('edit-category-image-path');
+        const description = descriptionInput.value.trim();
+        const imagePath = imagePathInput.value.trim();
+        
+        if (!description) {
+            showNotification('Please enter a category name', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/admin/categories/${categoryId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description, image_path: imagePath })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success || response.ok) {
+                showNotification('Category updated successfully', 'success');
+                closeModal('categories-table-edit');
+                refreshTable('categories-table');
+            } else {
+                showNotification(result.message || 'Failed to update category', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating category:', error);
+            showNotification('Error updating category', 'error');
+        }
+    }
+
+    // Load category statistics from analytics data
+    async function loadCategoryStats() {
+        try {
+            const response = await fetch('/static/data/analytics.json');
+            const data = await response.json();
+
+            // Update stat cards with real data
+            if (data.products) {
+                document.getElementById('total-categories').textContent = data.products.total_categories || 0;
+
+                // Calculate active categories (categories with products)
+                let activeCategories = 0;
+                let totalProducts = 0;
+
+                if (data.products.products_by_category) {
+                    activeCategories = data.products.products_by_category.filter(cat => cat.count > 0).length;
+                    totalProducts = data.products.products_by_category.reduce((sum, cat) => sum + (cat.count || 0), 0);
+                }
+
+                document.getElementById('active-categories').textContent = activeCategories;
+                document.getElementById('products-assigned').textContent = totalProducts;
+            }
+
+        } catch (error) {
+            console.error('Error loading category stats:', error);
+            // Set fallback values if data loading fails
+            document.getElementById('total-categories').textContent = '0';
+            document.getElementById('active-categories').textContent = '0';
+            document.getElementById('products-assigned').textContent = '0';
+        }
+    }
+
+    // Analytics refresh function
+    function refreshAnalytics() {
+        withButtonLoading('refreshDataBtn', async () => {
+            await loadCategoryStats();
+            refreshTable('categories-table');
+            updateLastUpdated();
+            return Promise.resolve();
+        }, {
+            loadingText: 'Refreshing...',
+            successNotification: 'Categories data refreshed!',
+            errorNotification: 'Error refreshing categories data'
+        });
+    }
+
+    // Add new category function
+    function openAddCategoryModal() {
+        const modal = document.getElementById('categories-table-edit-modal');
+        const titleEl = modal.querySelector('.modal-header h3');
+        const contentEl = modal.querySelector('.form-content');
+        const saveBtn = document.getElementById('categories-table-edit-save');
+
+        if (!modal) return;
+
+        // Update modal for adding new category
+        titleEl.textContent = 'Add New Category';
+        contentEl.innerHTML = `
+        <div class="form-group">
+            <label for="new-category-description">Category Name</label>
+            <input type="text" id="new-category-description" name="description" placeholder="Enter category name" required>
+            <div class="form-help">Enter a descriptive name for the category</div>
+        </div>
+    `;
+
+        modal.style.display = 'flex';
+
+        // Setup save handler for new category
+        saveBtn.onclick = () => saveNewCategory();
+
+        // Focus on the input
+        document.getElementById('new-category-description').focus();
+    }
+
+    // Save new category function
+    async function saveNewCategory() {
+        const descriptionInput = document.getElementById('new-category-description');
+        const description = descriptionInput.value.trim();
+
+        if (!description) {
+            showNotification('Please enter a category name', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/admin/table/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ description })
+            });
+
+            const result = await response.json();
+
+            if (result.success || response.ok) {
+                showNotification('Category created successfully', 'success');
+                closeModal('categories-table-edit');
+                refreshTable('categories-table');
+            } else {
+                showNotification(result.message || 'Failed to create category', 'error');
+            }
+        } catch (error) {
+            console.error('Error creating category:', error);
+            showNotification('Error creating category', 'error');
+        }
+    }
+
+    // Update last updated timestamp
+    function updateLastUpdated() {
+        const now = new Date();
+        const timeString = now.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('last-updated').textContent = timeString;
+    }
+</script>
+{% endblock %}

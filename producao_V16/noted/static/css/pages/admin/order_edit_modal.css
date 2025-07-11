@@ -1,0 +1,107 @@
+/* Order Edit Modal Custom Styles */
+
+/* Order Print Image Section */
+.order-print-image {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.order-print-image h4 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.print-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.print-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.print-option input[type="checkbox"] {
+    margin: 0;
+}
+
+.print-option label {
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: normal;
+}
+
+/* Additional order edit modal styles */
+.order-edit-section {
+    margin-bottom: 20px;
+}
+
+.order-edit-section h4 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.order-status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.order-status-wrapper select {
+    flex: 1;
+}
+
+/* Status badge in modal */
+.edit-status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.edit-status-badge.status-pending { background-color: #FEF3C7; color: #92400E; }
+.edit-status-badge.status-processing { background-color: #E0F2FE; color: #0369A1; }
+.edit-status-badge.status-shipped { background-color: #D1FAE5; color: #047857; }
+.edit-status-badge.status-delivered { background-color: #BBF7D0; color: #16A34A; }
+.edit-status-badge.status-cancelled { background-color: #FEE2E2; color: #DC2626; }
+
+/* Order details summary */
+.order-summary {
+    background-color: #f9fafb;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.order-summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.order-summary-row:last-child {
+    border-bottom: none;
+}
+
+.order-summary-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.order-summary-value {
+    text-align: right;
+}

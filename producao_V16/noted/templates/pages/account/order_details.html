@@ -1,0 +1,181 @@
+{% extends "layout.html" %}
+
+{% block body_class %}account order-details | noted;{% endblock %}
+
+{% block content %}
+<div class="order-details-wrapper">
+  <div class="order-details-container">
+    <div class="order-header">
+      <h1>order #{{ order.id }}</h1>
+      <div class="order-meta">
+        <p class="order-date"><i class="fas fa-calendar-alt"></i> {{ order.formatted_date }}</p>
+        <p class="order-status">status: <span class="status-{{ order.status }}">{{ order.status }}</span></p>
+      </div>
+      <a href="{{ url_for('auth.account') }}" class="back-link"><i class="fas fa-arrow-left"></i> back to my account</a>
+    </div>
+
+    <div class="order-sections">
+      <!-- Order summary -->
+      <div class="order-section">
+        <h2>order summary</h2>
+        <div class="order-summary">
+          <div class="summary-row">
+            <div class="summary-label">subtotal:</div>
+            <div class="summary-value">€{{ "%.2f"|format(order.subtotal or 0) }}</div>
+          </div>
+          {% if order.shipping_cost %}
+          <div class="summary-row">
+            <div class="summary-label">shipping:</div>
+            <div class="summary-value">€{{ "%.2f"|format(order.shipping_cost) }}</div>
+          </div>
+          {% endif %}
+          {% if order.tax_amount %}
+          <div class="summary-row">
+            <div class="summary-label">tax ({{ "%.0f"|format(order.tax_rate) }}%):</div>
+            <div class="summary-value">€{{ "%.2f"|format(order.tax_amount) }}</div>
+          </div>
+          {% endif %}
+          {% if order.discount_amount %}
+          <div class="summary-row">
+            <div class="summary-label">discount:</div>
+            <div class="summary-value">-€{{ "%.2f"|format(order.discount_amount) }}</div>
+          </div>
+          {% endif %}
+          <div class="summary-row total">
+            <div class="summary-label">total:</div>
+            <div class="summary-value">€{{ "%.2f"|format(order.total) }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order items -->
+      <div class="order-section">
+        <h2>items</h2>
+        <div class="order-items">
+          {% for item in items %}
+          <div class="order-item">
+            <div class="item-image">
+              {% if item.product_image %}
+              <img src="{{ url_for('static', filename='img/' + item.product_image) }}" alt="{{ item.product_name }}">
+              {% else %}
+              <div class="no-image">no image</div>
+              {% endif %}
+            </div>
+            <div class="item-details">
+              <h3 class="item-name">{{ item.product_name }}</h3>
+              <p class="item-price">€{{ "%.2f"|format(item.unit_price) }} x {{ item.quantity }}</p>
+              <p class="item-total">€{{ "%.2f"|format(item.unit_price * item.quantity) }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Shipping and payment info -->
+      <div class="order-columns">
+        <!-- Shipping address -->
+        <div class="order-section">
+          <h2>shipping address</h2>
+          {% if shipping %}
+          <div class="address-info">
+            <p>{{ shipping.first_name }} {{ shipping.last_name }}</p>
+            <p>{{ shipping.street_address }}</p>
+            <p>{{ shipping.city }}, {{ shipping.state }} {{ shipping.zip_code }}</p>
+            <p>{{ shipping.country }}</p>
+            {% if shipping.phone %}
+            <p>{{ shipping.phone }}</p>
+            {% endif %}
+          </div>
+          {% else %}
+          <p class="no-info">No shipping address provided</p>
+          {% endif %}
+        </div>
+
+        <!-- Billing address -->
+        <div class="order-section">
+          <h2>billing address</h2>
+          {% if billing %}
+          <div class="address-info">
+            <p>{{ billing.first_name }} {{ billing.last_name }}</p>
+            <p>{{ billing.street_address }}</p>
+            <p>{{ billing.city }}, {{ billing.state }} {{ billing.zip_code }}</p>
+            <p>{{ billing.country }}</p>
+            {% if billing.phone %}
+            <p>{{ billing.phone }}</p>
+            {% endif %}
+          </div>
+          {% else %}
+          <p class="no-info">Same as shipping address</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Payment method -->
+      <div class="order-section">
+        <h2>payment</h2>
+        <div class="payment-info">
+          <p><strong>method:</strong> {{ order.payment_method }}</p>
+          {% if payment %}
+            {% if payment.card_brand and payment.card_last4 %}
+            <p><strong>card:</strong> {{ payment.card_brand }} ending in {{ payment.card_last4 }}</p>
+            {% endif %}
+            {% if payment.paid %}
+            <p class="payment-status success">Payment completed on {{ payment.formatted_date }}</p>
+            {% else %}
+            <p class="payment-status pending">Payment pending</p>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Invoice -->
+      {% if invoice %}
+      <div class="order-section invoice-section">
+        <h2>invoice</h2>
+        <div class="invoice-info">
+          <p><strong>invoice #:</strong> {{ invoice.invoice_number }}</p>
+          <p><strong>date:</strong> {{ invoice.formatted_date }}</p>
+          {% if invoice.pdf_path %}
+          <a href="{{ url_for('orders.view_invoice', order_id=order.id) }}" target="_blank" class="btn btn-primary">
+            <i class="fas fa-file-invoice"></i> view invoice
+          </a>
+          <a href="{{ url_for('orders.download_invoice', order_id=order.id) }}" class="btn btn-outline">
+            <i class="fas fa-download"></i> download invoice
+          </a>
+          {% else %}
+          <p class="no-info">Invoice is being processed</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Tracking info -->
+      {% if order.tracking_number %}
+      <div class="order-section">
+        <h2>tracking</h2>
+        <div class="tracking-info">
+          <p><strong>tracking #:</strong> {{ order.tracking_number }}</p>
+          <!-- Link to tracking service could be added here based on shipping method -->
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/account.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/order_details.css') }}">
+<style>
+  /* Quick status styles in case the CSS file is missing */
+  .status-pending { color: #f39c12; }
+  .status-processing { color: #3498db; }
+  .status-shipped { color: #2ecc71; }
+  .status-delivered { color: #27ae60; }
+  .status-cancelled { color: #e74c3c; }
+  
+  .payment-status.success { color: #2ecc71; }
+  .payment-status.pending { color: #f39c12; }
+</style>
+{% endblock %}

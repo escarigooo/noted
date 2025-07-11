@@ -1,0 +1,1060 @@
+/* ======================= */
+/* ADMIN LAYOUT STYLES      */
+/* ======================= */
+
+/* Last updated styling */
+.last-updated {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.last-updated span {
+    color: #374151;
+    font-weight: 500;
+}
+
+/* Loading state removed - now using notifications only */
+
+.breacrumb{
+    width: 100%;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+    text-align: left;
+    margin-top: 1rem; /* Adjusted for better spacing */
+}
+/* CSS Variables for Admin */
+:root {
+    --primary-color: var(--color-primary);
+    --primary-dark: #e6b600;
+    --color-gray: #e2e8f0;
+}
+
+/* Admin page general styles */
+.admin-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Pages header (já definido no categories.css, mas garantindo override) */
+.pages-header {
+    padding: 2rem 0 2rem 1rem;
+    /*margin-bottom: 2rem;*/
+}
+
+.pages-header .page-title {
+    font-size: 2.5rem;
+    color: var(--color-black);
+    margin-bottom: 0.5rem;
+}
+
+/* ======================= */
+/* UNIFIED ADMIN WRAPPERS   */
+/* ======================= */
+
+.admin-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    /*padding: 0 2rem 3rem 2rem;*/
+    padding: 0 1rem 0 1rem;
+}
+
+/* ======================= */
+/* UNIFIED STATS GRID       */
+/* ======================= */
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.admin-stats .stat-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border-left: 4px solid var(--color-primary);
+    transition: transform 0.2s ease;
+}
+
+.admin-stats .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.admin-stats .stat-card h3,
+.admin-stats .stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0 0 0.5rem 0;
+    display: block;
+}
+
+.admin-stats .stat-card p,
+.admin-stats .stat-card .stat-label {
+    color: #64748b;
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* ======================= */
+/* UNIFIED ACTIONS          */
+/* ======================= */
+
+.admin-actions {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.admin-actions .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.admin-actions .btn-primary {
+    background: var(--color-primary);
+}
+
+.admin-actions .btn-primary:hover {
+    background: #e6b600;
+    transform: translateY(-1px);
+}
+
+.admin-actions .btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.admin-actions .btn-secondary:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+/* ======================= */
+/* UNIFIED TABLE STYLES     */
+/* ======================= */
+
+.admin-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.table-header h2 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.25rem;
+}
+
+.search-filter {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-input,
+.filter-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.search-input {
+    min-width: 200px;
+}
+
+.search-input:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(255, 203, 5, 0.1);
+}
+
+.admin-table {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-table table {
+    width: 100%;
+    min-width: 800px; /* Ensure minimum width for readability */
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.admin-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.admin-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.admin-table .no-data {
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+    padding: 3rem;
+    font-size: 1rem;
+}
+
+/* ======================= */
+/* UNIFIED BADGES & STATUS  */
+/* ======================= */
+
+.status-badge,
+.role-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.active,
+.status-badge.completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.inactive,
+.status-badge.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-badge.pending,
+.status-badge.out-of-stock {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.processing {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.role-badge.admin {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.role-badge.user {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+/* ======================= */
+/* UNIFIED ACTION BUTTONS   */
+/* ======================= */
+
+.actions,
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.actions .btn,
+.action-buttons .btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.btn-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn-danger:hover {
+    background: #fecaca;
+}
+
+/* ======================= */
+/* UNIFIED GRIDS            */
+/* ======================= */
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.admin-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.admin-item h3 {
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+    font-size: 1.25rem;
+}
+
+.admin-item p {
+    color: #64748b;
+    margin: 0 0 1rem 0;
+}
+
+/* ======================= */
+/* RESPONSIVE DESIGN        */
+/* ======================= */
+
+@media (max-width: 768px) {
+ 
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .admin-stats .stat-card {
+        padding: 1rem;
+    }
+    
+    .admin-stats .stat-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .admin-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .search-filter {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .search-input,
+    .filter-select {
+        width: 100%;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .actions .btn {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.7rem;
+        min-width: 28px;
+    }
+    
+    .pagination {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .admin-modal .modal-content {
+        margin: 5% auto;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .admin-form .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .admin-form input,
+    .admin-form select,
+    .admin-form textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}
+
+/* Mobile Modal Improvements */
+@media (max-width: 768px) {
+    .admin-modal .modal-content {
+        margin: 5% auto;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .admin-form .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .admin-form input,
+    .admin-form select,
+    .admin-form textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}
+
+/* Touch-friendly buttons */
+@media (pointer: coarse) {
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .actions .btn {
+        min-height: 40px;
+        min-width: 40px;
+    }
+}
+
+/* Horizontal scroll shadows */
+.table-container {
+    position: relative;
+}
+
+.table-container::before,
+.table-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+}
+
+.table-container::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+    opacity: 0;
+}
+
+.table-container::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0));
+    opacity: 1;
+}
+
+.table-container.scroll-left::before {
+    opacity: 1;
+}
+
+.table-container.scroll-right::after {
+    opacity: 0;
+}
+
+/* ======================= */
+/* ADMIN CONTENT WRAPPER   */
+/* ======================= */
+
+.analytics-wrapper,
+.users-wrapper,
+.orders-wrapper,
+.categories-wrapper,
+.products-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem 3rem 2rem;
+}
+
+/* ======================= */
+/* STATS GRID (UNIVERSAL)  */
+/* ======================= */
+
+.stats-grid,
+.user-stats-grid,
+.orders-stats,
+.categories-stats,
+.products-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e5e5;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+}
+
+/* Icon-based stat cards */
+.stat-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.stat-content h3 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.stat-content .stat-number {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+/* ======================= */
+/* TABLE STYLES (UNIVERSAL) */
+/* ======================= */
+
+.users-table-container,
+.orders-table-container,
+.categories-table-container,
+.products-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid #e5e5e5;
+}
+
+.table-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+}
+
+.table-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.users-table,
+.orders-table table,
+.categories-table table,
+.products-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table th,
+.orders-table th,
+.categories-table th,
+.products-table th,
+.users-table td,
+.orders-table td,
+.categories-table td,
+.products-table td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.users-table th,
+.orders-table th,
+.categories-table th,
+.products-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.users-table tr:hover,
+.orders-table tr:hover,
+.categories-table tr:hover,
+.products-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.no-data {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 3rem !important;
+}
+
+/* ======================= */
+/* ROLE BADGES & STATUS    */
+/* ======================= */
+
+.role-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-badge.user {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.active {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.status-badge.pending {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.status-badge.completed {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+/* ======================= */
+/* BUTTONS & ACTIONS       */
+/* ======================= */
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background: #d4a024;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+/* Action buttons in tables */
+.admin-actions,
+.categories-actions,
+.products-actions {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* ======================= */
+/* SEARCH & FILTERS        */
+/* ======================= */
+
+.search-filter {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-input,
+.filter-select {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.search-input {
+    min-width: 200px;
+}
+
+.filter-select {
+    min-width: 150px;
+}
+
+/* ======================= */
+/* MODAL STYLES            */
+/* ======================= */
+
+.admin-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--color-primary);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.close-modal:hover {
+    color: var(--color-primary);
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ======================= */
+/* FORM STYLES             */
+/* ======================= */
+
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+}
+
+.form-group input[readonly],
+.form-group select[disabled],
+.form-group textarea[readonly] {
+    background-color: #f9f9f9;
+    cursor: not-allowed;
+}
+
+.product-image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.product-thumbnail {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.recent-orders-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.recent-orders-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.recent-orders-list li:last-child {
+    border-bottom: none;
+}
+
+/* ======================= */
+/* PAGINATION STYLES        */
+/* ======================= */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: white;
+    border-top: 1px solid #e2e8f0;
+}
+
+.pagination button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    min-width: 80px;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background: #f9fafb;
+}
+
+.page-info {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.pagination-info {
+    text-align: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.pagination-info p {
+    margin: 0;
+}
+
+/* Mobile pagination improvements */
+@media (max-width: 768px) {
+    .pagination {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .pagination button {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .page-info {
+        order: -1;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        padding: 0.75rem;
+    }
+    
+    .pagination button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .pagination-info {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+    }
+}

@@ -138,21 +138,6 @@ noted/
 - Secure session handling
 - Email verification for new accounts
 
-## Testing
-
-To run the test suite:
-
-```powershell
-cd noted
-python -m pytest
-```
-
-Key test files include:
-- `test_email.py` - Email service functionality
-- `test_cart_final.py` - Shopping cart operations
-- `test_bulk_update.py` - Product updates
-- `test_categories.py` - Category system
-
 ## API Endpoints
 
 The application provides REST API endpoints for:
@@ -171,11 +156,9 @@ The project was built with a focus on applying modern development practices and 
 ## Future Development
 
 As a learning project, noted; is continually evolving. Potential future enhancements include:
-- Improved mobile responsiveness
 - Integration with payment gateways
-- Enhanced search functionality
-- Performance optimizations
-- Additional product categorization features
+- Create search functionality
+- Dashboard import and export data  
 
 ## License
 

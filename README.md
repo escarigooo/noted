@@ -1,4 +1,4 @@
-# noted; - Digital Stationery Platform
+# noted; - digital note-taking tablet
 
 ## Project Overview
 

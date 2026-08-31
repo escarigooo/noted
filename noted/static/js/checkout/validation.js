@@ -228,37 +228,7 @@ function validateCheckoutData(data) {
     errors.push("Please select a payment method.");
   }
 
-  // Payment fields validation (if method is card)
-  if (data.paymentMethod === "card") {
-    const p = data.payment;
-    
-    if (isEmpty(p.card_number)) {
-      errors.push("Card number is required.");
-    } else if (!validateCardNumber(p.card_number)) {
-      errors.push("Please enter a valid card number.");
-    }
-    
-    if (isEmpty(p.expiry)) {
-      errors.push("Expiration date is required.");
-    } else if (!validateExpiration(p.expiry)) {
-      errors.push("Please enter a valid expiration date (MM/YY) that hasn't expired.");
-    }
-    
-    if (isEmpty(p.cvv)) {
-      errors.push("CVV is required.");
-    } else if (!validateCVV(p.cvv)) {
-      errors.push("Please enter a valid CVV (3-4 digits).");
-    }
-    
-    if (isEmpty(p.name_on_card)) {
-      errors.push("Cardholder name is required.");
-    } else {
-      // Validate cardholder name
-      if (p.name_on_card.length < 2) errors.push("Cardholder name must be at least 2 characters.");
-      if (p.name_on_card.length > 50) errors.push("Cardholder name must be less than 50 characters.");
-      if (!/^[a-zA-ZÀ-ÿ\s\-'\.]+$/.test(p.name_on_card)) errors.push("Cardholder name contains invalid characters.");
-    }
-  }
+  // Card payments are simulated; no financial details are collected.
 
   // PayPal validation (if applicable)
   if (data.paymentMethod === "paypal") {
@@ -469,35 +439,7 @@ function validateSection(sectionName, data) {
         errors.push("Please select a payment method.");
       }
       
-      if (data.paymentMethod === "card") {
-        const p = data.payment;
-        
-        if (isEmpty(p.card_number)) {
-          errors.push("Card number is required.");
-        } else if (!validateCardNumber(p.card_number)) {
-          errors.push("Please enter a valid card number.");
-        }
-        
-        if (isEmpty(p.expiry)) {
-          errors.push("Expiration date is required.");
-        } else if (!validateExpiration(p.expiry)) {
-          errors.push("Please enter a valid expiration date (MM/YY) that hasn't expired.");
-        }
-        
-        if (isEmpty(p.cvv)) {
-          errors.push("CVV is required.");
-        } else if (!validateCVV(p.cvv)) {
-          errors.push("Please enter a valid CVV (3-4 digits).");
-        }
-        
-        if (isEmpty(p.name_on_card)) {
-          errors.push("Cardholder name is required.");
-        } else {
-          if (p.name_on_card.length < 2) errors.push("Cardholder name must be at least 2 characters.");
-          if (p.name_on_card.length > 50) errors.push("Cardholder name must be less than 50 characters.");
-          if (!/^[a-zA-ZÀ-ÿ\s\-'\.]+$/.test(p.name_on_card)) errors.push("Cardholder name contains invalid characters.");
-        }
-      }
+      // Card payments are simulated; no financial details are collected.
       break;
   }
   

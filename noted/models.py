@@ -1,22 +1,23 @@
 from datetime import datetime
 from noted import db
+from flask import current_app
 import mysql.connector
+from sqlalchemy.engine import make_url
 
 def get_db_connection():
-    """
-    Create and return a new MySQL database connection.
-    Used for raw SQL queries when SQLAlchemy ORM is not suitable.
-    """
-    try:
-        return mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='',
-            database='db_noted'
-        )
-    except Exception as e:
-        print(f"Database connection error: {str(e)}")
-        raise
+    """Open a raw MySQL connection using the configured SQLAlchemy URL."""
+    database_url = make_url(current_app.config["SQLALCHEMY_DATABASE_URI"])
+    if not database_url.drivername.startswith("mysql"):
+        raise RuntimeError("Raw SQL features require a MySQL DATABASE_URI")
+
+    return mysql.connector.connect(
+        host=database_url.host or "localhost",
+        port=database_url.port or 3306,
+        user=database_url.username,
+        password=database_url.password or "",
+        database=database_url.database,
+    )
+
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -87,9 +88,12 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
+    email_verified = db.Column(db.Boolean, nullable=False, default=False)
     address = db.Column(db.Text)
     role = db.Column(db.Integer, default=2)  # 1 = admin, 2 = customer
     noted_cash = db.Column(db.Numeric(10, 2), default=0.00)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime)
 
 class Cart(db.Model):
     __tablename__ = 'cart'

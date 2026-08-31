@@ -152,19 +152,10 @@
         <div class="payment-item">
           <input type="radio" name="payment_method" id="payment_card" value="card" class="radio-input" required>
           <label for="payment_card" class="payment-header">
-            <span>credit card</span>
-            <div class="icons">
-              <img src="{{ url_for('static', filename='img/icons/visa.svg') }}" alt="Visa">
-              <img src="{{ url_for('static', filename='img/icons/mastercard.svg') }}" alt="MasterCard">
-            </div>
+            <span>simulated card (demo only)</span>
           </label>
           <div class="payment-body">
-            <input type="number" name="card_number" placeholder="card number" autocomplete="cc-number">
-            <div class="grid grid-2">
-              <input type="text" name="expiration" placeholder="MM/YY" autocomplete="cc-exp">
-              <input type="number" name="security_code" placeholder="CVC" autocomplete="cc-csc">
-            </div>
-            <input type="text" name="card_name" placeholder="name on card" autocomplete="cc-name">
+            <p>This is a portfolio demo. No card details are requested or processed.</p>
           </div>
         </div>
 

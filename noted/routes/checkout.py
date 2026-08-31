@@ -12,7 +12,7 @@ def checkout():
     if 'user_id' not in session:
         return redirect(url_for("auth.login", success="please log in to continue"))
 
-    user = User.query.get(session['user_id'])
+    user = db.session.get(User, session['user_id'])
     if not user:
         return redirect(url_for("auth.login"))
 
@@ -142,7 +142,7 @@ def place_order():
         else:
             last4 = None
             brand = "Noted Cash"
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
 
             # If the order is free after discounts, skip the balance check
             # Clear logic for free order vs. insufficient balance
@@ -188,7 +188,7 @@ def place_order():
         db.session.commit()
         
         # Send order confirmation email
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user:
             try:
                 # Use the unified send_order_email method with default parameters for order confirmation

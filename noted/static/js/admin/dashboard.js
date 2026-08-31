@@ -84,18 +84,7 @@ class DashboardHandler {
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
             
-            // Fallback to analytics.json if API fails
-            try {
-                const fallbackResponse = await fetch('/static/data/analytics.json');
-                if (fallbackResponse.ok) {
-                    const analyticsData = await fallbackResponse.json();
-                    this.statsData = analyticsData;
-                    console.log('Using fallback analytics data');
-                }
-            } catch (fallbackError) {
-                console.error('Error loading fallback data:', fallbackError);
-                throw error; // Throw the original error
-            }
+            throw error;
         }
     }
     

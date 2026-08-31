@@ -40,6 +40,8 @@ instance/
 
 # Testes e cache
 .pytest_cache/
+.coverage
+htmlcov/
 
 # Ficheiros gerados pela aplicação
 noted/static/invoices/*.pdf

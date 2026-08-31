@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, session, redirect, url_for, flash, jsonify, request
+from flask import Blueprint, current_app, render_template, session, redirect, url_for, flash, jsonify, request
 from functools import wraps
-from noted.models import User
+from noted.models import User, db
 import os
 import json
 import glob
+import random
 from datetime import datetime
 from decimal import Decimal
 from ..services.email_service import EmailService
@@ -20,7 +21,7 @@ def admin_required(f):
             flash('You need to be logged in to access this page.', 'error')
             return redirect(url_for('auth.login'))
         
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user or user.role != 1:  # Assuming role 1 is admin
             flash('You need to be an admin to access this page.', 'error')
             return redirect(url_for('misc.index'))
@@ -38,7 +39,7 @@ def dashboard():
     # Get current user from session
     user = None
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
     
     return render_template('pages/admin/dashboard.html', user=user)
 
@@ -95,346 +96,45 @@ def analytics():
     return render_template('pages/admin/analytics/analytics.html',
                           admin_breadcrumbs=admin_breadcrumbs)
 
-@admin_bp.route('/admin/refresh-analytics', methods=['POST'])
+
+@admin_bp.get('/api/admin/dashboard')
+@admin_required
+def dashboard_data():
+    from noted.services.analytics_service import analytics_data
+
+    return jsonify(analytics_data())
+
+
+@admin_bp.get('/api/admin/analytics')
+@admin_required
+def get_analytics_data():
+    from noted.services.analytics_service import analytics_data
+
+    return jsonify(analytics_data())
+
+
+@admin_bp.post('/admin/refresh-analytics')
 @admin_required
 def refresh_analytics():
-    """
-    Refresh analytics data - with fallback if notebook execution fails
-    """
-    try:
-        import subprocess
-        import sys
-        import os
-        from datetime import datetime
-        
-        print("REFRESH Starting analytics refresh process...")
-        
-        # First, find the existing JSON file for fallback
-        possible_json_paths = [
-            os.path.join(os.getcwd(), 'noted', 'static', 'data', 'analytics.json'),
-            os.path.join(os.getcwd(), 'static', 'data', 'analytics.json'),
-            os.path.join(os.path.dirname(__file__), '..', 'static', 'data', 'analytics.json'),
-            os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'data', 'analytics.json'),
-        ]
-        
-        json_path = None
-        for path in possible_json_paths:
-            abs_path = os.path.abspath(path)
-            if os.path.exists(abs_path):
-                json_path = abs_path
-                print(f"FALLBACK Found existing JSON at: {json_path}")
-                break
-        
-        if not json_path:
-            return jsonify({
-                'success': False,
-                'error': 'Analytics JSON file not found',
-                'paths_checked': [os.path.abspath(p) for p in possible_json_paths]
-            }), 404
-            
-        # Find the notebook path if we want to try running it
-        possible_notebook_paths = [
-            os.path.join(REPOSITORY_ROOT, 'notebooks', 'analytics.ipynb')
-        ]
-        
-        notebook_path = None
-        for path in possible_notebook_paths:
-            abs_path = os.path.abspath(path)
-            if os.path.exists(abs_path):
-                notebook_path = abs_path
-                print(f"NOTEBOOK Found at: {notebook_path}")
-                break
-        
-        # Try to find existing JSON file first
-        possible_json_paths = [
-            os.path.join(os.getcwd(), 'noted', 'static', 'data', 'analytics.json'),
-            os.path.join(os.getcwd(), 'static', 'data', 'analytics.json'),
-            os.path.join(os.path.dirname(__file__), '..', 'static', 'data', 'analytics.json'),
-            os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'data', 'analytics.json'),
-        ]
-        
-        json_path = None
-        for path in possible_json_paths:
-            abs_path = os.path.abspath(path)
-            if os.path.exists(abs_path):
-                json_path = abs_path
-                print(f"DATA Found existing JSON at: {json_path}")
-                break
-        
-        try:
-            # Try to execute the notebook using nbconvert
-            print("FAST Attempting to execute notebook...")
-            
-            # Method 1: Using nbconvert (recommended)
-            cmd = [
-                sys.executable, '-m', 'jupyter', 'nbconvert', 
-                '--execute', 
-                '--to', 'notebook',
-                '--inplace',
-                notebook_path
-            ]
-            
-            print(f"LAUNCH Running command: {' '.join(cmd)}")
-            
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                timeout=120,  # 2 minute timeout
-                cwd=os.path.dirname(notebook_path)  # Run from notebook directory
-            )
-            
-            if result.returncode != 0:
-                print(f"FAILED Notebook execution failed!")
-                print(f"STDERR: {result.stderr}")
-                print(f"STDOUT: {result.stdout}")
-                
-                # Handle fallback to existing JSON if available
-                if json_path:
-                    print(f"FALLBACK Using existing JSON file: {json_path}")
-                else:
-                    return jsonify({
-                        'success': False,
-                        'error': 'Failed to execute analytics notebook and no existing JSON found',
-                        'details': result.stderr,
-                        'stdout': result.stdout,
-                        'command': ' '.join(cmd)
-                    }), 500
-        except Exception as e:
-            print(f"ERROR Failed to run notebook: {str(e)}")
-            # Handle fallback to existing JSON if available
-            if not json_path:
-                return jsonify({
-                    'success': False,
-                    'error': f'Failed to execute notebook and no existing JSON found: {str(e)}',
-                    'suggestion': 'Install jupyter and nbconvert with: pip install jupyter nbconvert'
-                }), 500
-        
-        print("SUCCESS Notebook executed successfully!")
-        print(f"Output: {result.stdout}")
-        
-        # Try to execute the notebook if found
-        notebook_executed = False
-        notebook_error = None
-        
-        if notebook_path:
-            try:
-                print("FAST Attempting to execute notebook...")
-                
-                # Using nbconvert to execute the notebook
-                cmd = [
-                    sys.executable, '-m', 'jupyter', 'nbconvert', 
-                    '--execute', 
-                    '--to', 'notebook',
-                    '--inplace',
-                    notebook_path
-                ]
-                
-                print(f"LAUNCH Running command: {' '.join(cmd)}")
-                
-                result = subprocess.run(
-                    cmd,
-                    capture_output=True,
-                    text=True,
-                    timeout=120,  # 2 minute timeout
-                    cwd=os.path.dirname(notebook_path)  # Run from notebook directory
-                )
-                
-                if result.returncode == 0:
-                    notebook_executed = True
-                    print("SUCCESS Notebook executed successfully!")
-                else:
-                    notebook_error = f"Notebook execution returned non-zero exit code: {result.returncode}"
-                    print(f"FAILED {notebook_error}")
-                    print(f"STDERR: {result.stderr}")
-            except Exception as e:
-                notebook_error = str(e)
-                print(f"ERROR Failed to run notebook: {notebook_error}")
-        else:
-            notebook_error = "Notebook not found"
-        
-        # Read the fresh data
-        with open(json_path, 'r', encoding='utf-8') as f:
-            updated_data = json.load(f)
-        
-        print(f"CHART Fresh data loaded: {updated_data}")
-        
-        return jsonify({
-            'success': True,
-            'data': updated_data,
-            'message': 'Analytics data refreshed successfully from database via notebook',
-            'notebook_executed': True,
-            'notebook_path': notebook_path,
-            'json_path': json_path,
-            'execution_time': datetime.now().isoformat()
-        })
-        
-        # Read the JSON file - whether it's freshly generated or existing
-        with open(json_path, 'r', encoding='utf-8') as f:
-            updated_data = json.load(f)
-        
-        response = {
-            'success': True,
-            'data': updated_data,
-            'execution_time': datetime.now().isoformat()
-        }
-        
-        # Add appropriate status messages
-        if notebook_executed:
-            response['message'] = 'Analytics data refreshed successfully from database via notebook'
-            response['notebook_executed'] = True
-            response['notebook_path'] = notebook_path
-        else:
-            response['message'] = 'Using existing analytics data (fallback)'
-            response['notebook_executed'] = False
-            if notebook_error:
-                response['notebook_error'] = notebook_error
-                response['suggestion'] = 'To enable automatic analytics updates, install Jupyter: pip install jupyter nbconvert'
-        
-        return jsonify(response)
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            'success': False,
-            'error': str(e),
-            'traceback': traceback.format_exc()
-        }), 500
+    from noted.services.analytics_service import analytics_data
 
-@admin_bp.route('/admin/refresh-graphics', methods=['POST'])
+    return jsonify(success=True, data=analytics_data(), source='database')
+
+
+@admin_bp.get('/api/admin/graphics')
+@admin_required
+def get_graphics_data():
+    from noted.services.analytics_service import graphics_data
+
+    return jsonify(graphics_data())
+
+
+@admin_bp.post('/admin/refresh-graphics')
 @admin_required
 def refresh_graphics():
-    """
-    Execute the graphics notebook and return updated chart data
-    """
-    try:
-        import subprocess
-        import sys
-        import os
-        from datetime import datetime
-        
-        print("REFRESH Starting graphics refresh from notebook...")
-        
-        # Find the notebook path
-        possible_notebook_paths = [
-            os.path.join(REPOSITORY_ROOT, 'notebooks', 'graphics.ipynb')
-        ]
-        
-        notebook_path = None
-        for path in possible_notebook_paths:
-            abs_path = os.path.abspath(path)
-            if os.path.exists(abs_path):
-                notebook_path = abs_path
-                print(f" Found graphics notebook at: {notebook_path}")
-                break
-        
-        if not notebook_path:
-            return jsonify({
-                'success': False,
-                'error': 'Graphics notebook not found',
-                'paths_checked': [os.path.abspath(p) for p in possible_notebook_paths]
-            }), 404
-        
-        # Execute the notebook using nbconvert
-        print("FAST Executing graphics notebook...")
-        
-        cmd = [
-            sys.executable, '-m', 'jupyter', 'nbconvert', 
-            '--execute', 
-            '--to', 'notebook',
-            '--inplace',
-            notebook_path
-        ]
-        
-        print(f"LAUNCH Running command: {' '.join(cmd)}")
-        
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=120,  # 2 minute timeout
-            cwd=os.path.dirname(notebook_path)  # Run from notebook directory
-        )
-        
-        if result.returncode != 0:
-            print(f"FAILED Graphics notebook execution failed!")
-            print(f"STDERR: {result.stderr}")
-            print(f"STDOUT: {result.stdout}")
-            
-            return jsonify({
-                'success': False,
-                'error': 'Failed to execute graphics notebook',
-                'details': result.stderr,
-                'stdout': result.stdout,
-                'command': ' '.join(cmd)
-            }), 500
-        
-        print("SUCCESS Graphics notebook executed successfully!")
-        print(f"Output: {result.stdout}")
-        
-        # Find and read the updated JSON file
-        possible_json_paths = [
-            os.path.join(os.getcwd(), 'noted', 'static', 'data', 'graphics.json'),
-            os.path.join(os.getcwd(), 'static', 'data', 'graphics.json'),
-            os.path.join(os.path.dirname(__file__), '..', 'static', 'data', 'graphics.json'),
-            os.path.join(os.path.dirname(__file__), '..', '..', 'static', 'data', 'graphics.json'),
-            # Also check relative to notebook location
-            os.path.join(os.path.dirname(notebook_path), '..', 'static', 'data', 'graphics.json'),
-        ]
-        
-        json_path = None
-        for path in possible_json_paths:
-            abs_path = os.path.abspath(path)
-            if os.path.exists(abs_path):
-                json_path = abs_path
-                print(f"DATA Found graphics JSON at: {json_path}")
-                break
-        
-        if not json_path:
-            return jsonify({
-                'success': False,
-                'error': 'Graphics JSON file not found after notebook execution',
-                'paths_checked': [os.path.abspath(p) for p in possible_json_paths],
-                'notebook_output': result.stdout
-            }), 500
-        
-        # Read the fresh chart data
-        with open(json_path, 'r', encoding='utf-8') as f:
-            updated_data = json.load(f)
-        
-        print(f"CHART Fresh graphics data loaded with keys: {list(updated_data.keys())}")
-        
-        return jsonify({
-            'success': True,
-            'data': updated_data,
-            'message': 'Graphics data refreshed successfully from database via notebook',
-            'notebook_executed': True,
-            'notebook_path': notebook_path,
-            'json_path': json_path,
-            'execution_time': datetime.now().isoformat()
-        })
-        
-    except subprocess.TimeoutExpired:
-        return jsonify({
-            'success': False,
-            'error': 'Graphics notebook execution timed out (>2 minutes)',
-            'suggestion': 'Check database connection or optimize notebook performance'
-        }), 500
-        
-    except FileNotFoundError as e:
-        return jsonify({
-            'success': False,
-            'error': 'Jupyter not found. Please install with: pip install jupyter nbconvert',
-            'details': str(e)
-        }), 500
-        
-    except Exception as e:
-        import traceback
-        return jsonify({
-            'success': False,
-            'error': str(e),
-            'traceback': traceback.format_exc()
-        }), 500
+    from noted.services.analytics_service import graphics_data
+
+    return jsonify(success=True, data=graphics_data(), source='database')
 
 @admin_bp.route('/admin/orders/<int:order_id>/invoice')
 @admin_required
@@ -463,8 +163,7 @@ def view_invoice(order_id):
             # No invoice found
             abort(404, description="Invoice not found")
             
-        # Get the full path to the PDF
-        pdf_path = os.path.join(os.getcwd(), 'noted/static', invoice['pdf_path'].replace('/static/', ''))
+        pdf_path = invoice['pdf_path']
         
         if not os.path.exists(pdf_path):
             # PDF file doesn't exist
@@ -552,7 +251,7 @@ def admin_review_dashboard():
     # Get current user from session
     user = None
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
     
     return render_template('pages/admin/review/dashboard.html', user=user)
 
@@ -563,7 +262,7 @@ def email_dashboard():
     # Get current user from session
     user = None
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
     
     # Discover all email templates
     template_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates', 'emails')

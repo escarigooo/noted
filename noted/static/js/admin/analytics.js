@@ -6,7 +6,7 @@
 if (typeof AdminAnalytics === 'undefined') {
     class AdminAnalytics {
         constructor() {
-            this.dataUrl = '/static/data/analytics.json';
+            this.dataUrl = '/api/admin/analytics';
             this.refreshUrl = '/admin/refresh-analytics';  // SUCCESS This works!
             this.data = null;
         }
@@ -65,20 +65,9 @@ if (typeof AdminAnalytics === 'undefined') {
             if (result.success) {
                 this.data = result.data;
                 
-                // Display appropriate message based on notebook execution
-                if (result.notebook_executed) {
-                    console.log('SUCCESS Analytics refreshed via notebook:', this.data);
-                    if (typeof showNotification === 'function') {
-                        showNotification('Analytics data refreshed successfully!', 'success');
-                    }
-                } else {
-                    console.log('FALLBACK Using existing analytics data:', this.data);
-                    if (typeof showNotification === 'function') {
-                        const message = result.notebook_error ? 
-                            'Using existing analytics data (notebook execution failed)' : 
-                            'Using existing analytics data';
-                        showNotification(message, 'warning');
-                    }
+                console.log('SUCCESS Analytics refreshed from database:', this.data);
+                if (typeof showNotification === 'function') {
+                    showNotification('Analytics data refreshed successfully!', 'success');
                 }
                 
                 return this.data;
@@ -92,13 +81,6 @@ if (typeof AdminAnalytics === 'undefined') {
             // Show error notification
             if (typeof showNotification === 'function') {
                 showNotification('Failed to refresh analytics data', 'error');
-                
-                // Show install suggestion if needed
-                if (error.message && error.message.includes('Jupyter not found')) {
-                    setTimeout(() => {
-                        showNotification('Install Jupyter with: pip install jupyter nbconvert', 'info', 8000);
-                    }, 1000);
-                }
             }
             
             throw error;

@@ -4,21 +4,19 @@ The project does not vendor these Python packages. Installing `requirements.txt`
 
 | Dependency | Version | Declared licence | Official metadata |
 |---|---:|---|---|
-| Flask | 2.2.5 | BSD-3-Clause | https://pypi.org/project/Flask/2.2.5/ |
-| Flask-SQLAlchemy | 2.5.1 | BSD-3-Clause | https://pypi.org/project/Flask-SQLAlchemy/2.5.1/ |
-| SQLAlchemy | 1.4.46 | MIT | https://pypi.org/project/SQLAlchemy/1.4.46/ |
+| Flask | 3.1.3 | BSD-3-Clause | https://pypi.org/project/Flask/3.1.3/ |
+| Flask-SQLAlchemy | 3.1.1 | BSD-3-Clause | https://pypi.org/project/Flask-SQLAlchemy/3.1.1/ |
+| SQLAlchemy | 2.0.52 | MIT | https://pypi.org/project/SQLAlchemy/2.0.52/ |
 | Jinja2 | 3.1.6 | BSD-3-Clause | https://pypi.org/project/Jinja2/3.1.6/ |
-| Flask-Mail | 0.9.1 | BSD | https://pypi.org/project/Flask-Mail/0.9.1/ |
-| PyMySQL | 1.1.2 | MIT | https://pypi.org/project/PyMySQL/1.1.2/ |
-| pdfkit | 1.0.0 | MIT | https://pypi.org/project/pdfkit/1.0.0/ |
-| WeasyPrint | 59.0 | BSD | https://pypi.org/project/WeasyPrint/59.0/ |
-| reportlab | 3.6.13 | BSD | https://pypi.org/project/reportlab/3.6.13/ |
-| itsdangerous | 2.1.2 | BSD-3-Clause | https://pypi.org/project/itsdangerous/2.1.2/ |
-| Werkzeug | 2.2.3 | BSD-3-Clause | https://pypi.org/project/Werkzeug/2.2.3/ |
+| Flask-Mail | 0.10.0 | BSD | https://pypi.org/project/Flask-Mail/0.10.0/ |
+| PyMySQL | 1.2.0 | MIT | https://pypi.org/project/PyMySQL/1.2.0/ |
+| reportlab | 5.0.1 | BSD | https://pypi.org/project/reportlab/5.0.1/ |
+| itsdangerous | 2.2.0 | BSD-3-Clause | https://pypi.org/project/itsdangerous/2.2.0/ |
+| Werkzeug | 3.1.8 | BSD-3-Clause | https://pypi.org/project/Werkzeug/3.1.8/ |
 | python-dotenv | 1.2.3 | BSD-3-Clause | https://pypi.org/project/python-dotenv/1.2.3/ |
-| jupyter | 1.1.1 | BSD | https://pypi.org/project/jupyter/1.1.1/ |
-| nbconvert | 7.17.1 | BSD-3-Clause | https://pypi.org/project/nbconvert/7.17.1/ |
-| pandas | 3.0.5 | BSD-3-Clause (with bundled-component notices) | https://pypi.org/project/pandas/3.0.5/ |
+| gunicorn | 26.2.0 | MIT | https://pypi.org/project/gunicorn/26.2.0/ |
+
+Optional notebook and development dependencies are pinned separately in `requirements-analytics.txt` and `requirements-dev.txt`; they are not installed in the runtime image. Their licences must remain part of development-environment/SBOM review.
 
 
 ## Browser dependency

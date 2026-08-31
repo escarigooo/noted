@@ -15,6 +15,7 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = os.getenv("FLASK_DEBUG", "False").lower() in {"true", "1", "yes"}
+    INVOICE_DIR = os.getenv("INVOICE_DIR", "/tmp/noted/invoices")
 
     SESSION_PERMANENT = True
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)

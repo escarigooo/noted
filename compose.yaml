@@ -1,0 +1,53 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: db_noted
+      MYSQL_USER: noted
+      MYSQL_PASSWORD: noted-demo-only
+      MYSQL_ROOT_PASSWORD: root-demo-only
+    volumes:
+      - noted-db:/var/lib/mysql
+      - ./database/db_noted.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/test-content.sql:/docker-entrypoint-initdb.d/02-demo-data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  mail:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "8025:8025"
+
+  web:
+    build: .
+    environment:
+      SECRET_KEY: local-demo-secret-change-before-hosting
+      DATABASE_URI: mysql+pymysql://noted:noted-demo-only@db:3306/db_noted
+      MAIL_SERVER: mail
+      MAIL_PORT: 1025
+      MAIL_DEFAULT_SENDER: noted@example.com
+      INVOICE_DIR: /tmp/noted/invoices
+      FLASK_DEBUG: "False"
+    ports:
+      - "${NOTED_PORT:-8080}:8000"
+    volumes:
+      - noted-invoices:/tmp/noted/invoices
+    depends_on:
+      db:
+        condition: service_healthy
+      mail:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+volumes:
+  noted-db:
+  noted-invoices:

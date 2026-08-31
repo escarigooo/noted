@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, jsonify
+from sqlalchemy import text
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 
@@ -60,5 +61,14 @@ def create_app(test_config=None):
         from noted.models import Category
 
         return {"categories": Category.query.all()}
+
+    @app.get("/health")
+    def health():
+        try:
+            db.session.execute(text("SELECT 1"))
+        except Exception:
+            app.logger.exception("Database health check failed")
+            return jsonify(status="unhealthy", database="unavailable"), 503
+        return jsonify(status="ok", database="ok"), 200
 
     return app

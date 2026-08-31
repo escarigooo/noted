@@ -27,116 +27,43 @@ class InvoiceService:
         self.template_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(template_paths)
         )
-        
+
     def generate_invoice_pdf(self, order_id):
-        """Generate PDF invoice for an order"""
+        """Generate a small demo invoice in configured runtime storage."""
+        existing_path, _ = self.get_invoice_path(order_id)
+        if existing_path:
+            return existing_path, None
+
+        order_data = self._get_order_data(order_id)
+        if not order_data:
+            return None, "Order not found"
+
         try:
-            # Check if invoice already exists
-            existing_invoice_path = self.get_invoice_path(order_id)
-            if existing_invoice_path:
-                return existing_invoice_path, None
-            
-            # Get order data with all necessary details
-            order_data = self._get_order_data(order_id)
-            if not order_data:
-                return None, "Order not found"
-            
-            # Check if template exists and can be found
-            try:
-                template = self.template_env.get_template('invoice_template.html')
-                print(f"[DEBUG] Found invoice template successfully")
-            except jinja2.exceptions.TemplateNotFound:
-                # Template not found, try to create it from a basic template
-                print(f"[DEBUG] Template not found, creating a basic template")
-                self._create_basic_invoice_template()
-                
-                # Try to get the template again
-                try:
-                    template = self.template_env.get_template('invoice_template.html')
-                except jinja2.exceptions.TemplateNotFound as e:
-                    return None, f"Invoice template not found: {str(e)}. Please create an invoice_template.html file in templates/emails/invoices directory."
-            
-            # Generate HTML content from template
-            html_content = template.render(**order_data)
-            
-            # Ensure the invoices directory exists in static folder
-            try:
-                invoices_dir = os.path.join(current_app.static_folder, 'invoices')
-                if not os.path.exists(invoices_dir):
-                    print(f"[DEBUG] Creating invoices directory: {invoices_dir}")
-                    os.makedirs(invoices_dir)
-            except Exception as e:
-                print(f"[ERROR] Failed to create invoices directory: {str(e)}")
-                # Try an alternate location
-                alternate_dir = os.path.join(current_app.root_path, 'static', 'invoices')
-                print(f"[DEBUG] Trying alternate directory: {alternate_dir}")
-                if not os.path.exists(alternate_dir):
-                    os.makedirs(alternate_dir)
-                invoices_dir = alternate_dir
-                
-            # Generate PDF file path
-            invoice_filename = f"invoice_{order_data['invoice_number'].replace('-', '_')}.pdf"
-            pdf_path = os.path.join(invoices_dir, invoice_filename)
-            
-            # Try multiple PDF generation methods
-            success = False
-            error_messages = []
-            
-            # Method 1: Try pdfkit
-            try:
-                import pdfkit
-                pdfkit.from_string(html_content, pdf_path)
-                success = True
-            except ImportError:
-                error_messages.append("pdfkit module not installed. Run 'pip install pdfkit' and ensure wkhtmltopdf is installed.")
-            except Exception as e:
-                error_messages.append(f"pdfkit error: {str(e)}")
-            
-            # Method 2: Try WeasyPrint if pdfkit fails
-            if not success:
-                try:
-                    from weasyprint import HTML
-                    HTML(string=html_content).write_pdf(pdf_path)
-                    success = True
-                except ImportError:
-                    error_messages.append("WeasyPrint module not installed. Run 'pip install WeasyPrint'.")
-                except Exception as e:
-                    error_messages.append(f"WeasyPrint error: {str(e)}")
-            
-            # Method 3: Try ReportLab if both fail
-            if not success:
-                try:
-                    from reportlab.pdfgen import canvas
-                    from reportlab.lib.pagesizes import letter
-                    # This is a simplified fallback that won't look as good
-                    c = canvas.Canvas(pdf_path, pagesize=letter)
-                    c.drawString(100, 750, f"Invoice #{order_data['invoice_number']}")
-                    c.drawString(100, 730, f"Date: {order_data['invoice_date']}")
-                    c.drawString(100, 710, f"Customer: {order_data['customer']['name']}")
-                    y = 690
-                    for item in order_data['items']:
-                        y -= 20
-                        c.drawString(100, y, f"{item['name']} x{item['quantity']} - ${item['total']:.2f}")
-                    c.drawString(100, y-40, f"Total: ${order_data['total']:.2f}")
-                    c.save()
-                    success = True
-                except ImportError:
-                    error_messages.append("ReportLab module not installed. Run 'pip install reportlab'.")
-                except Exception as e:
-                    error_messages.append(f"ReportLab error: {str(e)}")
-            
-            if not success:
-                return None, "PDF generation failed. Errors: " + "; ".join(error_messages)
-            
-            # Update invoice record with PDF path
-            self._update_invoice_pdf_path(order_id, f"/static/invoices/{invoice_filename}")
-            
+            from reportlab.lib.pagesizes import A4
+            from reportlab.pdfgen import canvas
+
+            invoices_dir = current_app.config["INVOICE_DIR"]
+            os.makedirs(invoices_dir, exist_ok=True)
+            safe_number = order_data["invoice_number"].replace("-", "_")
+            pdf_path = os.path.join(invoices_dir, f"invoice_{safe_number}.pdf")
+
+            document = canvas.Canvas(pdf_path, pagesize=A4)
+            document.setTitle(f"Invoice {order_data['invoice_number']}")
+            document.drawString(72, 800, f"noted; demo invoice {order_data['invoice_number']}")
+            document.drawString(72, 780, f"Customer: {order_data['customer']['name']}")
+            document.drawString(72, 760, f"Date: {order_data['invoice_date']}")
+            y = 720
+            for item in order_data["items"]:
+                document.drawString(72, y, f"{item['name']} x{item['quantity']} - EUR {item['total']:.2f}")
+                y -= 20
+            document.drawString(72, y - 20, f"Total: EUR {order_data['total']:.2f}")
+            document.save()
+            self._update_invoice_pdf_path(order_id, pdf_path)
             return pdf_path, None
-            
-        except Exception as e:
-            print(f"Error generating invoice PDF: {str(e)}")
-            return None, str(e)
-            
+        except Exception as exc:
+            current_app.logger.exception("Invoice generation failed")
+            return None, f"PDF generation failed: {exc}"
+
     def _get_order_data(self, order_id):
         """Get all order data needed for invoice generation"""
         connection = get_db_connection()
@@ -383,37 +310,6 @@ class InvoiceService:
                 
             return success, message
             
-            # Update database if email sent successfully
-            if success:
-                connection = get_db_connection()
-                cursor = connection.cursor()
-                
-                # Update orders table
-                cursor.execute('''
-                    UPDATE orders
-                    SET invoice_sent = TRUE, invoice_sent_date = CURRENT_TIMESTAMP
-                    WHERE id = %s
-                ''', (order_id,))
-                
-                # Create email notification record
-                cursor.execute('''
-                    INSERT INTO email_notifications 
-                    (order_id, notification_type, recipient_email, subject, sent_at, status, attachments)
-                    VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP, %s, %s)
-                ''', (
-                    order_id,
-                    'invoice',
-                    order['customer_email'],
-                    subject,
-                    'sent',
-                    order['pdf_path']
-                ))
-                
-                connection.commit()
-                cursor.close()
-                connection.close()
-                
-            return success, message
                 
         except Exception as e:
             print(f"Error sending invoice email: {str(e)}")

@@ -24,11 +24,6 @@ function collectOrderData() {
     },
     shippingMethod: getSelectedValue('shipping_method'),
     paymentMethod: getSelectedValue('payment_method'),
-    payment: {
-      card_number: document.querySelector('input[name="card_number"]')?.value.trim(),
-      expiry: document.querySelector('input[name="expiration"]')?.value.trim(),
-      cvv: document.querySelector('input[name="security_code"]')?.value.trim(),
-      name_on_card: document.querySelector('input[name="card_name"]')?.value.trim()
-    }
+    payment: { simulated: true }
   };
 }

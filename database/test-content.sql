@@ -227,20 +227,20 @@ INSERT INTO product_stock (product_id, quantity) VALUES
 -- ===========================
 -- USERS
 -- ===========================
--- Password for all users is 'password123' - hashed with bcrypt
-INSERT INTO users (id, name, email, password, address, noted_cash, role, created_at, last_login) VALUES
-(1, 'Admin User', 'admin@noted.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Noted HQ, Lisboa, Portugal', 0.00, 1, '2024-12-01 09:00:00', '2025-06-28 14:30:00'),
-(2, 'João Silva', 'joao@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Rua das Flores 123, Lisboa', 25.00, 2, '2025-01-15 14:22:00', '2025-06-29 08:45:00'),
-(3, 'Maria Santos', 'maria@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Avenida da República 45, Porto', 50.00, 2, '2025-02-02 10:10:00', '2025-06-30 12:15:00'),
-(4, 'Carlos Mendes', 'carlos@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Rua do Comércio 78, Faro', 10.00, 2, '2025-02-15 16:45:00', '2025-06-25 18:20:00'),
-(5, 'Ana Costa', 'ana@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Avenida Central 22, Braga', 0.00, 2, '2025-03-01 09:30:00', '2025-06-27 20:10:00'),
-(6, 'Pedro Oliveira', 'pedro@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Rua da Liberdade 56, Coimbra', 5.00, 2, '2025-03-10 11:20:00', '2025-06-24 15:30:00'),
-(7, 'Sofia Rodrigues', 'sofia@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Largo do Rossio 9, Lisboa', 15.00, 2, '2025-04-05 13:15:00', '2025-06-28 09:45:00'),
-(8, 'Miguel Fernandes', 'miguel@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Avenida do Mar 33, Setúbal', 30.00, 2, '2025-04-20 15:40:00', '2025-06-26 14:20:00'),
-(9, 'Inês Martins', 'ines@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Rua das Oliveiras 17, Évora', 0.00, 2, '2025-05-10 10:30:00', '2025-06-23 11:15:00'),
-(10, 'Tiago Pereira', 'tiago@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Praça Central 4, Aveiro', 20.00, 2, '2025-05-25 12:50:00', '2025-06-29 17:25:00'),
-(11, 'Marta Almeida', 'marta@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Rua dos Clérigos 27, Porto', 0.00, 2, '2025-06-01 14:10:00', '2025-06-30 10:05:00'),
-(12, 'Ricardo Santos', 'ricardo@email.com', '$2y$10$MUJ5kzRnNxk3JJL60dZ6N.m.9vUhJGLqiG5vSWqU9XP9xUuvr/b9G', 'Avenida da Praia 11, Faro', 0.00, 2, '2025-06-15 09:20:00', '2025-06-29 16:40:00');
+-- Synthetic demo identities. Password for all users: DemoOnly!2026 (Werkzeug PBKDF2 hash).
+INSERT INTO users (id, name, email, password, email_verified, address, noted_cash, role, created_at, last_login) VALUES
+(1, 'Demo Admin', 'admin@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Demo Office, Example City', 0.00, 1, '2024-12-01 09:00:00', '2025-06-28 14:30:00'),
+(2, 'Demo User 01', 'demo01@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 1, Example City', 25.00, 2, '2025-01-15 14:22:00', '2025-06-29 08:45:00'),
+(3, 'Demo User 02', 'demo02@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 2, Example City', 50.00, 2, '2025-02-02 10:10:00', '2025-06-30 12:15:00'),
+(4, 'Demo User 03', 'demo03@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 3, Example City', 10.00, 2, '2025-02-15 16:45:00', '2025-06-25 18:20:00'),
+(5, 'Demo User 04', 'demo04@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 4, Example City', 0.00, 2, '2025-03-01 09:30:00', '2025-06-27 20:10:00'),
+(6, 'Demo User 05', 'demo05@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 5, Example City', 5.00, 2, '2025-03-10 11:20:00', '2025-06-24 15:30:00'),
+(7, 'Demo User 06', 'demo06@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 6, Example City', 15.00, 2, '2025-04-05 13:15:00', '2025-06-28 09:45:00'),
+(8, 'Demo User 07', 'demo07@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 7, Example City', 30.00, 2, '2025-04-20 15:40:00', '2025-06-26 14:20:00'),
+(9, 'Demo User 08', 'demo08@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 8, Example City', 0.00, 2, '2025-05-10 10:30:00', '2025-06-23 11:15:00'),
+(10, 'Demo User 09', 'demo09@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 9, Example City', 20.00, 2, '2025-05-25 12:50:00', '2025-06-29 17:25:00'),
+(11, 'Demo User 10', 'demo10@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 10, Example City', 0.00, 2, '2025-06-01 14:10:00', '2025-06-30 10:05:00'),
+(12, 'Demo User 11', 'demo11@example.com', 'pbkdf2:sha256:260000$noteddemo$5b58a34f0ea45e7bf9b4f754ef348b0f8f158c45460b1a665e1ff62285d93276', 1, 'Example Street 11, Example City', 0.00, 2, '2025-06-15 09:20:00', '2025-06-29 16:40:00');
 
 -- ===========================
 -- NOTED CASH TRANSACTIONS
@@ -347,53 +347,53 @@ INSERT INTO payment_info (order_id, card_last4, card_brand, paid, payment_date) 
 -- SHIPPING ADDRESSES
 -- ===========================
 INSERT INTO shipping_addresses (order_id, first_name, last_name, street_address, city, state, zip_code, country, phone, email) VALUES
-(1, 'Maria', 'Santos', 'Avenida da República 45', 'Porto', 'Porto', '4000-123', 'Portugal', '+351912345678', 'maria@email.com'),
-(2, 'João', 'Silva', 'Rua das Flores 123', 'Lisboa', 'Lisboa', '1000-123', 'Portugal', '+351923456789', 'joao@email.com'),
-(3, 'Ana', 'Costa', 'Avenida Central 22', 'Braga', 'Braga', '4700-123', 'Portugal', '+351934567890', 'ana@email.com'),
-(4, 'Miguel', 'Fernandes', 'Avenida do Mar 33', 'Setúbal', 'Setúbal', '2900-123', 'Portugal', '+351945678901', 'miguel@email.com'),
-(5, 'Carlos', 'Mendes', 'Rua do Comércio 78', 'Faro', 'Faro', '8000-123', 'Portugal', '+351956789012', 'carlos@email.com'),
-(6, 'Maria', 'Santos', 'Avenida da República 45', 'Porto', 'Porto', '4000-123', 'Portugal', '+351912345678', 'maria@email.com'),
-(7, 'Pedro', 'Oliveira', 'Rua da Liberdade 56', 'Coimbra', 'Coimbra', '3000-123', 'Portugal', '+351967890123', 'pedro@email.com'),
-(8, 'Sofia', 'Rodrigues', 'Largo do Rossio 9', 'Lisboa', 'Lisboa', '1100-123', 'Portugal', '+351978901234', 'sofia@email.com'),
-(9, 'João', 'Silva', 'Rua das Flores 123', 'Lisboa', 'Lisboa', '1000-123', 'Portugal', '+351923456789', 'joao@email.com'),
-(10, 'Inês', 'Martins', 'Rua das Oliveiras 17', 'Évora', 'Évora', '7000-123', 'Portugal', '+351989012345', 'ines@email.com'),
-(11, 'Tiago', 'Pereira', 'Praça Central 4', 'Aveiro', 'Aveiro', '3800-123', 'Portugal', '+351990123456', 'tiago@email.com'),
-(12, 'Ana', 'Costa', 'Avenida Central 22', 'Braga', 'Braga', '4700-123', 'Portugal', '+351934567890', 'ana@email.com'),
-(13, 'Carlos', 'Mendes', 'Rua do Comércio 78', 'Faro', 'Faro', '8000-123', 'Portugal', '+351956789012', 'carlos@email.com'),
-(14, 'Miguel', 'Fernandes', 'Avenida do Mar 33', 'Setúbal', 'Setúbal', '2900-123', 'Portugal', '+351945678901', 'miguel@email.com'),
-(15, 'Maria', 'Santos', 'Avenida da República 45', 'Porto', 'Porto', '4000-123', 'Portugal', '+351912345678', 'maria@email.com'),
-(16, 'Sofia', 'Rodrigues', 'Largo do Rossio 9', 'Lisboa', 'Lisboa', '1100-123', 'Portugal', '+351978901234', 'sofia@email.com'),
-(17, 'João', 'Silva', 'Rua das Flores 123', 'Lisboa', 'Lisboa', '1000-123', 'Portugal', '+351923456789', 'joao@email.com'),
-(18, 'Marta', 'Almeida', 'Rua dos Clérigos 27', 'Porto', 'Porto', '4000-456', 'Portugal', '+351901234567', 'marta@email.com'),
-(19, 'Pedro', 'Oliveira', 'Rua da Liberdade 56', 'Coimbra', 'Coimbra', '3000-123', 'Portugal', '+351967890123', 'pedro@email.com'),
-(20, 'Ricardo', 'Santos', 'Avenida da Praia 11', 'Faro', 'Faro', '8000-456', 'Portugal', '+351912345678', 'ricardo@email.com'),
-(21, 'Tiago', 'Pereira', 'Praça Central 4', 'Aveiro', 'Aveiro', '3800-123', 'Portugal', '+351990123456', 'tiago@email.com');
+(1, 'Demo', 'User 02', 'Example Street 2', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo02@example.com'),
+(2, 'Demo', 'User 01', 'Example Street 1', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo01@example.com'),
+(3, 'Demo', 'User 04', 'Example Street 4', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo04@example.com'),
+(4, 'Demo', 'User 07', 'Example Street 7', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo07@example.com'),
+(5, 'Demo', 'User 03', 'Example Street 3', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo03@example.com'),
+(6, 'Demo', 'User 02', 'Example Street 2', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo02@example.com'),
+(7, 'Demo', 'User 05', 'Example Street 5', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo05@example.com'),
+(8, 'Demo', 'User 06', 'Example Street 6', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo06@example.com'),
+(9, 'Demo', 'User 01', 'Example Street 1', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo01@example.com'),
+(10, 'Demo', 'User 08', 'Example Street 8', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo08@example.com'),
+(11, 'Demo', 'User 09', 'Example Street 9', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo09@example.com'),
+(12, 'Demo', 'User 04', 'Example Street 4', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo04@example.com'),
+(13, 'Demo', 'User 03', 'Example Street 3', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo03@example.com'),
+(14, 'Demo', 'User 07', 'Example Street 7', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo07@example.com'),
+(15, 'Demo', 'User 02', 'Example Street 2', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo02@example.com'),
+(16, 'Demo', 'User 06', 'Example Street 6', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo06@example.com'),
+(17, 'Demo', 'User 01', 'Example Street 1', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo01@example.com'),
+(18, 'Demo', 'User 10', 'Example Street 10', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo10@example.com'),
+(19, 'Demo', 'User 05', 'Example Street 5', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo05@example.com'),
+(20, 'Demo', 'User 02', 'Example Street 11', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo11@example.com'),
+(21, 'Demo', 'User 09', 'Example Street 9', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo09@example.com');
 
 -- ===========================
 -- BILLING ADDRESSES (same as shipping for simplicity)
 -- ===========================
 INSERT INTO billing_addresses (order_id, first_name, last_name, street_address, city, state, zip_code, country, phone, email) VALUES
-(1, 'Maria', 'Santos', 'Avenida da República 45', 'Porto', 'Porto', '4000-123', 'Portugal', '+351912345678', 'maria@email.com'),
-(2, 'João', 'Silva', 'Rua das Flores 123', 'Lisboa', 'Lisboa', '1000-123', 'Portugal', '+351923456789', 'joao@email.com'),
-(3, 'Ana', 'Costa', 'Avenida Central 22', 'Braga', 'Braga', '4700-123', 'Portugal', '+351934567890', 'ana@email.com'),
-(4, 'Miguel', 'Fernandes', 'Avenida do Mar 33', 'Setúbal', 'Setúbal', '2900-123', 'Portugal', '+351945678901', 'miguel@email.com'),
-(5, 'Carlos', 'Mendes', 'Rua do Comércio 78', 'Faro', 'Faro', '8000-123', 'Portugal', '+351956789012', 'carlos@email.com'),
-(6, 'Maria', 'Santos', 'Avenida da República 45', 'Porto', 'Porto', '4000-123', 'Portugal', '+351912345678', 'maria@email.com'),
-(7, 'Pedro', 'Oliveira', 'Rua da Liberdade 56', 'Coimbra', 'Coimbra', '3000-123', 'Portugal', '+351967890123', 'pedro@email.com'),
-(8, 'Sofia', 'Rodrigues', 'Largo do Rossio 9', 'Lisboa', 'Lisboa', '1100-123', 'Portugal', '+351978901234', 'sofia@email.com'),
-(9, 'João', 'Silva', 'Rua das Flores 123', 'Lisboa', 'Lisboa', '1000-123', 'Portugal', '+351923456789', 'joao@email.com'),
-(10, 'Inês', 'Martins', 'Rua das Oliveiras 17', 'Évora', 'Évora', '7000-123', 'Portugal', '+351989012345', 'ines@email.com'),
-(11, 'Tiago', 'Pereira', 'Praça Central 4', 'Aveiro', 'Aveiro', '3800-123', 'Portugal', '+351990123456', 'tiago@email.com'),
-(12, 'Ana', 'Costa', 'Avenida Central 22', 'Braga', 'Braga', '4700-123', 'Portugal', '+351934567890', 'ana@email.com'),
-(13, 'Carlos', 'Mendes', 'Rua do Comércio 78', 'Faro', 'Faro', '8000-123', 'Portugal', '+351956789012', 'carlos@email.com'),
-(14, 'Miguel', 'Fernandes', 'Avenida do Mar 33', 'Setúbal', 'Setúbal', '2900-123', 'Portugal', '+351945678901', 'miguel@email.com'),
-(15, 'Maria', 'Santos', 'Avenida da República 45', 'Porto', 'Porto', '4000-123', 'Portugal', '+351912345678', 'maria@email.com'),
-(16, 'Sofia', 'Rodrigues', 'Largo do Rossio 9', 'Lisboa', 'Lisboa', '1100-123', 'Portugal', '+351978901234', 'sofia@email.com'),
-(17, 'João', 'Silva', 'Rua das Flores 123', 'Lisboa', 'Lisboa', '1000-123', 'Portugal', '+351923456789', 'joao@email.com'),
-(18, 'Marta', 'Almeida', 'Rua dos Clérigos 27', 'Porto', 'Porto', '4000-456', 'Portugal', '+351901234567', 'marta@email.com'),
-(19, 'Pedro', 'Oliveira', 'Rua da Liberdade 56', 'Coimbra', 'Coimbra', '3000-123', 'Portugal', '+351967890123', 'pedro@email.com'),
-(20, 'Ricardo', 'Santos', 'Avenida da Praia 11', 'Faro', 'Faro', '8000-456', 'Portugal', '+351912345678', 'ricardo@email.com'),
-(21, 'Tiago', 'Pereira', 'Praça Central 4', 'Aveiro', 'Aveiro', '3800-123', 'Portugal', '+351990123456', 'tiago@email.com');
+(1, 'Demo', 'User 02', 'Example Street 2', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo02@example.com'),
+(2, 'Demo', 'User 01', 'Example Street 1', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo01@example.com'),
+(3, 'Demo', 'User 04', 'Example Street 4', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo04@example.com'),
+(4, 'Demo', 'User 07', 'Example Street 7', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo07@example.com'),
+(5, 'Demo', 'User 03', 'Example Street 3', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo03@example.com'),
+(6, 'Demo', 'User 02', 'Example Street 2', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo02@example.com'),
+(7, 'Demo', 'User 05', 'Example Street 5', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo05@example.com'),
+(8, 'Demo', 'User 06', 'Example Street 6', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo06@example.com'),
+(9, 'Demo', 'User 01', 'Example Street 1', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo01@example.com'),
+(10, 'Demo', 'User 08', 'Example Street 8', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo08@example.com'),
+(11, 'Demo', 'User 09', 'Example Street 9', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo09@example.com'),
+(12, 'Demo', 'User 04', 'Example Street 4', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo04@example.com'),
+(13, 'Demo', 'User 03', 'Example Street 3', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo03@example.com'),
+(14, 'Demo', 'User 07', 'Example Street 7', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo07@example.com'),
+(15, 'Demo', 'User 02', 'Example Street 2', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo02@example.com'),
+(16, 'Demo', 'User 06', 'Example Street 6', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo06@example.com'),
+(17, 'Demo', 'User 01', 'Example Street 1', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo01@example.com'),
+(18, 'Demo', 'User 10', 'Example Street 10', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo10@example.com'),
+(19, 'Demo', 'User 05', 'Example Street 5', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo05@example.com'),
+(20, 'Demo', 'User 02', 'Example Street 11', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo11@example.com'),
+(21, 'Demo', 'User 09', 'Example Street 9', 'Example City', 'Example City', '0000-000', 'Portugal', '+351000000000', 'demo09@example.com');
 
 -- ===========================
 -- CART (current active carts)

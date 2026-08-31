@@ -1,25 +1,11 @@
 from flask import Blueprint, jsonify, request
-from noted.models import User, Product, Category, Order
-import mysql.connector
+from noted.models import User, Product, Category, Order, get_db_connection
 from datetime import datetime
 from functools import wraps
-import hashlib
+from werkzeug.security import generate_password_hash
 
 # Create Blueprint
 admin_api = Blueprint('admin_api', __name__)
-
-# Database connection helper
-def get_db_connection():
-    try:
-        return mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password='',
-            database='db_noted'
-        )
-    except Exception as e:
-        print(f"Database connection error: {str(e)}")
-        raise
 
 # Admin authentication for API endpoints
 def admin_required_api(f):
@@ -630,8 +616,8 @@ def create_user():
         if not name or not email or not password:
             return jsonify({"success": False, "message": "Name, email, and password are required"}), 400
         
-        # Hash password (using simple hash for testing - replace with proper bcrypt in production)
-        hashed_password = hashlib.sha256(password.encode('utf-8')).hexdigest()
+        # Use the same password hashing scheme as the login flow.
+        hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         
         connection = get_db_connection()
         cursor = connection.cursor()
@@ -642,8 +628,8 @@ def create_user():
             return jsonify({"success": False, "message": "Email already exists"}), 400
         
         cursor.execute('''
-            INSERT INTO users (name, email, password, role, address, noted_cash, created_at)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO users (name, email, password, email_verified, role, address, noted_cash, created_at)
+            VALUES (%s, %s, %s, TRUE, %s, %s, %s, %s)
         ''', (name, email, hashed_password, role, address, noted_cash, datetime.now()))
         
         user_id = cursor.lastrowid
@@ -720,7 +706,7 @@ def update_user(user_id):
             update_fields.append("email = %s")
             params.append(data['email'])
         if 'password' in data and data['password']:
-            hashed_password = hashlib.sha256(data['password'].encode('utf-8')).hexdigest()
+            hashed_password = generate_password_hash(data["password"], method="pbkdf2:sha256")
             update_fields.append("password = %s")
             params.append(hashed_password)
         if 'role' in data:

@@ -28,8 +28,6 @@ def add_to_cart():
 
 @cart_bp.route('/apply_discount', methods=['POST'])
 def apply_discount():
-    print("\n--- APPLY DISCOUNT --- ")
-    print(f"SESSION BEFORE: {dict(session)}")
     code = request.json.get('code', '').strip().upper()
     discount = Discount.query.filter_by(code=code, is_active=True).first()
 
@@ -46,7 +44,6 @@ def apply_discount():
             session['temp_user_id'] = str(uuid.uuid4())
         user_key = f"anon_{session['temp_user_id']}"
     
-    print(f"GENERATED USER KEY: {user_key}")
     # Store discount with user-specific session key
     session[f'discount_{user_key}'] = {
         'code': code,
@@ -56,7 +53,6 @@ def apply_discount():
     
     # Make sure session is saved
     session.modified = True
-    print(f"SESSION AFTER: {dict(session)}")
     
     return jsonify({
         'success': True, 
@@ -67,8 +63,6 @@ def apply_discount():
 
 @cart_bp.route('/remove_discount', methods=['POST'])
 def remove_discount():
-    print("\n--- REMOVE DISCOUNT --- ")
-    print(f"SESSION BEFORE: {dict(session)}")
     
     # Create a unique session key for each user
     if 'user_id' in session:
@@ -78,25 +72,19 @@ def remove_discount():
             session['temp_user_id'] = str(uuid.uuid4())
         user_key = f"anon_{session['temp_user_id']}"
     
-    print(f"USING USER KEY: {user_key}")
     
     # Remove discount from session
     discount_key = f'discount_{user_key}'
     if discount_key in session:
         del session[discount_key]
         session.modified = True
-        print(f"DISCOUNT REMOVED FROM SESSION")
-        print(f"SESSION AFTER: {dict(session)}")
         return jsonify({'success': True, 'message': 'Discount removed'})
     else:
-        print(f"NO DISCOUNT FOUND IN SESSION")
         return jsonify({'success': False, 'error': 'No discount to remove'})
 
 
 @cart_bp.route('/cart_data')
 def cart_data():
-    print("\n--- CART DATA ---")
-    print(f"SESSION: {dict(session)}")
     items = []
 
     # Create a unique user key for session storage
@@ -136,7 +124,6 @@ def cart_data():
                 'quantity': quantity
             })
 
-    print(f"USING USER KEY: {user_key}")
 
     total = sum(item['price'] * item['quantity'] for item in items)
     total_after_discount = total

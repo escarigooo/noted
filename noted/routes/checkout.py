@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session, jsonify
+from flask import Blueprint, current_app, render_template, redirect, url_for, request, session, jsonify
 from ..models import BillingAddress, Discount, NotedCashTransaction, Order, OrderItem, PaymentInfo, Product, ShippingAddress, db, User, Cart
 from ..services import EmailService
 
@@ -39,16 +39,8 @@ def cart_total():
 
 @checkout_bp.route('/place-order', methods=['POST'])
 def place_order():
-    data = request.get_json()
-    total_confirmed = data.get('total_confirmed', 0.0)
-
-    # Debug logging
-    print("Received order data:", data)
-    print(f"Payment method: {data.get('paymentMethod')}")
-    print(f"Free order flag: {data.get('free_order', False)}")
-    print(f"Requires no balance flag: {data.get('requires_no_balance', False)}")
-    print(f"Actual payment required: {data.get('actual_payment_required', 'Not specified')}")
-    print(f"Total confirmed: {total_confirmed}")
+    data = request.get_json(silent=True) or {}
+    total_confirmed = data.get("total_confirmed", 0.0)
     
     try:
         total_confirmed = Decimal(str(total_confirmed))
@@ -60,8 +52,8 @@ def place_order():
         return jsonify({'success': False, 'message': 'User not authenticated'}), 401
 
     try:
-        shipping_data = data.get('shipping')
-        billing_data = data.get('billing')
+        shipping_data = data.get("shipping") or {}
+        billing_data = data.get("billing") or {}
         shipping_method = data.get('shippingMethod')
         payment_method = data.get('paymentMethod')
         billing_same = data.get('billingSameAsShipping', True)
@@ -108,32 +100,23 @@ def place_order():
         # Apply discount to total
         discounted_total = real_total - discount_value
         
-        # Add shipping cost
-        shipping_cost = Decimal(str(data.get('shipping_cost', 0.0)))
+        # Shipping prices are authoritative on the server.
+        shipping_rates = {"free": Decimal("0.00"), "express": Decimal("9.90")}
+        if shipping_method not in shipping_rates:
+            return jsonify({"success": False, "message": "Invalid shipping method"}), 400
+        shipping_cost = shipping_rates[shipping_method]
         final_total = discounted_total + shipping_cost
         
-        # Handle free order case with proper validation
-        free_order = data.get('free_order', False)
-        requires_no_balance = data.get('requires_no_balance', False)
-        actual_payment_required = Decimal(str(data.get('actual_payment_required', final_total)))
-        
-        # For free orders, we still validate the original total was sent correctly
-        # but we'll process the order with zero cost
-        if free_order and requires_no_balance and final_total <= Decimal('0.01'):
-            # This is a legitimate free order
-            payment_total = Decimal('0.00')
-            print("Processing as FREE ORDER with zero payment")
-        else:
-            # Regular order with payment required
-            payment_total = final_total
-            print(f"Processing as REGULAR ORDER with payment: {payment_total}")
-            
-            # Still verify the client knows the correct original total
-            if abs(real_total - total_confirmed) > Decimal("0.01"):
-                return jsonify({
-                    "success": False,
-                    "message": f"Cart total mismatch: {real_total:.2f}€ vs {total_confirmed:.2f}€"
-                }), 400
+        if payment_method not in {"card", "account"}:
+            return jsonify({"success": False, "message": "Invalid payment method"}), 400
+
+        if abs(final_total - total_confirmed) > Decimal("0.01"):
+            return jsonify({
+                "success": False,
+                "message": "Cart total changed. Please review the order and try again.",
+            }), 400
+
+        payment_total = final_total
 
         order = Order(
             user_id=user_id,
@@ -152,30 +135,18 @@ def place_order():
         billing = BillingAddress(order_id=order.id, **(shipping_data if billing_same else billing_data))
         db.session.add(billing)
 
-        if payment_method == 'card':
-            card_number = data['payment'].get('card_number', '')
-            last4 = card_number[-4:] if card_number else None
-            brand = "Unknown"
+        if payment_method == "card":
+            # Portfolio demo only: no card details are collected or processed.
+            last4 = None
+            brand = "Demo card"
         else:
             last4 = None
             brand = "Noted Cash"
             user = User.query.get(user_id)
 
-            # Check if this is a free order (zero cost after discounts)
-            # free_order already defined above, no need to redefine
-            print(f"Free order check - free_order: {free_order}, requires_no_balance: {requires_no_balance}")
-            print(f"Final total: {final_total}, Payment total: {payment_total}")
-            
-            if user:
-                print(f"User noted_cash balance: {user.noted_cash}")
-            else:
-                print("User not found")
-            
             # If the order is free after discounts, skip the balance check
             # Clear logic for free order vs. insufficient balance
             if payment_total <= Decimal("0.01"):
-                # Zero payment order, allow regardless of balance
-                print("Zero payment order - allowing without balance check")
                 pass
             elif not user or Decimal(user.noted_cash or 0) < payment_total:
                 return jsonify({'success': False, 'message': 'Insufficient Noted Cash balance'}), 400
@@ -188,8 +159,6 @@ def place_order():
                         change_amount=-payment_total,
                         reason='Order payment'
                     ))
-                else:
-                    print("Zero payment order - no Noted Cash transaction needed")
 
         payment = PaymentInfo(
             order_id=order.id,
@@ -225,14 +194,15 @@ def place_order():
                 # Use the unified send_order_email method with default parameters for order confirmation
                 EmailService.send_order_email(user.email, user.name, order)
             except Exception as e:
-                print(f"Failed to send order confirmation email: {e}")
+                current_app.logger.warning("Order confirmation email failed")
                 # Don't fail the order if email fails
         
         return jsonify({'success': True, 'message': 'Order placed successfully'})
 
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
+        current_app.logger.exception("Order placement failed")
+        return jsonify({"success": False, "message": "Unable to place order"}), 500
 
 
 @checkout_bp.route("/set_shipping", methods=["POST"])

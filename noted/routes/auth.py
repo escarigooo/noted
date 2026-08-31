@@ -21,7 +21,7 @@ def login():
         password = request.form["password"]
         user = User.query.filter_by(email=email).first()
 
-        if user and check_password_hash(user.password, password):
+        if user and user.email_verified and check_password_hash(user.password, password):
             session['user_id'] = user.id
             session['user_email'] = user.email
             session['user_name'] = user.name
@@ -60,68 +60,74 @@ def register():
         if password != confirm:
             return render_template("pages/auth/register.html", error="passwords do not match")
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
+        if User.query.filter_by(email=email).first():
             return render_template("pages/auth/register.html", error="email already registered")
 
         try:
-            token_data = {"name": name, "email": email, "password": password}
-            token = get_serializer().dumps(token_data, salt="email-confirm")
+            new_user = User(
+                name=name,
+                email=email,
+                password=generate_password_hash(password, method="pbkdf2:sha256"),
+                email_verified=False,
+            )
+            db.session.add(new_user)
+            db.session.flush()
 
-            verify_link = url_for("auth.verify_email", token=token, _external=True)
-            print(f"[DEBUG] Email verification link: {verify_link}")
+            token = get_serializer().dumps(
+                {"user_id": new_user.id, "email": new_user.email},
+                salt="email-confirm",
+            )
+            if EmailService.send_registration_email(email, name, token):
+                db.session.commit()
+                return render_template(
+                    "pages/auth/register.html",
+                    success="check your email to verify your account.",
+                )
 
-            # Send verification email
-            email_sent = EmailService.send_registration_email(email, name, token)
-            
-            if email_sent:
-                return render_template("pages/auth/register.html", success="check your email to verify your account.")
-            else:
-                # Debugging information
-                print("[ERROR] Failed to send registration email")
-                from flask import current_app
-                print(f"[DEBUG] Email Config: {current_app.config.get('MAIL_SERVER')}, "
-                      f"Port: {current_app.config.get('MAIL_PORT')}, "
-                      f"Username: {current_app.config.get('MAIL_USERNAME')}")
-                return render_template("pages/auth/register.html", error="failed to send verification email. please try again.")
-        except Exception as e:
-            print(f"[ERROR] Registration exception: {str(e)}")
-            import traceback
-            print(traceback.format_exc())
-            return render_template("pages/auth/register.html", error="An error occurred during registration. Please try again.")
+            db.session.rollback()
+            return render_template(
+                "pages/auth/register.html",
+                error="failed to send verification email. please try again.",
+            )
+        except Exception:
+            db.session.rollback()
+            current_app.logger.exception("Registration failed")
+            return render_template(
+                "pages/auth/register.html",
+                error="An error occurred during registration. Please try again.",
+            )
 
     return render_template("pages/auth/register.html")
 
-# ---------------------- VERIFICAÇÃO DO TOKEN ---------------------- #
+
+# ---------------------- VERIFICACAO DO TOKEN ---------------------- #
 @auth_bp.route("/verify/<token>")
 def verify_email(token):
     try:
-        print("[DEBUG] Token recebido:", token)
-
         data = get_serializer().loads(token, salt="email-confirm", max_age=3600)
-        print("[DEBUG] Dados do token:", data)
-
-        name = data.get("name")
-        email = data.get("email")
-        password = data.get("password")
-
-        if not all([name, email, password]):
+        user = User.query.filter_by(
+            id=data.get("user_id"),
+            email=data.get("email"),
+        ).first()
+        if not user:
             return redirect(url_for("auth.register", error="invalid token content"))
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            return redirect(url_for("auth.login", success="this email is already verified."))
+        if user.email_verified:
+            return redirect(
+                url_for("auth.login", success="this email is already verified.")
+            )
 
-        hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
-        new_user = User(name=name, email=email, password=hashed_password)
-        db.session.add(new_user)
+        user.email_verified = True
         db.session.commit()
+        return redirect(
+            url_for("auth.login", success="account verified! you can now log in.")
+        )
+    except Exception:
+        current_app.logger.info("Invalid or expired email verification token")
+        return redirect(
+            url_for("auth.register", error="invalid or expired verification link.")
+        )
 
-        return redirect(url_for("auth.login", success="account verified! you can now log in."))
-
-    except Exception as e:
-        print(f"[DEBUG] verification error: {e}")
-        return redirect(url_for("auth.register", error="invalid or expired verification link."))
 
 # ---------------------- LOGOUT ---------------------- #
 @auth_bp.route("/logout")
@@ -232,7 +238,6 @@ def forgot_password():
         if user:
             token = get_serializer().dumps(user.email, salt="reset-password")
             reset_link = url_for("auth.reset_password", token=token, _external=True)
-            print(f"[debug] password reset link: {reset_link}")
             
             # Send password reset email
             email_sent = EmailService.send_password_reset_email(user.email, user.name, token)
@@ -251,8 +256,8 @@ def forgot_password():
 def reset_password(token):
     try:
         email = get_serializer().loads(token, salt="reset-password", max_age=3600)
-    except Exception as e:
-        print(f"[debug] invalid or expired reset link: {e}")
+    except Exception:
+        current_app.logger.info("Invalid or expired password reset token")
         return render_template("pages/auth/login.html", error="invalid or expired reset link.")
 
     if request.method == "POST":

@@ -230,11 +230,6 @@ function validateCheckoutData(data) {
 
   // Card payments are simulated; no financial details are collected.
 
-  // PayPal validation (if applicable)
-  if (data.paymentMethod === "paypal") {
-    // PayPal validation would go here if needed
-    // For now, just ensure the method is selected
-  }
 
   // Additional validation for order consistency
   if (data.items && data.items.length === 0) {

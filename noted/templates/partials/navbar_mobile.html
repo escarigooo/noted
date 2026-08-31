@@ -1,15 +1,15 @@
 <header>
     <nav class="mobile-bottom-navbar">
       <button id="mobileMenuToggle" class="mobile-nav-btn none-mobile">
-        <img src="{{ url_for('static', filename='img/icons/menu.png') }}" alt="Menu">
+        <img src="{{ url_for('static', filename='img/icons/menu.svg') }}" alt="Menu">
       </button>
       
       <button id="mobileAccountToggle" class="mobile-nav-btn none-mobile">
-        <img src="{{ url_for('static', filename='img/icons/user.png') }}" alt="Account">
+        <img src="{{ url_for('static', filename='img/icons/user.svg') }}" alt="Account">
       </button>
       
       <button id="mobileCartToggle" class="mobile-nav-btn none-mobile">
-        <img src="{{ url_for('static', filename='img/icons/cart.png') }}" alt="Cart">
+        <img src="{{ url_for('static', filename='img/icons/cart.svg') }}" alt="Cart">
       </button>
     </nav>
   </header>
@@ -21,7 +21,7 @@
   <aside id="cartSidebar" class="cart-sidebar">
     <div class="cart-header">
       <h2>your cart</h2>
-      <button id="closeCart"><img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" /></button>
+      <button id="closeCart"><img src="{{ url_for('static', filename='img/icons/close.svg') }}" alt="Close" /></button>
     </div>
     <div class="cart-content">
       <!-- Cart items will be dynamically inserted here via JavaScript -->
@@ -34,10 +34,10 @@
     <div class="nav-menu-header">
       <h2 class="menu-title">menu</h2>
       <button id="closeMenu" class="icon-button">
-        <img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" />
+        <img src="{{ url_for('static', filename='img/icons/close.svg') }}" alt="Close" />
       </button>
       <button id="backButton" class="icon-button" style="display: none;">
-        <img src="{{ url_for('static', filename='img/icons/undo.png') }}" alt="Back" />
+        <img src="{{ url_for('static', filename='img/icons/back.svg') }}" alt="Back" />
       </button>
     </div>
   
@@ -47,7 +47,7 @@
         <li><a href="{{ url_for('admin.dashboard') }}" class="admin-menu">dashboard</a></li>
       {% endif %}
       <li><a href="#" class="menu-link" data-target="products">products
-          <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span></a></li>
+          <span><img src="{{ url_for('static', filename='img/icons/arrow-right.svg') }}" alt="arrow" /></span></a></li>
       <li><a href="{{ url_for('misc.about') }}">about</a></li>
       <li><a href="{{ url_for('misc.support') }}">support</a></li>
     </ul>
@@ -58,7 +58,7 @@
       <li>
         <a href="#" class="menu-link" data-target="category-{{ category.id }}">
           {{ category.description }}
-          <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span>
+          <span><img src="{{ url_for('static', filename='img/icons/arrow-right.svg') }}" alt="arrow" /></span>
         </a>
       </li>
       {% endfor %}

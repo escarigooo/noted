@@ -14,11 +14,11 @@ The repository is temporarily private while historical personal/generated files 
 
 - Python and Flask with Jinja templates
 - Flask-SQLAlchemy / SQLAlchemy
-- MySQL and MySQL Connector/Python
+- MySQL and PyMySQL
 - HTML, CSS, and browser JavaScript
 - Flask-Mail
 - PDF generation libraries
-- Jupyter, Papermill, and pandas for experimental admin analytics
+- Jupyter, nbconvert, and pandas for experimental admin analytics
 
 ## Local setup (current development workflow)
 
@@ -62,4 +62,4 @@ André Escarigo is the sole human author. AI tools assisted with implementation,
 
 ## Licence status
 
-No redistribution licence is granted yet. A code licence and separate third-party/asset notices will be added only after the provenance audit and asset replacement are complete.
+Code and repository-authored visual assets are available under the MIT License. Documentation is CC BY 4.0. Dependencies retain their own licences; see `THIRD_PARTY_NOTICES.md` and `docs/ASSET_PROVENANCE.md`.

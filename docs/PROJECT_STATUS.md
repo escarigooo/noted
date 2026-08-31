@@ -32,17 +32,17 @@ These statements describe inspected source code. End-to-end behaviour still need
 - Email delivery needs an external SMTP service; local development can use Mailpit or a similar mail catcher.
 - Some admin/email preview routes overlap and need consolidation.
 - Automated tests, CI, containers, and a supported deployment configuration are being added separately.
-- Existing images, icons, and fonts have unknown provenance and are not cleared for redistribution. The repository must remain private until they are replaced or verified.
+- The current visual assets have documented provenance. The repository remains private until the historical unknown assets are removed by the planned Git history rewrite.
 
 ## Technology actually present
 
-Python, Flask, Flask-SQLAlchemy, SQLAlchemy, MySQL Connector/Python, Flask-Mail, Werkzeug, Jinja, HTML, CSS, browser JavaScript, PDF-generation libraries, Jupyter/Papermill, pandas, and MySQL.
+Python, Flask, Flask-SQLAlchemy, SQLAlchemy, PyMySQL, Flask-Mail, Werkzeug, Jinja, HTML, CSS, browser JavaScript, PDF-generation libraries, Jupyter/nbconvert, pandas, and MySQL.
 
 ## Publication gate
 
 Do not make the repository public or advertise a live demo until all of these are complete:
 
-1. unknown assets are replaced or their licences/provenance are documented;
+1. asset provenance and licence records pass final review;
 2. Git history is rewritten to remove historical personal PDFs and large unredistributable archives;
 3. tests, CI, build, and secret scans pass;
 4. a clean demo starts from documented commands with synthetic data only;

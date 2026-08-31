@@ -21,7 +21,7 @@
       {% include "partials/breadcrumb.html" with context %}
     </div>
   </div>
-  
+
   <!-- Product Detail Content -->
   <div class="product-detail-content">
     <!-- Main Product Section -->
@@ -30,57 +30,57 @@
       <div class="product-image-section">
         <div class="product-main-image">
           <!-- Main product image -->
-          <img src="{{ url_for('static', filename='img/products/' + product.image) if product.image else url_for('static', filename='img/products/placeholder.png') }}" 
-               alt="{{ product.name }}" 
+          <img src="{{ url_for('static', filename='img/products/' + product.image) if product.image else url_for('static', filename='img/products/placeholder.svg') }}"
+               alt="{{ product.name }}"
                id="main-product-image">
-          
+
           <!-- Navigation controls -->
           <div class="image-nav-controls">
             <button class="nav-btn prev-btn" id="prevImage" aria-label="Previous Image">
-              <img src="{{ url_for('static', filename='img/icons/arrow-left.png') }}" alt="Previous">
+              <img src="{{ url_for('static', filename='img/icons/arrow-left.svg') }}" alt="Previous">
             </button>
             <button class="nav-btn next-btn" id="nextImage" aria-label="Next Image">
-              <img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="Next">
+              <img src="{{ url_for('static', filename='img/icons/arrow-right.svg') }}" alt="Next">
             </button>
           </div>
         </div>
-        
+
         <!-- Thumbnail gallery -->
         <div class="product-image-gallery" id="image-thumbnails">
           <!-- Main product image as first thumbnail -->
           {% if product.image %}
           <div class="thumbnail-container active" data-index="0" data-src="{{ url_for('static', filename='img/products/' + product.image) }}">
-            <img src="{{ url_for('static', filename='img/products/' + product.image) }}" 
-                 alt="{{ product.name }}" 
+            <img src="{{ url_for('static', filename='img/products/' + product.image) }}"
+                 alt="{{ product.name }}"
                  class="gallery-thumbnail">
           </div>
           {% endif %}
-          
+
           <!-- Additional product images sorted by ID -->
           {% if product.images %}
             {% for image in product.images|sort(attribute='id') %}
             <div class="thumbnail-container" data-index="{{ loop.index }}" data-src="{{ url_for('static', filename='img/products/' + image.path) }}">
-              <img src="{{ url_for('static', filename='img/products/' + image.path) }}" 
-                   alt="{{ image.caption or product.name }}" 
+              <img src="{{ url_for('static', filename='img/products/' + image.path) }}"
+                   alt="{{ image.caption or product.name }}"
                    class="gallery-thumbnail">
             </div>
             {% endfor %}
           {% endif %}
         </div>
       </div>
-      
+
       <!-- Product Info Section (34% width) -->
       <div class="product-info-section">
         <div class="product-basic-info">
           <h2 class="product-name">{{ product.name }}</h2>
-          
+
           <!-- Price - Most Important Info First -->
           <div class="product-price">
             <span class="price-amount">{{ "%.2f"|format(product.price) }}€</span>
           </div>
-          
+
           <p class="product-description">{{ product.description or "Premium quality product designed for your needs." }}</p>
-          
+
           <!-- Dynamic Product Features from Database -->
           {% if product.features %}
           <div class="product-features">
@@ -94,7 +94,7 @@
                 {% set color_features = color_features + [feature] %}
               {% endif %}
             {% endfor %}
-            
+
             <!-- Material Selection (if available in DB) -->
             {% if material_features %}
             <div class="feature-group">
@@ -102,7 +102,7 @@
               <div class="material-options">
                 <div class="material-buttons">
                   {% for feature in material_features %}
-                  <button class="material-btn {% if loop.first %}active{% endif %}" 
+                  <button class="material-btn {% if loop.first %}active{% endif %}"
                           type="button"
                           data-price="{{ feature.value.split('|')[1] if '|' in feature.value else product.price }}">
                     {{ feature.value.split('|')[0] if '|' in feature.value else feature.value }}
@@ -116,7 +116,7 @@
               <div class="price-indicator">{{ "%.0f"|format(product.price) }}€</div>
             </div>
             {% endif %}
-            
+
             <!-- Color Selection (if available in DB) -->
             {% if color_features %}
             <div class="feature-group">
@@ -127,8 +127,8 @@
                 {% set color_parts = feature.value.split('|') %}
                 {% set color_name = color_parts[0] %}
                 {% set color_hex = color_parts[1] if color_parts|length > 1 else '#000' %}
-                <div class="color-circle {% if loop.first %}active{% endif %} {% if color_hex in ['#fff', '#ffffff', 'white'] %}white-border{% endif %}" 
-                     data-color="{{ color_name.lower() }}" 
+                <div class="color-circle {% if loop.first %}active{% endif %} {% if color_hex in ['#fff', '#ffffff', 'white'] %}white-border{% endif %}"
+                     data-color="{{ color_name.lower() }}"
                      data-color-hex="{{ color_hex }}"></div>
                 {% endfor %}
               </div>
@@ -136,12 +136,12 @@
             {% endif %}
           </div>
           {% endif %}
-          
+
           <!-- Add to Cart Button -->
           <button class="add-to-cart-btn" data-product-id="{{ product.id }}">
             add to cart
           </button>
-          
+
           <!-- Quick Product Highlights -->
           <div class="product-highlights">
             <div class="highlight-item">
@@ -163,13 +163,13 @@
 
     <!-- Detailed Product Information Sections -->
     <div class="product-details-sections">
-      
+
       <!-- Delivery Times Section -->
       <div class="detail-section">
         <h3 class="section-title">Delivery times</h3>
         <div class="section-content">
           <p class="delivery-info">Delivery time within Europe 24-48 hours depending on availability</p>
-          
+
           <!-- Product Specifications from Database -->
           <div class="product-specs">
             {% if product.features %}
@@ -206,7 +206,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Installation Guide Section -->
       <div class="detail-section">
         <h3 class="section-title">Installation Guide</h3>
@@ -227,7 +227,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Trust Section -->
       <div class="trust-section">
         <h3 class="section-title">Fast, Local & Trusted</h3>
@@ -250,18 +250,18 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Related Products Section (same collection) -->
       {% if product.collection_id %}
       <div class="related-products-section">
         <h3 class="section-title">Related Products</h3>
-        
+
         <div class="related-products-container">
           <!-- Navigation Controls -->
           <button class="related-nav-btn prev-btn" id="prevRelated" aria-label="Previous Related">
-            <img src="{{ url_for('static', filename='img/icons/arrow-left.png') }}" alt="Previous">
+            <img src="{{ url_for('static', filename='img/icons/arrow-left.svg') }}" alt="Previous">
           </button>
-          
+
           <!-- Products Wrapper -->
           <div class="related-products-wrapper" id="relatedProductsWrapper">
             <!-- We'll query products from the same collection, excluding current product -->
@@ -269,13 +269,13 @@
             {% if product.collection_id %}
               <!-- Collection ID found: {{ product.collection_id }} -->
               {% set related_products = get_related_products(product.collection_id, product.id, limit=8) %}
-              
+
               {% if related_products and related_products|length > 0 %}
                 {% for related in related_products %}
                 <div class="product-card related-product">
                   <a href="{{ url_for('products.product_details', product_name=related.name) }}">
                     <div class="product-image">
-                      <img src="{{ url_for('static', filename='img/products/' + related.image) if related.image else url_for('static', filename='img/products/placeholder.png') }}" 
+                      <img src="{{ url_for('static', filename='img/products/' + related.image) if related.image else url_for('static', filename='img/products/placeholder.svg') }}"
                            alt="{{ related.name }}" loading="lazy">
                     </div>
                     <div class="product-info">
@@ -296,16 +296,16 @@
               </div>
             {% endif %}
           </div>
-          
+
           <!-- Navigation Controls -->
           <button class="related-nav-btn next-btn" id="nextRelated" aria-label="Next Related">
-            <img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="Next">
+            <img src="{{ url_for('static', filename='img/icons/arrow-right.svg') }}" alt="Next">
           </button>
         </div>
       </div>
       {% endif %}
-      
-      
+
+
     </div>
   </div>
 </section>

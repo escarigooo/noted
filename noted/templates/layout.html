@@ -105,11 +105,10 @@
 
   <!-- Script dashboard (não defer para garantir carregamento certo do Chart.js) -->
   {% if request.endpoint == 'admin.dashboard' %}
-  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/admin/dashboard.js') }}"></script>
   {% endif %}
 
   {% if request.endpoint == 'checkout.checkout' %}
-  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@17/build/js/intlTelInput.min.js"></script>
 
   <script src="{{ url_for('static', filename='js/checkout/core.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/checkout/validation.js') }}" defer></script>

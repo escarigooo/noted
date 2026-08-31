@@ -117,16 +117,16 @@ def get_email_test_data():
             'id': 3,
             'name': 'Leather Portfolio',
             'price': 45.00,
-            'image': 'portfolio-leather.jpg',
-            'image_url': '/static/img/products/portfolio-leather.jpg',
+            'image': 'folio.png',
+            'image_url': '/static/img/products/folio.png',
             'description': 'Professional leather portfolio for documents'
         },
         {
             'id': 4,
             'name': 'Desk Organizer',
             'price': 28.00,
-            'image': 'organizer-desk.jpg',
-            'image_url': '/static/img/products/organizer-desk.jpg',
+            'image': 'essentials.png',
+            'image_url': '/static/img/products/essentials.png',
             'description': 'Bamboo desk organizer with multiple compartments'
         }
     ]
@@ -215,7 +215,7 @@ def preview_email_template(template_name):
             total=total,
             tracking_info=tracking_info,
             company_name='noted;',
-            support_email='support@noted.com',
+            support_email='support@example.com',
             site_url=request.url_root.rstrip('/')
         )
     

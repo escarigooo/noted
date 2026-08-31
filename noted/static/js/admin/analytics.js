@@ -38,7 +38,7 @@ if (typeof AdminAnalytics === 'undefined') {
                 showNotification('Refreshing analytics data...', 'info');
             }
             
-            // Get CSRF token if using Flask-WTF
+            // Include a CSRF token when the application provides one
             const csrfToken = document.querySelector('meta[name=csrf-token]')?.content;
             
             const headers = {

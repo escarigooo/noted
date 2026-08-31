@@ -50,7 +50,7 @@ body.auth-page {
 
 /* Só login tem imagem de fundo
 body.login-page {
-  background-image: url("/static/img/logo.png");
+  background-image: url("/static/img/logo.svg");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 250px;

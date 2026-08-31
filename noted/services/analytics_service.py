@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from noted.models import Category, Order, PaymentInfo, Product, ProductStock, User
 
@@ -21,7 +21,39 @@ def _monthly_series(orders):
     return labels, [round(sales[key], 2) for key in labels], [counts[key] for key in labels]
 
 
-def analytics_data():
+def _as_utc(value):
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
+
+
+def _orders_since(orders, since):
+    return [
+        order
+        for order in orders
+        if order.order_date and _as_utc(order.order_date) >= since
+    ]
+
+
+def _chart_data(orders):
+    labels, sales, counts = _monthly_series(orders)
+    return {
+        "sales_chart": {
+            "labels": labels,
+            "data": sales,
+            "type": "line",
+            "title": "Sales by month",
+        },
+        "orders_chart": {
+            "labels": labels,
+            "data": counts,
+            "type": "bar",
+            "title": "Orders by month",
+        },
+    }
+
+
+def analytics_data(now=None):
     orders = Order.query.order_by(Order.order_date.asc()).all()
     users = User.query.all()
     products = Product.query.all()
@@ -29,16 +61,25 @@ def analytics_data():
     paid_order_ids = {row.order_id for row in PaymentInfo.query.filter_by(paid=True).all()}
     labels, sales, order_counts = _monthly_series(orders)
     total_sales = round(sum(_money(order.total) for order in orders), 2)
-    now = datetime.now(timezone.utc)
+    now = now or datetime.now(timezone.utc)
+    current_month = now.strftime("%Y-%m")
+    monthly_sales = round(
+        sum(_money(order.total) for order in orders if order.order_date and order.order_date.strftime("%Y-%m") == current_month),
+        2,
+    )
+    monthly_orders = sum(
+        bool(order.order_date and order.order_date.strftime("%Y-%m") == current_month)
+        for order in orders
+    )
     recent = sorted(orders, key=lambda order: order.order_date or datetime.min, reverse=True)[:10]
 
     return {
         "last_updated": now.isoformat(),
         "dashboard": {
             "total_sales": total_sales,
-            "monthly_sales": sales[-1] if sales else 0,
+            "monthly_sales": monthly_sales,
             "total_orders": len(orders),
-            "monthly_orders": order_counts[-1] if order_counts else 0,
+            "monthly_orders": monthly_orders,
             "total_customers": sum(user.role == 2 for user in users),
             "active_products": len(products),
             "revenue_growth": 0,
@@ -61,7 +102,7 @@ def analytics_data():
         },
         "orders": {
             "total_orders": len(orders),
-            "monthly_orders": order_counts[-1] if order_counts else 0,
+            "monthly_orders": monthly_orders,
             "paid_orders": len(paid_order_ids),
             "unpaid_orders": len(orders) - len(paid_order_ids),
             "orders_by_month": [{"month": label, "count": count} for label, count in zip(labels, order_counts)],
@@ -83,22 +124,11 @@ def analytics_data():
     }
 
 
-def graphics_data():
-    data = analytics_data()
-    sales_rows = data["analytics"]["sales_by_month"]
-    order_rows = data["orders"]["orders_by_month"]
-    sales_chart = {
-        "labels": [row["month"] for row in sales_rows],
-        "data": [row["sales"] for row in sales_rows],
-        "type": "line",
-        "title": "Sales by month",
-    }
-    orders_chart = {
-        "labels": [row["month"] for row in order_rows],
-        "data": [row["count"] for row in order_rows],
-        "type": "bar",
-        "title": "Orders by month",
-    }
+def graphics_data(now=None):
+    now = now or datetime.now(timezone.utc)
+    data = analytics_data(now=now)
+    orders = Order.query.order_by(Order.order_date.asc()).all()
+    all_time = _chart_data(orders)
     category_rows = (
         Category.query.outerjoin(Product)
         .with_entities(Category.description, Product.id)
@@ -108,10 +138,21 @@ def graphics_data():
     for category, product_id in category_rows:
         if product_id is not None:
             category_counts[category] += 1
-    ranges = ["Last 7 days", "Last 30 days", "Last 3 months", "Last 12 months", "All time"]
+    range_days = {
+        "Last 7 days": 7,
+        "Last 30 days": 30,
+        "Last 3 months": 90,
+        "Last 12 months": 365,
+    }
+    date_ranges = {
+        name: _chart_data(_orders_since(orders, now - timedelta(days=days)))
+        for name, days in range_days.items()
+    }
+    date_ranges["All time"] = all_time
+    ranges = [*range_days, "All time"]
     return {
         "last_updated": data["last_updated"],
-        "date_ranges": {name: {"sales_chart": sales_chart, "orders_chart": orders_chart} for name in ranges},
+        "date_ranges": date_ranges,
         "static_charts": {
             "products_chart": {
                 "labels": list(category_counts),
@@ -122,6 +163,6 @@ def graphics_data():
             "top_customers": {"labels": [], "data": [], "type": "bar", "title": "Top customers"},
         },
         "filters": {"date_ranges": ranges, "categories": list(category_counts)},
-        "sales_chart": sales_chart,
-        "orders_chart": orders_chart,
+        "sales_chart": all_time["sales_chart"],
+        "orders_chart": all_time["orders_chart"],
     }

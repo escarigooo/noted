@@ -6,6 +6,22 @@ from flask import current_app, url_for
 from ..models import get_db_connection
 from decimal import Decimal
 
+
+def resolve_invoice_path(stored_path):
+    """Resolve a stored PDF path only when it stays inside INVOICE_DIR."""
+    if not stored_path:
+        return None
+    invoice_dir = os.path.realpath(current_app.config["INVOICE_DIR"])
+    candidate = stored_path if os.path.isabs(stored_path) else os.path.join(invoice_dir, stored_path)
+    candidate = os.path.realpath(candidate)
+    try:
+        is_inside = os.path.commonpath((invoice_dir, candidate)) == invoice_dir
+    except ValueError:
+        return None
+    if not is_inside or not candidate.lower().endswith(".pdf"):
+        return None
+    return candidate
+
 class InvoiceService:
     """Service for generating and managing invoices"""
     
@@ -44,7 +60,9 @@ class InvoiceService:
 
             invoices_dir = current_app.config["INVOICE_DIR"]
             os.makedirs(invoices_dir, exist_ok=True)
-            safe_number = order_data["invoice_number"].replace("-", "_")
+            invoice_number = order_data["invoice_number"] or self._invoice_number(order_id)
+            order_data["invoice_number"] = invoice_number
+            safe_number = invoice_number.replace("-", "_")
             pdf_path = os.path.join(invoices_dir, f"invoice_{safe_number}.pdf")
 
             document = canvas.Canvas(pdf_path, pagesize=A4)
@@ -63,6 +81,10 @@ class InvoiceService:
         except Exception as exc:
             current_app.logger.exception("Invoice generation failed")
             return None, f"PDF generation failed: {exc}"
+
+    @staticmethod
+    def _invoice_number(order_id):
+        return f"INV-{datetime.now().year}-{order_id:04d}"
 
     def _get_order_data(self, order_id):
         """Get all order data needed for invoice generation"""
@@ -219,8 +241,7 @@ class InvoiceService:
                 return False
             
             # Generate invoice number based on order
-            current_year = datetime.now().year
-            invoice_number = f"INV-{current_year}-{order_id:04d}"
+            invoice_number = self._invoice_number(order_id)
             
             # Create new invoice record
             cursor.execute('''
@@ -341,8 +362,9 @@ class InvoiceService:
             cursor.close()
             connection.close()
             
-            if result and result['pdf_path'] and os.path.exists(result['pdf_path']):
-                return result['pdf_path'], None
+            safe_path = resolve_invoice_path(result['pdf_path']) if result else None
+            if safe_path and os.path.exists(safe_path):
+                return safe_path, None
             elif result:
                 return None, "Invoice file not found on disk"
             else:

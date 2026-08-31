@@ -36,6 +36,51 @@ def test_graphics_endpoint_has_stable_contract(admin_client):
     assert data["static_charts"]["products_chart"]["labels"] == ["note"]
 
 
+def test_current_month_metrics_do_not_use_latest_historical_month(app):
+    with app.app_context():
+        data = analytics_data(now=datetime(2026, 9, 1, tzinfo=timezone.utc))
+    assert data["dashboard"]["monthly_sales"] == 0
+    assert data["dashboard"]["monthly_orders"] == 0
+    assert data["orders"]["monthly_orders"] == 0
+
+
+def test_graphic_ranges_filter_historical_orders(app):
+    with app.app_context():
+        data = graphics_data(now=datetime(2026, 9, 1, tzinfo=timezone.utc))
+    assert data["date_ranges"]["Last 7 days"]["orders_chart"]["data"] == []
+    assert data["date_ranges"]["All time"]["orders_chart"]["data"] == [1]
+
+
+def test_invoice_generation_assigns_number_before_building_path(app, monkeypatch):
+    service = InvoiceService.__new__(InvoiceService)
+    monkeypatch.setattr(service, "get_invoice_path", lambda order_id: (None, "not found"))
+    monkeypatch.setattr(
+        service,
+        "_get_order_data",
+        lambda order_id: {
+            "invoice_number": None,
+            "invoice_date": "31/08/2026",
+            "customer": {"name": "Demo User"},
+            "items": [],
+            "total": 10,
+        },
+    )
+    stored = {}
+    monkeypatch.setattr(service, "_update_invoice_pdf_path", lambda order_id, path: stored.update(path=path))
+    with app.app_context():
+        path, error = service.generate_invoice_pdf(7)
+    assert error is None
+    assert Path(path).name == "invoice_INV_2026_0007.pdf"
+    assert stored["path"] == path
+
+
+def test_invoice_paths_cannot_escape_runtime_directory(app, tmp_path):
+    with app.app_context():
+        assert resolve_invoice_path("invoice_demo.pdf") == str(tmp_path / "invoices" / "invoice_demo.pdf")
+        assert resolve_invoice_path("../outside.pdf") is None
+        assert resolve_invoice_path("invoice_demo.txt") is None
+
+
 def test_admin_endpoint_requires_authentication(client):
     response = client.get("/api/admin/analytics")
     assert response.status_code == 302
@@ -71,3 +116,8 @@ def test_simulated_checkout_uses_server_total_and_clears_cart(customer_client, m
     assert response.status_code == 200
     assert response.get_json()["success"] is True
     assert customer_client.get("/cart_data").get_json()["items"] == []
+from datetime import datetime, timezone
+from pathlib import Path
+
+from noted.services.analytics_service import analytics_data, graphics_data
+from noted.services.invoice_service import InvoiceService, resolve_invoice_path

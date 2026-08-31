@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request, abort, flash
 from noted.models import get_db_connection, User, Order, OrderItem, Product
-from noted.services.invoice_service import InvoiceService
+from noted.services.invoice_service import InvoiceService, resolve_invoice_path
 from noted.services.email_service import EmailService
 import os
 from flask import send_file
@@ -157,9 +157,9 @@ def view_invoice(order_id):
         abort(404, "Invoice not found")
     
     # Get the full path to the PDF
-    pdf_path = os.path.join(os.getcwd(), 'noted/static', invoice['pdf_path'].replace('/static/', ''))
+    pdf_path = resolve_invoice_path(invoice['pdf_path'])
     
-    if not os.path.exists(pdf_path):
+    if not pdf_path or not os.path.exists(pdf_path):
         abort(404, "Invoice file not found")
     
     # Return the file for viewing in browser
@@ -204,9 +204,9 @@ def download_invoice(order_id):
         abort(404, "Invoice not found")
     
     # Get the full path to the PDF
-    pdf_path = os.path.join(os.getcwd(), 'noted/static', invoice['pdf_path'].replace('/static/', ''))
+    pdf_path = resolve_invoice_path(invoice['pdf_path'])
     
-    if not os.path.exists(pdf_path):
+    if not pdf_path or not os.path.exists(pdf_path):
         abort(404, "Invoice file not found")
     
     # Return the file for download
@@ -513,4 +513,3 @@ def preview_email(email_type):
     })
     
     return render_template(template_info['template'], **context)
-

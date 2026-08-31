@@ -7,6 +7,7 @@ import glob
 import random
 from datetime import datetime
 from decimal import Decimal
+from werkzeug.exceptions import HTTPException
 from ..services.email_service import EmailService
 from ..models import Order
 
@@ -142,7 +143,7 @@ def view_invoice(order_id):
     """View invoice PDF"""
     from flask import send_file, abort
     from noted.models import get_db_connection
-    import os
+    from noted.services.invoice_service import resolve_invoice_path
 
     try:
         # Get invoice path from database
@@ -163,15 +164,17 @@ def view_invoice(order_id):
             # No invoice found
             abort(404, description="Invoice not found")
             
-        pdf_path = invoice['pdf_path']
+        pdf_path = resolve_invoice_path(invoice['pdf_path'])
         
-        if not os.path.exists(pdf_path):
+        if not pdf_path or not os.path.exists(pdf_path):
             # PDF file doesn't exist
             abort(404, description="Invoice file not found")
             
         # Return the file for viewing in browser
         return send_file(pdf_path, mimetype='application/pdf')
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error viewing invoice: {str(e)}")
         abort(500, description="Error retrieving invoice")

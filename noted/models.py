@@ -51,11 +51,19 @@ class Product(db.Model):
     image = db.Column(db.String(200))
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
     collection_id = db.Column(db.Integer, db.ForeignKey('product_collections.id'))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     features = db.relationship('ProductFeature', backref='product', cascade="all, delete-orphan")
     images = db.relationship('ProductImage', backref='product', cascade="all, delete-orphan")
     accessories = db.relationship('Accessory', secondary='product_accessories', backref='products')
+
+
+class ProductStock(db.Model):
+    __tablename__ = 'product_stock'
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), primary_key=True)
+    quantity = db.Column(db.Integer, nullable=False, default=0)
+
+    product = db.relationship('Product', backref=db.backref('stock', uselist=False))
 
 class ProductImage(db.Model):
     __tablename__ = 'product_images'
@@ -108,7 +116,7 @@ class User(db.Model):
     address = db.Column(db.Text)
     role = db.Column(db.Integer, default=2)  # 1 = admin, 2 = customer
     noted_cash = db.Column(db.Numeric(10, 2), default=0.00)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     last_login = db.Column(db.DateTime)
 
 class Cart(db.Model):
@@ -117,7 +125,7 @@ class Cart(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, default=1, nullable=False)
-    added_at = db.Column(db.DateTime, default=datetime.utcnow)
+    added_at = db.Column(db.DateTime, default=datetime.now)
 
     user = db.relationship('User', backref='cart_items')
     product = db.relationship('Product')
@@ -129,13 +137,13 @@ class Discount(db.Model):
     amount = db.Column(db.Numeric(10, 2), nullable=False)  # ex: 10.00
     is_percentage = db.Column(db.Boolean, default=False)
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
 class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    order_date = db.Column(db.DateTime, default=datetime.utcnow)
+    order_date = db.Column(db.DateTime, default=datetime.now)
     total = db.Column(db.Numeric(10, 2))  # Changed from Float to Numeric for precision
     shipping_method = db.Column(db.String(100))
     payment_method = db.Column(db.String(100))
@@ -201,7 +209,7 @@ class NotedCashTransaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     change_amount = db.Column(db.Numeric(10, 2), nullable=False)
     reason = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
 # Adicione esta classe ao final do arquivo
 
@@ -211,7 +219,7 @@ class ProductCollection(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     image = db.Column(db.String(200))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     
     # Relação many-to-many com produtos
     products = db.relationship('Product', 

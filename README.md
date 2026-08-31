@@ -8,7 +8,7 @@ The inspected source includes catalogue browsing, accounts, a database-backed ca
 
 ## Current state
 
-The repository is temporarily private while historical personal/generated files and visual assets of unknown provenance are removed. It is not yet publication-ready or deployed. Automated tests, CI, containers, and deployment instructions will be added during the current cleanup.
+The repository is temporarily private until historical personal and unknown-provenance files are removed from Git history. The current tree has tests, CI, a containerized demo, and documented deployment boundaries, but no public deployment is enabled yet.
 
 ## Stack
 
@@ -17,29 +17,26 @@ The repository is temporarily private while historical personal/generated files 
 - MySQL and PyMySQL
 - HTML, CSS, and browser JavaScript
 - Flask-Mail
-- PDF generation libraries
-- Jupyter, nbconvert, and pandas for experimental admin analytics
+- ReportLab for simple demo invoices
+- Optional Jupyter, nbconvert, and pandas for offline analytics experiments
+- Pytest, Ruff, pip-audit, GitHub Actions, Docker, and Gunicorn
 
-## Local setup (current development workflow)
+## Reproducible demo
 
-Requirements: Python 3, MySQL, and a modern browser. The Windows batch scripts are retained temporarily for the original local workflow; a cross-platform container workflow is planned.
+Requirements: Docker with Compose and a modern browser.
 
-1. Create and activate a virtual environment.
-2. Install dependencies:
+```bash
+docker compose up --build
+```
 
-   ```bash
-   python3 -m pip install -r requirements.txt
-   ```
+Open http://localhost:8080. Mailpit is available at http://localhost:8025. The health probe is http://localhost:8080/health. Set `NOTED_PORT` before starting Compose to choose another host port.
 
-3. Copy `.env.example` to `.env`, replace `SECRET_KEY`, and set `DATABASE_URI` for your MySQL instance.
-4. Import `database/db_noted.sql`, then optionally `database/test-content.sql` for synthetic demo data.
-5. Start the development server:
+Synthetic demo credentials:
 
-   ```bash
-   python3 -m noted.app
-   ```
+- admin: `admin@example.com` / `DemoOnly!2026`
+- customer: `demo01@example.com` / `DemoOnly!2026`
 
-The default local URL is `http://127.0.0.1:5000`. Do not use the Flask development server for a public deployment.
+See [Demo and deployment](docs/DEPLOYMENT.md) for reset commands, local Python checks, hosted configuration, and limitations. The Flask development server is not a supported public deployment path.
 
 ## Repository structure
 

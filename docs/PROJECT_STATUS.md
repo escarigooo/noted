@@ -27,16 +27,16 @@ These statements describe inspected source code. End-to-end behaviour still need
 - Card payment is deliberately simulated. No card details are requested, processed, or sent to a payment provider.
 - There is no production payment integration.
 - CSRF protection is not yet wired into the forms or JSON requests.
-- Analytics executes Jupyter notebooks during HTTP requests and needs redesign before production use.
-- Invoice generation depends on host tools and writes generated files locally.
+- Analytics is calculated from the database; notebooks are isolated offline experiments.
+- Invoice generation writes simple ReportLab PDFs to configurable runtime storage.
 - Email delivery needs an external SMTP service; local development can use Mailpit or a similar mail catcher.
 - Some admin/email preview routes overlap and need consolidation.
-- Automated tests, CI, containers, and a supported deployment configuration are being added separately.
+- The current smoke/critical-flow suite establishes a 25% coverage floor; broader route and failure-path coverage is still needed.
 - The current visual assets have documented provenance. The repository remains private until the historical unknown assets are removed by the planned Git history rewrite.
 
 ## Technology actually present
 
-Python, Flask, Flask-SQLAlchemy, SQLAlchemy, PyMySQL, Flask-Mail, Werkzeug, Jinja, HTML, CSS, browser JavaScript, PDF-generation libraries, Jupyter/nbconvert, pandas, and MySQL.
+Python, Flask, Flask-SQLAlchemy, SQLAlchemy, PyMySQL, Flask-Mail, Werkzeug, Jinja, HTML, CSS, browser JavaScript, ReportLab, optional Jupyter/nbconvert/pandas, Gunicorn, Docker, Pytest, Ruff, and MySQL.
 
 ## Publication gate
 

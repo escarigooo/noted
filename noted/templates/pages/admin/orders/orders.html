@@ -192,7 +192,7 @@
     // Load order statistics from analytics data
     async function loadOrderStats() {
         try {
-            const response = await fetch('/static/data/analytics.json');
+            const response = await fetch('/api/admin/analytics');
             const data = await response.json();
 
             const totalOrdersEl = document.getElementById('total-orders');
@@ -295,18 +295,7 @@
                 // Refresh modal to show invoice details
                 openOrderEditModal(orderId);
             } else {
-                // Check for specific errors
-                if (result.message && result.message.includes('PDF generation tools are not installed')) {
-                    // Show more helpful error message
-                    const errorMessage = `PDF Generation Error: Missing required software. 
-                        To fix this issue: 
-                        1. Run the install_wkhtmltopdf.bat script in the noted folder 
-                        2. Run 'pip install pdfkit weasyprint reportlab' in your terminal 
-                        3. Restart the application server`;
-                    showNotification(errorMessage, 'error', 10000); // 10 seconds display
-                } else {
-                    showNotification(result.message || 'Failed to generate invoice', 'error');
-                }
+                showNotification(result.message || 'Failed to generate invoice', 'error');
             }
         } catch (error) {
             console.error('Error generating invoice:', error);

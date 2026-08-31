@@ -126,7 +126,7 @@
     // Load user statistics from analytics data
     async function loadUserStats() {
         try {
-            const response = await fetch('/static/data/analytics.json');
+            const response = await fetch('/api/admin/analytics');
             const data = await response.json();
 
             // Update stat cards with real data

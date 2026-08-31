@@ -1111,7 +1111,7 @@ def generate_invoice(order_id):
         invoice_service = InvoiceService()
         
         # First check if an invoice already exists
-        existing_pdf_path = invoice_service.get_invoice_path(order_id)
+        existing_pdf_path, _ = invoice_service.get_invoice_path(order_id)
         if existing_pdf_path:
             # Invoice already exists, return its path
             return jsonify({
@@ -1125,13 +1125,6 @@ def generate_invoice(order_id):
         pdf_path, error = invoice_service.generate_invoice_pdf(order_id)
         
         if error:
-            # Check for specific error messages
-            if "pdfkit" in error.lower() and "not installed" in error.lower():
-                return jsonify({
-                    "success": False, 
-                    "message": "PDF generation tools are not installed properly. Please run the install_wkhtmltopdf.bat script and restart the server.",
-                    "error_details": error
-                }), 500
             return jsonify({"success": False, "message": error}), 500
             
         return jsonify({
@@ -1140,16 +1133,6 @@ def generate_invoice(order_id):
             "pdf_path": pdf_path,
             "regenerated": True
         }), 200
-        
-    except ImportError as e:
-        error_msg = str(e)
-        if "pdfkit" in error_msg.lower():
-            return jsonify({
-                "success": False, 
-                "message": "PDF generation module is not installed. Please run: pip install pdfkit weasyprint reportlab and then run install_wkhtmltopdf.bat",
-                "error_details": error_msg
-            }), 500
-        return jsonify({"success": False, "message": f"Missing module: {error_msg}"}), 500
         
     except Exception as e:
         print(f"Error generating invoice: {str(e)}")

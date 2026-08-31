@@ -135,7 +135,7 @@
     // Load product statistics from analytics data
     async function loadProductStats() {
         try {
-            const response = await fetch('/static/data/analytics.json');
+            const response = await fetch('/api/admin/analytics');
             const data = await response.json();
 
             // Update stat cards with real data

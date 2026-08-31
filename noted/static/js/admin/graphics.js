@@ -4,7 +4,7 @@
 
 class GraphicsHandler {
     constructor() {
-        this.dataUrl = '/static/data/graphics.json';
+        this.dataUrl = '/api/admin/graphics';
         this.refreshUrl = '/admin/refresh-graphics';
         this.data = null;
         this.charts = {};

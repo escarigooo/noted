@@ -36,11 +36,30 @@ Notebook dependencies are isolated in `requirements-analytics.txt`. Notebooks ar
 
 ## Hosted demo contract
 
-Deploy the `Dockerfile` to a container platform with a managed MySQL service. Configure `SECRET_KEY`, `DATABASE_URI`, SMTP settings, `SITE_URL`, and `INVOICE_DIR` through the platform secret/environment manager. Use an ephemeral invoice directory for a disposable demo or an explicitly managed private volume if files must survive restarts.
+Deploy the `Dockerfile` to a container platform with a private, persistent MySQL service. Configure `SECRET_KEY`, `DATABASE_URI`, SMTP settings, `SITE_URL`, and `INVOICE_DIR` through the platform secret/environment manager. Use an ephemeral invoice directory for a disposable demo or an explicitly managed private volume if files must survive restarts.
 
 The container runs as a non-root user and starts Gunicorn through `wsgi.py`. The platform should use `/health` as its readiness probe. Do not expose MySQL or Mailpit publicly.
 
 No automatic production deployment is enabled yet. The Git-history rewrite is complete; deployment remains gated on GitHub-side cleanup of legacy references, the final public-content audit, and an explicit platform choice. CI validates tests, dependency vulnerabilities, complete reachable secret history, and the container build on pull requests and pushes to `main`.
+
+## Hosting assessment (2026-09-01)
+
+A hosted demo is optional for this portfolio project. The verified local Compose demo and factual case study remain valid without a permanent public environment.
+
+If a live demo is wanted, **Railway Hobby is the recommended fit**:
+
+- Railway automatically builds a root `Dockerfile` and provides private networking between services.
+- Its MySQL template is quick to provision and private by default, but Railway explicitly classifies database templates as **unmanaged**. Backups, maintenance, security, and recovery remain the owner's responsibility.
+- Hobby currently costs USD 5/month and includes USD 5/month of resource usage. Usage above that allowance is billed separately, so a usage limit must be configured.
+
+The alternatives add more work for this particular application:
+
+- Render can run the web container and a private MySQL container with a persistent disk, but MySQL is not one of Render's managed datastores. Free web services cannot attach persistent disks, so a durable MySQL demo is not fully free.
+- Fly.io documents MySQL as a self-managed application with a persistent volume and recommends 2 GB RAM for MySQL 8. This gives more infrastructure control than a disposable CV demo needs.
+
+Official references: [Railway plans](https://docs.railway.com/pricing/plans), [Railway Dockerfiles](https://docs.railway.com/builds/dockerfiles), [Railway MySQL](https://docs.railway.com/databases/mysql), [Render free services](https://render.com/docs/free), [Render MySQL](https://render.com/docs/deploy-mysql), and [Fly.io MySQL](https://fly.io/docs/app-guides/mysql-on-fly/).
+
+Do not create provider resources until the repository owner has approved the provider and recurring-spend ceiling. Do not deploy at all until GitHub-side history cleanup in issue #6 is complete.
 
 ## Limitations
 

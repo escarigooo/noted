@@ -95,14 +95,12 @@ A noted; é uma plataforma de cadernos digitais open source que oferece sincroni
    ```
    pip install --upgrade pip
    pip install -r requirements.txt
-   pip install python-dotenv pandas matplotlib sqlalchemy mysql-connector-python
-   pip install papermill nbformat==5.9.2 nbconvert jupyter_client
    ```
 
 3. Configurar o ficheiro .env:
    ```
    SECRET_KEY=chave_secreta
-   DATABASE_URI=mysql://username:password@localhost/db_noted
+   DATABASE_URI=mysql+pymysql://username:password@localhost/db_noted
    MAIL_SERVER=smtp.exemplo.com
    MAIL_PORT=587
    MAIL_USERNAME=seu_email@exemplo.com

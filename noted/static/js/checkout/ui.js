@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // ELEMENTOS & VARIÁVEIS
   // ============================
   const phoneInput = document.getElementById("phone");
-  const flagIcon = document.getElementById("flagIcon");
-
   const sameAddressCheckbox = document.getElementById("same_address");
   const billingFields = document.getElementById("billingAddressFields");
 
@@ -13,33 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const continueButtons = document.querySelectorAll('.section-block .btn');
   const shippingRadios = document.querySelectorAll('input[name="shipping_method"]');
   const paymentSection = document.getElementById('paymentSection');
-
-  const countryFlags = {
-    "+351": "pt", "+34": "es", "+33": "fr", "+44": "gb",
-    "+49": "de", "+39": "it", "+1": "us", "+55": "br"
-  };
-
-  // ============================
-  // BANDEIRA DO TELEFONE
-  // ============================
-  if (phoneInput && flagIcon) {
-    const updateFlagIcon = () => {
-      const value = phoneInput.value.trim();
-      let found = false;
-      for (const prefix in countryFlags) {
-        if (value.startsWith(prefix)) {
-          const code = countryFlags[prefix];
-          flagIcon.src = `https://flagcdn.com/32x24/${code}.png`;
-          flagIcon.style.display = 'inline-block';
-          found = true;
-          break;
-        }
-      }
-      if (!found) flagIcon.style.display = 'none';
-    };
-    phoneInput.addEventListener("input", updateFlagIcon);
-    updateFlagIcon();
-  }
 
   // ============================
   // CHECKBOX "MESMO ENDEREÇO"

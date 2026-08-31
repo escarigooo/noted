@@ -644,16 +644,16 @@ def get_email_test_data():
             'id': 3,
             'name': 'Leather Portfolio',
             'price': 45.00,
-            'image': 'portfolio-leather.jpg',
-            'image_url': '/static/img/products/portfolio-leather.jpg',
+            'image': 'folio.png',
+            'image_url': '/static/img/products/folio.png',
             'description': 'Professional leather portfolio for documents'
         },
         {
             'id': 4,
             'name': 'Desk Organizer',
             'price': 28.00,
-            'image': 'organizer-desk.jpg',
-            'image_url': '/static/img/products/organizer-desk.jpg',
+            'image': 'essentials.png',
+            'image_url': '/static/img/products/essentials.png',
             'description': 'Bamboo desk organizer with multiple compartments'
         }
     ]
@@ -740,7 +740,7 @@ def preview_email(email_type):
                 tax=tax,
                 total=total,
                 app_name="noted;",
-                support_email="support@noted.com"
+                support_email="support@example.com"
             )
             
         elif email_type == 'order_status':
@@ -781,23 +781,23 @@ def preview_email(email_type):
                 tax=tax,
                 total=total,
                 app_name="noted;",
-                support_email="support@noted.com"
+                support_email="support@example.com"
             )
             
         elif email_type == 'registration':
             return render_template('emails/registration.html',
                 user_name='John Doe',
-                verification_link='https://noted.com/verify/abc123',
+                verification_link='http://localhost:5000/verify/abc123',
                 app_name="noted;",
-                support_email="support@noted.com"
+                support_email="support@example.com"
             )
             
         elif email_type == 'password_reset':
             return render_template('emails/password_reset.html',
                 user_name='John Doe',
-                reset_link='https://noted.com/reset-password/abc123',
+                reset_link='http://localhost:5000/reset-password/abc123',
                 app_name="noted;",
-                support_email="support@noted.com"
+                support_email="support@example.com"
             )
             
         elif email_type == 'invoice_email':
@@ -832,7 +832,7 @@ def preview_email(email_type):
                 tax=tax,
                 total=total,
                 app_name="noted;",
-                support_email="support@noted.com",
+                support_email="support@example.com",
                 invoice_link='#'
             )
         
@@ -853,7 +853,7 @@ def send_test_email():
         status = data.get('status')
         
         # Get current admin user email
-        admin_email = session.get('user_email', 'admin@noted.com')
+        admin_email = session.get('user_email', 'admin@example.com')
         admin_name = session.get('user_name', 'Admin')
         
         # Create mock order for testing

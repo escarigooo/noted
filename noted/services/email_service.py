@@ -54,8 +54,8 @@ class EmailService:
             context.update({
                 'now': datetime.now(),
                 'company_name': current_app.config.get('COMPANY_NAME', 'noted;'),
-                'support_email': current_app.config.get('SUPPORT_EMAIL', 'support@noted.pt'),
-                'site_url': current_app.config.get('SITE_URL', 'https://noted.pt'),
+                'support_email': current_app.config.get('SUPPORT_EMAIL', 'support@example.com'),
+                'site_url': current_app.config.get('SITE_URL', 'http://localhost:5000'),
                 'company_address': current_app.config.get('COMPANY_ADDRESS', 'Rua da Inovação, 123<br>1000-001 Lisboa, Portugal')
             })
             

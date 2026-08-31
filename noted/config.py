@@ -11,7 +11,7 @@ class Config:
 
     SECRET_KEY = os.getenv("SECRET_KEY")
     SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URI", "mysql+mysqlconnector://root@localhost/db_noted"
+        "DATABASE_URI", "mysql+pymysql://root@localhost/db_noted"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = os.getenv("FLASK_DEBUG", "False").lower() in {"true", "1", "yes"}

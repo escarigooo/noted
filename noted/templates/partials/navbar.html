@@ -3,13 +3,13 @@
     <div class="nav-container cont">
       <div class="menu-toggle-container none">
         <button class="menu-toggle" id="menuToggle">
-          <img id="menuTitleIcon" src="{{ url_for('static', filename='img/icons/menu.png') }}" alt="Menu" />
+          <img id="menuTitleIcon" src="{{ url_for('static', filename='img/icons/menu.svg') }}" alt="Menu" />
         </button>
       </div>
 
       <div class="logo">
         <a href="{{ url_for('misc.index') }}"> <!--  ALTERADO: rota está no blueprint misc_bp -->
-          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" />
+          <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="logo" />
         </a>
       </div>
 
@@ -39,10 +39,10 @@
 
       <div class="navbar-right none">
         <a href="{{ url_for('auth.account') }}"> <!--  ALTERADO: esta rota também vem de auth_bp -->
-          <img src="{{ url_for('static', filename='img/icons/user.png') }}" alt="user" class="icon" />
+          <img src="{{ url_for('static', filename='img/icons/user.svg') }}" alt="user" class="icon" />
         </a>
         <button class="cart-toggle" id="cartToggle">
-          <img src="{{ url_for('static', filename='img/icons/cart.png') }}" alt="cart" class="icon" />
+          <img src="{{ url_for('static', filename='img/icons/cart.svg') }}" alt="cart" class="icon" />
         </button>
       </div>
     </div>
@@ -53,7 +53,7 @@
 <aside id="cartSidebar" class="cart-sidebar">
   <div class="cart-header">
     <h2>your cart</h2>
-    <button id="closeCart"><img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" /></button>
+    <button id="closeCart"><img src="{{ url_for('static', filename='img/icons/close.svg') }}" alt="Close" /></button>
   </div>
   <div class="cart-content">
     <!-- Cart items will be dynamically inserted here via JavaScript -->
@@ -66,10 +66,10 @@
   <div class="nav-menu-header">
     <h2 class="menu-title">menu</h2>
     <button id="closeMenu" class="icon-button">
-      <img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" />
+      <img src="{{ url_for('static', filename='img/icons/close.svg') }}" alt="Close" />
     </button>
     <button id="backButton" class="icon-button" style="display: none;">
-      <img src="{{ url_for('static', filename='img/icons/undo.png') }}" alt="Back" />
+      <img src="{{ url_for('static', filename='img/icons/back.svg') }}" alt="Back" />
     </button>
   </div>
 
@@ -90,7 +90,7 @@
   <ul id="mainMenu" class="nav-menu-links">
     <li><a href="{{ url_for('misc.index') }}" {% if request.endpoint == 'misc.index' %}class="active"{% endif %}>home</a></li>
     <li><a href="#" class="menu-link {% if request.endpoint in ['products.categories', 'products.category_products', 'products.product_details'] %}active{% endif %}" data-target="products">products
-        <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span></a></li>
+        <span><img src="{{ url_for('static', filename='img/icons/arrow-right.svg') }}" alt="arrow" /></span></a></li>
     <li><a href="{{ url_for('misc.about') }}" {% if request.endpoint == 'misc.about' %}class="active"{% endif %}>about</a></li>
     <li><a href="{{ url_for('misc.support') }}" {% if request.endpoint == 'misc.support' %}class="active"{% endif %}>support</a></li>
     {% if current_user and current_user.role == 1 %}
@@ -104,7 +104,7 @@
     <li>
       <a href="#" class="menu-link" data-target="category-{{ category.id }}">
         {{ category.description }}
-        <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span>
+        <span><img src="{{ url_for('static', filename='img/icons/arrow-right.svg') }}" alt="arrow" /></span>
       </a>
     </li>
     {% endfor %}

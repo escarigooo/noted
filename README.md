@@ -27,7 +27,7 @@ Follow these steps to set up and run the noted; application:
 Run the setup script to create and configure the virtual environment:
 
 ```powershell
-.\noted\setup_venv.bat
+.\scripts\setup_venv.bat
 ```
 
 This script will:
@@ -40,7 +40,13 @@ This script will:
 After setup is complete, start the Flask application:
 
 ```powershell
-.\noted\start_project.bat
+.\scripts\start_project.bat
+```
+
+Or launch the package manually from the repository root:
+
+```powershell
+python -m noted.app
 ```
 
 Alternatively, you can use the VS Code task:
@@ -56,15 +62,10 @@ The application uses a MySQL database. Make sure you have MySQL installed and ru
 
 - Default database name: `db_noted`
 - Database script locations:
-  - Main schema: `base-de-dados/db_noted.sql`
-  - Test content: `base-de-dados/db_noted_conteudo-test.sql`
+  - Main schema: `database/db_noted.sql`
+  - Test content: `database/test-content.sql`
 
-To initialize or reset the database, run:
-
-```powershell
-cd noted
-python check_db.py
-```
+To initialize or reset the database, open MySQL Workbench and run `database/db_noted.sql`, followed by `database/test-content.sql` if you want sample data.
 
 ## Email Templates
 
@@ -80,30 +81,27 @@ All templates are located in `noted/templates/emails/`
 ## Project Architecture
 
 ### Directory Structure
-The application follows a modular architecture:
+The repository separates application code from development and project material:
 
-```
+```text
 noted/
-├── __init__.py        # Flask application factory
-├── app.py             # Application entry point
-├── config.py          # Configuration management
-├── models.py          # Database models (SQLAlchemy)
-├── routes/            # Organized by feature using Flask Blueprints
-│   ├── admin.py       # Admin dashboard functionality
-│   ├── auth.py        # Authentication routes
-│   ├── cart.py        # Shopping cart operations
-│   ├── checkout.py    # Checkout process
-│   ├── orders.py      # Order management
-│   ├── products.py    # Product catalog
-│   └── api/           # API endpoints
-├── services/          # Business logic services
-│   └── email_service.py  # Email functionality
-├── static/            # Static assets (CSS, JS, images)
-└── templates/         # Jinja2 templates
-    ├── emails/        # Email templates
-    ├── layout.html    # Base template
-    ├── pages/         # Main page templates
-    └── partials/      # Reusable components
+├── .gitignore
+├── .vscode/           # Shared editor tasks and settings
+├── README.md
+├── requirements.txt
+├── database/          # MySQL schema and sample content
+├── docs/              # Architecture and project notes
+├── notebooks/         # Analytics notebooks
+├── scripts/           # Windows setup and startup scripts
+└── noted/             # Flask application package
+    ├── __init__.py
+    ├── app.py
+    ├── config.py
+    ├── models.py
+    ├── routes/
+    ├── services/
+    ├── static/
+    └── templates/
 ```
 
 ### Frontend Organization

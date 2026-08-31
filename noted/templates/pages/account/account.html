@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+
+{% block body_class %}account | noted;{% endblock %}
+
+{% block content %}
+<div class="account-wrapper">
+  <!-- Success message alert -->
+  {% if success %}
+  <div class="alert alert-success">
+    {{ success }}
+  </div>
+  {% endif %}
+  
+  <div class="account-container">
+    <h1>my account</h1>
+    
+    <div class="account-info">
+      <!-- Account details section -->
+      <div class="account-section user-info-section">
+        <h2>account details</h2>
+        <div class="user-details">
+          <p><strong>name:</strong> {{ user.name }}</p>
+          <p><strong>email:</strong> {{ user.email }}</p>
+          <p><strong>member since:</strong> {{ user.joined_date }}</p>
+          {% if user.noted_cash %}
+          <p class="noted-cash"><strong>noted; cash:</strong> €{{ "%.2f"|format(user.noted_cash|float) }}</p>
+          {% endif %}
+        </div>
+        <div class="account-actions">
+          <a href="{{ url_for('auth.edit_profile') if 'edit_profile' in url_for.__globals__ else '#' }}" class="btn btn-outline">edit profile</a>
+          <a href="{{ url_for('auth.forgot_password') }}" class="btn btn-outline">change password</a>
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-outline">log out</a>
+        </div>
+      </div>
+      
+      <!-- Recent orders section -->
+      <div class="account-section recent-orders-section">
+        <h2>recent orders</h2>
+        {% if orders %}
+          <div class="orders-list">
+            {% for order in orders[:3] %}
+              <div class="order-item">
+                <div class="order-header">
+                  <span class="order-number">#{{ order.id }}</span>
+                  <span class="order-date">{{ order.formatted_date }}</span>
+                  <span class="order-status status-{{ order.status }}">{{ order.status }}</span>
+                </div>
+                <div class="order-summary">
+                  <p>{{ order.total_items or 0 }} item{{ 's' if order.total_items != 1 else '' }}</p>
+                  <p class="order-total">€{{ "%.2f"|format(order.total|float) }}</p>
+                </div>
+                <div class="order-actions">
+                  <a href="{{ url_for('orders.order_details', order_id=order.id) }}" class="btn btn-sm">view details</a>
+                  {% if order.invoice_number %}
+                  <a href="{{ url_for('orders.view_invoice', order_id=order.id) }}" target="_blank" class="btn btn-sm btn-invoice">
+                    <i class="fas fa-file-invoice"></i> invoice
+                  </a>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+            {% if orders|length > 3 %}
+              <a href="#all-orders" class="view-all-link">view all orders</a>
+            {% endif %}
+          </div>
+        {% else %}
+          <p class="no-orders">you haven't placed any orders yet.</p>
+        {% endif %}
+      </div>
+      
+      <!-- Invoices section -->
+      <div class="account-section invoices-section">
+        <h2>my invoices</h2>
+        {% if invoices %}
+          <div class="invoices-list">
+            {% for invoice in invoices %}
+              <div class="invoice-item">
+                <div class="invoice-header">
+                  <span class="invoice-number">{{ invoice.invoice_number }}</span>
+                  <span class="invoice-date">{{ invoice.formatted_date }}</span>
+                </div>
+                <div class="invoice-details">
+                  <p>Order #{{ invoice.order_id }}</p>
+                  <p class="invoice-total">€{{ "%.2f"|format(invoice.order_total|float) }}</p>
+                </div>
+                {% if invoice.pdf_path %}
+                <div class="invoice-actions">
+                  <a href="{{ url_for('orders.view_invoice', order_id=invoice.order_id) }}" target="_blank" class="btn btn-sm btn-invoice">
+                    <i class="fas fa-file-pdf"></i> view invoice
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="no-invoices">you don't have any invoices yet.</p>
+        {% endif %}
+      </div>
+      
+      <!-- Noted Cash transactions -->
+      {% if cash_transactions %}
+      <div class="account-section transactions-section">
+        <h2>noted; cash history</h2>
+        <div class="transactions-list">
+          {% for transaction in cash_transactions %}
+            <div class="transaction-item {{ 'credit' if transaction.change_amount > 0 else 'debit' }}">
+              <div class="transaction-date">{{ transaction.formatted_date }}</div>
+              <div class="transaction-reason">{{ transaction.reason or 'Transaction' }}</div>
+              <div class="transaction-amount">
+                {{ '+' if transaction.change_amount > 0 else '' }}€{{ "%.2f"|format(transaction.change_amount|float) }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- All orders section (expanded) -->
+    {% if orders and orders|length > 3 %}
+    <div id="all-orders" class="all-orders-section">
+      <h2>all orders</h2>
+      <div class="orders-table-container">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>order #</th>
+              <th>date</th>
+              <th>items</th>
+              <th>total</th>
+              <th>status</th>
+              <th>actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in orders %}
+            <tr>
+              <td>{{ order.id }}</td>
+              <td>{{ order.formatted_date }}</td>
+              <td>{{ order.total_items or 0 }}</td>
+              <td>€{{ "%.2f"|format(order.total|float) }}</td>
+              <td><span class="status-{{ order.status }}">{{ order.status }}</span></td>
+              <td>
+                <a href="{{ url_for('orders.order_details', order_id=order.id) }}" class="btn btn-sm">details</a>
+                {% if order.invoice_number %}
+                <a href="{{ url_for('orders.view_invoice', order_id=order.id) }}" target="_blank" class="btn btn-sm btn-invoice">
+                  invoice
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/account.css') }}">
+<style>
+  /* Quick status styles in case the CSS file is missing */
+  .status-pending { color: #f39c12; }
+  .status-processing { color: #3498db; }
+  .status-shipped { color: #2ecc71; }
+  .status-delivered { color: #27ae60; }
+  .status-cancelled { color: #e74c3c; }
+  
+  .transaction-item.credit .transaction-amount { color: #2ecc71; }
+  .transaction-item.debit .transaction-amount { color: #e74c3c; }
+</style>
+{% endblock %}

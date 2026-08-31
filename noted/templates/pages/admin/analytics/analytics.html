@@ -1,0 +1,275 @@
+{% extends "pages/admin/base.html" %}
+
+{% block admin_page_title %}Analytics{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+
+{% block admin_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/notifications.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_table.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/button_loading.css') }}">
+
+
+{% endblock %}
+
+{% block admin_content %}
+<section class="admin-wrapper">
+    <!-- Loading state removed - using only notifications -->
+
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3 id="total-sales">--</h3>
+            <p>Total Sales</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="monthly-sales">--</h3>
+            <p>Monthly Sales</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="total-orders">--</h3>
+            <p>Total Orders</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="monthly-orders">--</h3>
+            <p>Monthly Orders</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="total-customers">--</h3>
+            <p>Total Customers</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="revenue-growth">--</h3>
+            <p>Revenue Growth</p>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <button id="refreshDataBtn" class="btn btn-primary" onclick="refreshAnalytics()">Refresh Data</button>
+        <button id="generateReportBtn" class="btn btn-secondary" onclick="generateReport()">Generate Report</button>
+        <button id="updateChartsBtn" class="btn btn-secondary" onclick="refreshGraphics()">Update Charts</button>
+    </div>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+        <h2>Interactive Charts & Analytics</h2>
+
+        <!-- Chart Filters -->
+        <div class="chart-filters">
+            <div class="filter-group">
+                <label for="dateFilter">Date Range:</label>
+                <select id="dateFilter" onchange="applyFilters()">
+                    <option value="Last 12 months">Last 12 months</option>
+                    <option value="Last 6 months">Last 6 months</option>
+                    <option value="Last 3 months">Last 3 months</option>
+                    <option value="Last 30 days">Last 30 days</option>
+                    <option value="Last 7 days">Last 7 days</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Sales Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Sales Trend</h3>
+                    <p>Monthly sales performance over time</p>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Orders Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Orders Overview</h3>
+                    <p>Order volume and trends</p>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="ordersChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Products by Category -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Products by Category</h3>
+                    <p>Distribution of products across categories</p>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="productsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Customers -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Top Customers</h3>
+                    <p>Highest value customers by total orders</p>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="topCustomersChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Last updated info -->
+    <p class="last-updated">
+        Analytics updated: <span id="last-updated">--</span><br>
+        Charts updated: <span id="charts-last-updated">--</span>
+    </p>
+</section>
+{% endblock %}
+
+{% block admin_scripts %}
+<!-- Chart.js for interactive charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Include admin_tables.js first if needed -->
+<script src="{{ url_for('static', filename='js/admin/admin_tables.js') }}"></script>
+<!-- Then include analytics and graphics JavaScript -->
+<script src="{{ url_for('static', filename='js/admin/analytics.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/graphics.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/button_loading.js') }}"></script>
+
+<script>
+    // Prevent double initialization
+    let analyticsInitialized = false;
+    let graphicsInitialized = false;
+
+    // Initialize both analytics and graphics when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Analytics page initializing...');
+
+        // Initialize analytics (stat cards) only once
+        if (typeof AdminAnalytics !== 'undefined' && !analyticsInitialized) {
+            window.analyticsHandler = new AdminAnalytics();
+            window.analyticsHandler.fetchData().then(() => {
+                window.analyticsHandler.updateAnalyticsPage();
+            });
+            analyticsInitialized = true;
+            console.log('Analytics handler initialized');
+        }
+
+        // Initialize graphics (charts) only once
+        if (typeof GraphicsHandler !== 'undefined' && !graphicsInitialized) {
+            window.graphicsHandler = new GraphicsHandler();
+            window.graphicsHandler.fetchData().then((data) => {
+                if (data) {
+                    window.graphicsHandler.initializeCharts();
+                    console.log('Graphics handler initialized');
+                }
+            });
+            graphicsInitialized = true;
+        }
+        
+        // Update the last updated timestamp
+        updateLastUpdated();
+    });
+
+    // Analytics refresh function
+    function refreshAnalytics() {
+        withButtonLoading('refreshDataBtn', async () => {
+            try {
+                // Use analytics.js refresh if available
+                if (window.analyticsHandler && typeof window.analyticsHandler.refreshAnalytics === 'function') {
+                    // Call the refreshAnalytics method but don't let it show its own notifications
+                    // We'll handle that in the withButtonLoading wrapper
+                    const originalShowNotification = window.showNotification;
+                    window.showNotification = function() {}; // Temporarily disable notifications
+                    
+                    const result = await window.analyticsHandler.refreshAnalytics();
+                    
+                    // Restore the original notification function
+                    window.showNotification = originalShowNotification;
+                    
+                    // Update the UI with refreshed data
+                    if (window.analyticsHandler.updateAnalyticsPage) {
+                        window.analyticsHandler.updateAnalyticsPage();
+                    }
+                } else {
+                    console.error('Analytics handler not available');
+                    throw new Error('Analytics handler not available');
+                }
+                
+                updateLastUpdated();
+                return true;
+            } catch (error) {
+                console.error('Refresh failed:', error);
+                updateLastUpdated('(refresh failed)');
+                throw error;
+            }
+        }, {
+            loadingText: 'Refreshing...',
+            successNotification: 'Data refreshed successfully!',
+            errorNotification: 'Failed to refresh data. See console for details.'
+        });
+    }
+
+    // Update last updated timestamp
+    function updateLastUpdated(message = null) {
+        const now = new Date();
+        const timeString = now.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const lastUpdatedEl = document.getElementById('last-updated');
+        if (!lastUpdatedEl) return;
+
+        if (message) {
+            lastUpdatedEl.innerHTML = `${timeString} <span class="update-note">${message}</span>`;
+        } else {
+            lastUpdatedEl.textContent = timeString;
+        }
+    }
+
+    // We're now using the shared notification system from notifications.js
+    // No need to define showNotification here anymore
+
+    // Global functions for button clicks
+    function refreshGraphics() {
+        withButtonLoading('updateChartsBtn', async () => {
+            if (window.graphicsHandler && typeof window.graphicsHandler.refreshGraphics === 'function') {
+                await window.graphicsHandler.refreshGraphics();
+                
+                // Update the last updated timestamp for charts
+                const now = new Date();
+                const timeString = now.toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                document.getElementById('charts-last-updated').textContent = timeString;
+                return true;
+            } else {
+                console.error('Graphics handler not available');
+                throw new Error('Graphics handler not available');
+            }
+        }, {
+            loadingText: 'Loading...',
+            successNotification: 'Charts data refreshed!',
+            errorNotification: 'Failed to refresh charts data'
+        });
+    }
+
+    function applyFilters() {
+        if (window.graphicsHandler) {
+            const dateFilter = document.getElementById('dateFilter')?.value;
+
+            console.log('Applying date filter:', dateFilter);
+            window.graphicsHandler.applyDateFilter(dateFilter);
+        }
+    }
+
+    function generateReport() {
+        withButtonLoading('generateReportBtn', async () => {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            showNotification('Generate Report feature coming soon!', 'info');
+        });
+    }
+</script>
+{% endblock %}

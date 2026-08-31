@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}{% block admin_page_title %}Admin{% endblock %} | noted;{% endblock %}
+
+{% block body_class %}admin-page{% endblock %}
+
+{% block extra_css %}
+<!-- CSS para o pages-header (necessário para todas as páginas admin) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/categories.css') }}">
+<!-- CSS específico do admin layout -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_layout.css') }}">
+{% block admin_styles %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<section class="admin-wrapper">
+  <!-- Admin Pages Header (igual ao categories) -->
+  <div class="pages-header">
+    <h1 class="page-title">{% block page_title %}Admin Dashboard{% endblock %}</h1>
+    <!-- Breadcrumb dinâmico -->
+    {% include "partials/breadcrumb_admin.html" with context %}
+  </div>
+
+  <!-- Admin Content -->
+  {% block admin_content %}{% endblock %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% block admin_scripts %}{% endblock %}
+{% endblock %}

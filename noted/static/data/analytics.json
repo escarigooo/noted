@@ -1,0 +1,681 @@
+{
+  "last_updated": "2025-07-06T20:34:05.645589",
+  "dashboard": {
+    "total_sales": 3897.92,
+    "monthly_sales": 0.0,
+    "total_orders": 22,
+    "monthly_orders": 1,
+    "total_customers": 11,
+    "active_products": 12,
+    "revenue_growth": -100.0,
+    "recent_orders": [
+      {
+        "id": 22,
+        "customer": "andre",
+        "total": 0,
+        "date": "2025-07-04T14:48:24",
+        "paid": true
+      },
+      {
+        "id": 21,
+        "customer": "Tiago Pereira",
+        "total": 69.0,
+        "date": "2025-06-30T11:25:00",
+        "paid": false
+      },
+      {
+        "id": 20,
+        "customer": "Ricardo Santos",
+        "total": 19.99,
+        "date": "2025-06-30T09:40:00",
+        "paid": false
+      },
+      {
+        "id": 19,
+        "customer": "Pedro Oliveira",
+        "total": 59.0,
+        "date": "2025-06-29T14:30:00",
+        "paid": false
+      },
+      {
+        "id": 18,
+        "customer": "Marta Almeida",
+        "total": 537.99,
+        "date": "2025-06-28T12:10:00",
+        "paid": false
+      },
+      {
+        "id": 17,
+        "customer": "João Silva",
+        "total": 158.0,
+        "date": "2025-06-25T10:20:00",
+        "paid": true
+      },
+      {
+        "id": 16,
+        "customer": "Sofia Rodrigues",
+        "total": 12.0,
+        "date": "2025-06-15T16:45:00",
+        "paid": true
+      },
+      {
+        "id": 15,
+        "customer": "Maria Santos",
+        "total": 499.0,
+        "date": "2025-06-05T15:00:00",
+        "paid": true
+      },
+      {
+        "id": 14,
+        "customer": "Miguel Fernandes",
+        "total": 19.99,
+        "date": "2025-05-25T13:15:00",
+        "paid": true
+      },
+      {
+        "id": 13,
+        "customer": "Carlos Mendes",
+        "total": 14.99,
+        "date": "2025-05-15T11:35:00",
+        "paid": true
+      }
+    ]
+  },
+  "products": {
+    "total_products": 12,
+    "total_categories": 4,
+    "out_of_stock_count": 0,
+    "low_stock_count": 0,
+    "products_by_category": [
+      {
+        "category": "essentials",
+        "count": 4
+      },
+      {
+        "category": "note",
+        "count": 3
+      },
+      {
+        "category": "write",
+        "count": 3
+      },
+      {
+        "category": "type",
+        "count": 2
+      }
+    ],
+    "top_selling_products": [
+      {
+        "name": "Supernote Flow Refill",
+        "quantity_sold": 7.0,
+        "revenue": 76.0
+      },
+      {
+        "name": "Supernote",
+        "quantity_sold": 5.0,
+        "revenue": 2266.0
+      },
+      {
+        "name": "Cable",
+        "quantity_sold": 5.0,
+        "revenue": 49.95
+      },
+      {
+        "name": "Supernote Flow",
+        "quantity_sold": 4.0,
+        "revenue": 196.0
+      },
+      {
+        "name": "Supernote Case",
+        "quantity_sold": 3.0,
+        "revenue": 207.0
+      },
+      {
+        "name": "Marker Tips",
+        "quantity_sold": 3.0,
+        "revenue": 23.97
+      },
+      {
+        "name": "Vision Marker",
+        "quantity_sold": 3.0,
+        "revenue": 177.0
+      },
+      {
+        "name": "Milemarker",
+        "quantity_sold": 2.0,
+        "revenue": 29.98
+      },
+      {
+        "name": "Vision",
+        "quantity_sold": 2.0,
+        "revenue": 998.0
+      },
+      {
+        "name": "Milestones",
+        "quantity_sold": 2.0,
+        "revenue": 39.98
+      }
+    ],
+    "low_stock_products": [],
+    "out_of_stock_products": [],
+    "recent_products": [
+      {
+        "name": "Supernote",
+        "price": 350.0,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "note"
+      },
+      {
+        "name": "Supernote Case",
+        "price": 69.0,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "essentials"
+      },
+      {
+        "name": "Supernote Flow",
+        "price": 49.0,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "write"
+      },
+      {
+        "name": "Supernote Flow Refill",
+        "price": 12.0,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "essentials"
+      },
+      {
+        "name": "Cable",
+        "price": 9.99,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "essentials"
+      },
+      {
+        "name": "Marker Tips",
+        "price": 7.99,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "essentials"
+      },
+      {
+        "name": "Milemarker",
+        "price": 14.99,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "write"
+      },
+      {
+        "name": "Milestones",
+        "price": 499.99,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "note"
+      },
+      {
+        "name": "Type Mile",
+        "price": 89.0,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "type"
+      },
+      {
+        "name": "Vision",
+        "price": 299.0,
+        "created_at": "2025-07-04T11:23:58",
+        "category": "note"
+      }
+    ]
+  },
+  "orders": {
+    "total_orders": 22,
+    "monthly_orders": 1,
+    "paid_orders": 18.0,
+    "unpaid_orders": 4.0,
+    "orders_by_month": [
+      {
+        "month": "2025-01",
+        "count": 2,
+        "revenue": 548.0
+      },
+      {
+        "month": "2025-02",
+        "count": 3,
+        "revenue": 756.98
+      },
+      {
+        "month": "2025-03",
+        "count": 3,
+        "revenue": 557.99
+      },
+      {
+        "month": "2025-04",
+        "count": 3,
+        "revenue": 585.99
+      },
+      {
+        "month": "2025-05",
+        "count": 3,
+        "revenue": 93.98
+      },
+      {
+        "month": "2025-06",
+        "count": 7,
+        "revenue": 1354.98
+      },
+      {
+        "month": "2025-07",
+        "count": 1,
+        "revenue": 0
+      }
+    ],
+    "orders_by_payment_method": [
+      {
+        "method": "Credit Card",
+        "count": 14
+      },
+      {
+        "method": "PayPal",
+        "count": 7
+      },
+      {
+        "method": "account",
+        "count": 1
+      }
+    ],
+    "recent_orders": [
+      {
+        "id": 22,
+        "customer": "andre",
+        "total": 0,
+        "date": "2025-07-04T14:48:24",
+        "paid": true
+      },
+      {
+        "id": 21,
+        "customer": "Tiago Pereira",
+        "total": 69.0,
+        "date": "2025-06-30T11:25:00",
+        "paid": false
+      },
+      {
+        "id": 20,
+        "customer": "Ricardo Santos",
+        "total": 19.99,
+        "date": "2025-06-30T09:40:00",
+        "paid": false
+      },
+      {
+        "id": 19,
+        "customer": "Pedro Oliveira",
+        "total": 59.0,
+        "date": "2025-06-29T14:30:00",
+        "paid": false
+      },
+      {
+        "id": 18,
+        "customer": "Marta Almeida",
+        "total": 537.99,
+        "date": "2025-06-28T12:10:00",
+        "paid": false
+      },
+      {
+        "id": 17,
+        "customer": "João Silva",
+        "total": 158.0,
+        "date": "2025-06-25T10:20:00",
+        "paid": true
+      },
+      {
+        "id": 16,
+        "customer": "Sofia Rodrigues",
+        "total": 12.0,
+        "date": "2025-06-15T16:45:00",
+        "paid": true
+      },
+      {
+        "id": 15,
+        "customer": "Maria Santos",
+        "total": 499.0,
+        "date": "2025-06-05T15:00:00",
+        "paid": true
+      },
+      {
+        "id": 14,
+        "customer": "Miguel Fernandes",
+        "total": 19.99,
+        "date": "2025-05-25T13:15:00",
+        "paid": true
+      },
+      {
+        "id": 13,
+        "customer": "Carlos Mendes",
+        "total": 14.99,
+        "date": "2025-05-15T11:35:00",
+        "paid": true
+      }
+    ]
+  },
+  "users": {
+    "total_users": 13,
+    "total_customers": 11.0,
+    "total_admins": 2.0,
+    "recent_registrations": 13,
+    "users_with_orders": 12,
+    "top_customers": [
+      {
+        "name": "Maria Santos",
+        "email": "maria@email.com",
+        "total_spent": 987.99,
+        "order_count": 3
+      },
+      {
+        "name": "Ana Costa",
+        "email": "ana@email.com",
+        "total_spent": 607.0,
+        "order_count": 2
+      },
+      {
+        "name": "Pedro Oliveira",
+        "email": "pedro@email.com",
+        "total_spent": 558.0,
+        "order_count": 2
+      },
+      {
+        "name": "Marta Almeida",
+        "email": "marta@email.com",
+        "total_spent": 537.99,
+        "order_count": 1
+      },
+      {
+        "name": "Inês Martins",
+        "email": "ines@email.com",
+        "total_spent": 479.0,
+        "order_count": 1
+      },
+      {
+        "name": "João Silva",
+        "email": "joao@email.com",
+        "total_spent": 234.99,
+        "order_count": 3
+      },
+      {
+        "name": "Tiago Pereira",
+        "email": "tiago@email.com",
+        "total_spent": 168.0,
+        "order_count": 2
+      },
+      {
+        "name": "Miguel Fernandes",
+        "email": "miguel@email.com",
+        "total_spent": 139.97,
+        "order_count": 2
+      },
+      {
+        "name": "Carlos Mendes",
+        "email": "carlos@email.com",
+        "total_spent": 103.99,
+        "order_count": 2
+      },
+      {
+        "name": "Sofia Rodrigues",
+        "email": "sofia@email.com",
+        "total_spent": 61.0,
+        "order_count": 2
+      }
+    ]
+  },
+  "analytics": {
+    "sales_by_month": [
+      {
+        "month": "2025-01",
+        "count": 2,
+        "revenue": 548.0
+      },
+      {
+        "month": "2025-02",
+        "count": 3,
+        "revenue": 756.98
+      },
+      {
+        "month": "2025-03",
+        "count": 3,
+        "revenue": 557.99
+      },
+      {
+        "month": "2025-04",
+        "count": 3,
+        "revenue": 585.99
+      },
+      {
+        "month": "2025-05",
+        "count": 3,
+        "revenue": 93.98
+      },
+      {
+        "month": "2025-06",
+        "count": 7,
+        "revenue": 1354.98
+      },
+      {
+        "month": "2025-07",
+        "count": 1,
+        "revenue": 0
+      }
+    ],
+    "orders_by_day": [
+      {
+        "date": "2025-06-15",
+        "count": 1,
+        "revenue": 12.0
+      },
+      {
+        "date": "2025-06-25",
+        "count": 1,
+        "revenue": 158.0
+      },
+      {
+        "date": "2025-06-28",
+        "count": 1,
+        "revenue": 537.99
+      },
+      {
+        "date": "2025-06-29",
+        "count": 1,
+        "revenue": 59.0
+      },
+      {
+        "date": "2025-06-30",
+        "count": 2,
+        "revenue": 88.99
+      },
+      {
+        "date": "2025-07-04",
+        "count": 1,
+        "revenue": 0
+      },
+      {
+        "date": "2025-06-15",
+        "count": 1,
+        "revenue": 12.0
+      },
+      {
+        "date": "2025-06-25",
+        "count": 1,
+        "revenue": 158.0
+      },
+      {
+        "date": "2025-06-28",
+        "count": 1,
+        "revenue": 537.99
+      },
+      {
+        "date": "2025-06-29",
+        "count": 1,
+        "revenue": 59.0
+      },
+      {
+        "date": "2025-06-30",
+        "count": 2,
+        "revenue": 88.99
+      },
+      {
+        "date": "2025-07-04",
+        "count": 1,
+        "revenue": 0
+      }
+    ],
+    "top_products": [
+      {
+        "name": "Supernote Flow Refill",
+        "quantity_sold": 7.0,
+        "revenue": 76.0
+      },
+      {
+        "name": "Supernote",
+        "quantity_sold": 5.0,
+        "revenue": 2266.0
+      },
+      {
+        "name": "Cable",
+        "quantity_sold": 5.0,
+        "revenue": 49.95
+      },
+      {
+        "name": "Supernote Flow",
+        "quantity_sold": 4.0,
+        "revenue": 196.0
+      },
+      {
+        "name": "Supernote Case",
+        "quantity_sold": 3.0,
+        "revenue": 207.0
+      },
+      {
+        "name": "Marker Tips",
+        "quantity_sold": 3.0,
+        "revenue": 23.97
+      },
+      {
+        "name": "Vision Marker",
+        "quantity_sold": 3.0,
+        "revenue": 177.0
+      },
+      {
+        "name": "Milemarker",
+        "quantity_sold": 2.0,
+        "revenue": 29.98
+      },
+      {
+        "name": "Vision",
+        "quantity_sold": 2.0,
+        "revenue": 998.0
+      },
+      {
+        "name": "Milestones",
+        "quantity_sold": 2.0,
+        "revenue": 39.98
+      }
+    ],
+    "customer_analytics": [
+      {
+        "name": "Maria Santos",
+        "email": "maria@email.com",
+        "total_spent": 987.99,
+        "order_count": 3
+      },
+      {
+        "name": "Ana Costa",
+        "email": "ana@email.com",
+        "total_spent": 607.0,
+        "order_count": 2
+      },
+      {
+        "name": "Pedro Oliveira",
+        "email": "pedro@email.com",
+        "total_spent": 558.0,
+        "order_count": 2
+      },
+      {
+        "name": "Marta Almeida",
+        "email": "marta@email.com",
+        "total_spent": 537.99,
+        "order_count": 1
+      },
+      {
+        "name": "Inês Martins",
+        "email": "ines@email.com",
+        "total_spent": 479.0,
+        "order_count": 1
+      },
+      {
+        "name": "João Silva",
+        "email": "joao@email.com",
+        "total_spent": 234.99,
+        "order_count": 3
+      },
+      {
+        "name": "Tiago Pereira",
+        "email": "tiago@email.com",
+        "total_spent": 168.0,
+        "order_count": 2
+      },
+      {
+        "name": "Miguel Fernandes",
+        "email": "miguel@email.com",
+        "total_spent": 139.97,
+        "order_count": 2
+      },
+      {
+        "name": "Carlos Mendes",
+        "email": "carlos@email.com",
+        "total_spent": 103.99,
+        "order_count": 2
+      },
+      {
+        "name": "Sofia Rodrigues",
+        "email": "sofia@email.com",
+        "total_spent": 61.0,
+        "order_count": 2
+      }
+    ],
+    "payment_methods": [
+      {
+        "method": "Credit Card",
+        "count": 14
+      },
+      {
+        "method": "PayPal",
+        "count": 7
+      },
+      {
+        "method": "account",
+        "count": 1
+      }
+    ],
+    "monthly_revenue": [
+      {
+        "month": "2025-01",
+        "revenue": 548.0
+      },
+      {
+        "month": "2025-02",
+        "revenue": 756.98
+      },
+      {
+        "month": "2025-03",
+        "revenue": 557.99
+      },
+      {
+        "month": "2025-04",
+        "revenue": 585.99
+      },
+      {
+        "month": "2025-05",
+        "revenue": 93.98
+      },
+      {
+        "month": "2025-06",
+        "revenue": 1354.98
+      },
+      {
+        "month": "2025-07",
+        "revenue": 0
+      }
+    ]
+  }
+}

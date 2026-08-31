@@ -1,0 +1,202 @@
+{% extends "layout.html" %}
+
+{% block title %}checkout | noted;{% endblock %}
+
+{% block body_class %}checkout{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/checkout.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@17/build/css/intlTelInput.min.css" />
+{% endblock %}
+
+{% block content %}
+<main class="container checkout">
+  <div class="pages-header">
+    <h1 class="page-title">checkout</h1>
+  </div>
+
+  <form method="POST" class="checkout-form" onsubmit="return false">
+    <!-- Contact -->
+    <section class="section-block">
+      <div class="section-header">
+        <h2 class="section-title">contact</h2>
+        <button type="button" class="edit-button" style="display: none;">edit</button>
+      </div>
+      <div class="form-group">
+        <input type="email" name="email" id="email" placeholder=" " autocomplete="email" required value="{{ session.get('user_email', '') }}">
+        <label for="email">email</label>
+      </div>
+      <button type="button" class="btn">continue</button>
+    </section>
+
+    <!-- Delivery -->
+    <section class="section-block">
+      <div class="section-header">
+        <h2 class="section-title">delivery</h2>
+        <button type="button" class="edit-button" style="display: none;">edit</button>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="form-group">
+          <input type="text" name="first_name" id="first_name" placeholder=" " autocomplete="given-name" required>
+          <label for="first_name">first name</label>
+        </div>
+        <div class="form-group">
+          <input type="text" name="last_name" id="last_name" placeholder=" " autocomplete="family-name" required>
+          <label for="last_name">last name</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input type="text" name="country" id="country" placeholder=" " autocomplete="country-name" required>
+        <label for="country">country</label>
+      </div>
+
+      <div class="form-group">
+        <input type="text" name="street_address" id="street_address" placeholder=" " autocomplete="address-line1" required>
+        <label for="street_address">street address</label>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="form-group">
+          <input type="text" name="city" id="city" placeholder=" " autocomplete="address-level2" required>
+          <label for="city">city</label>
+        </div>
+        <div class="form-group">
+          <input type="text" name="state" id="state" placeholder=" " autocomplete="address-level1" required>
+          <label for="state">state</label>
+        </div>
+        <div class="form-group">
+          <input type="text" name="zip_code" id="zip_code" placeholder=" " autocomplete="postal-code" required>
+          <label for="zip_code">zip code</label>
+        </div>
+      </div>
+
+      <div class="form-group full-width phone">
+        <div class="flag-wrapper">
+          <img id="flagIcon" src="" alt="flag">
+          <input value="+351" type="tel" name="phone" id="phone" placeholder=" " autocomplete="tel" required>
+          <label for="phone">phone number</label>
+        </div>
+      </div>
+
+      <label class="checkbox">
+        <input type="checkbox" name="same_address" id="same_address" checked>
+        billing address same as shipping
+      </label>
+
+      <div id="billingAddressFields" style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">billing address</h2>
+        </div>
+        <div class="form-group">
+          <input type="text" name="billing_street" id="billing_street" placeholder=" " autocomplete="address-line1">
+          <label for="billing_street">street address</label>
+        </div>
+        <div class="grid grid-3">
+          <div class="form-group">
+            <input type="text" name="billing_city" id="billing_city" placeholder=" " autocomplete="address-level2">
+            <label for="billing_city">city</label>
+          </div>
+          <div class="form-group">
+            <input type="text" name="billing_state" id="billing_state" placeholder=" " autocomplete="address-level1">
+            <label for="billing_state">state</label>
+          </div>
+          <div class="form-group">
+            <input type="text" name="billing_zip" id="billing_zip" placeholder=" " autocomplete="postal-code">
+            <label for="billing_zip">zip code</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="text" name="billing_country" id="billing_country" placeholder=" " autocomplete="country-name">
+          <label for="billing_country">country</label>
+        </div>
+      </div>
+
+      <button type="button" class="btn">continue</button>
+    </section>
+
+    <!-- Shipping Options -->
+    <section class="section-block">
+      <div class="section-header">
+        <h2 class="section-title">shipping options</h2>
+        <button type="button" class="edit-button" style="display: none;">edit</button>
+      </div>
+
+      <div class="accordion-payment">
+        <div class="payment-item">
+          <input type="radio" name="shipping_method" id="shipping_free" value="free" data-cost="0" class="radio-input" required>
+          <label for="shipping_free" class="payment-header">
+            <span>free shipping</span>
+            <span class="small">delivery in 5–7 business days</span>
+          </label>
+        </div>
+        <div class="payment-item">
+          <input type="radio" name="shipping_method" id="shipping_express" value="express" data-cost="9.90" class="radio-input">
+          <label for="shipping_express" class="payment-header">
+            <span>express shipping</span>
+            <span class="small">delivery in 1–2 business days – 9.90€</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment -->
+    <section class="section-block" id="paymentSection">
+      <div class="section-header">
+        <h2 class="section-title">payment</h2>
+        <button type="button" class="edit-button" style="display: none;">edit</button>
+      </div>
+
+      <div class="accordion-payment">
+        <div class="payment-item">
+          <input type="radio" name="payment_method" id="payment_card" value="card" class="radio-input" required>
+          <label for="payment_card" class="payment-header">
+            <span>credit card</span>
+            <div class="icons">
+              <img src="{{ url_for('static', filename='img/icons/visa.svg') }}" alt="Visa">
+              <img src="{{ url_for('static', filename='img/icons/mastercard.svg') }}" alt="MasterCard">
+            </div>
+          </label>
+          <div class="payment-body">
+            <input type="number" name="card_number" placeholder="card number" autocomplete="cc-number">
+            <div class="grid grid-2">
+              <input type="text" name="expiration" placeholder="MM/YY" autocomplete="cc-exp">
+              <input type="number" name="security_code" placeholder="CVC" autocomplete="cc-csc">
+            </div>
+            <input type="text" name="card_name" placeholder="name on card" autocomplete="cc-name">
+          </div>
+        </div>
+
+        <div class="payment-item">
+          <input type="radio" name="payment_method" id="payment_account" value="account" class="radio-input">
+          <label for="payment_account" class="payment-header">
+            <span>account balance</span>
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Wallet">
+          </label>
+          <div class="payment-body-alt">
+            <div class="form-group-alt">
+              <input type="number" min="0" max="{{ session.get('user_balance', 0) }}" name="payment_alt" placeholder="e.g. 10.00">
+              <span class="user-balance">balance: {{ '%.2f'|format(session.get('user_balance', 0)) }} €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button id="place-order-btn" type="button" class="btn submit">place order</button>
+      <div id="order-status" class="order-status-msg" style="display: none;"></div>
+
+    </section>
+  </form>
+</main>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/checkout/core.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/checkout/ui.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/checkout/validation.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/checkout/order.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/checkout/checkout.js') }}"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@17/build/js/intlTelInput.min.js"></script>
+{% endblock %}

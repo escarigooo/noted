@@ -1,0 +1,758 @@
+{% extends "pages/admin/base.html" %}
+
+{% block admin_page_title %}products{% endblock %}
+{% block page_title %}products{% endblock %}
+
+{% block admin_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/products.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_table.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/notifications.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/button_loading.css') }}">
+{% endblock %}
+
+{% block admin_content %}
+<section class="admin-wrapper">
+
+
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3 id="total-products">--</h3>
+            <p>Total Products</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="out-of-stock">--</h3>
+            <p>Out of Stock</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="low-stock-count">--</h3>
+            <p>Low Stock (≤10)</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="total-categories">--</h3>
+            <p>Categories</p>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <button id="refreshDataBtn" class="btn btn-primary" onclick="refreshAnalytics()">Refresh Data</button>
+        <button id="newProductBtn" class="btn btn-secondary" onclick="openAddProductModal()">New Product</button>
+        <button id="manageStockBtn" class="btn btn-secondary" onclick="openStockManagementModal()">Manage Stock</button>
+        <button id="importProductsBtn" class="btn btn-secondary" onclick="importProducts()">Import</button>
+        <button id="exportProductsBtn" class="btn btn-secondary" onclick="exportProducts()">Export</button>
+    </div>
+
+    <!-- Table Section -->
+    {% set table_config = {
+    'table_id': 'products-table',
+    'table_name': 'Products',
+    'columns': [
+    {'key': 'id', 'label': 'ID', 'width': '80px'},
+    {'key': 'name', 'label': 'Product Name'},
+    {'key': 'category_description', 'label': 'Category', 'width': '120px'},
+    {'key': 'price', 'label': 'Price', 'width': '100px', 'format': 'currency', 'class': 'text-right'},
+    {'key': 'stock_quantity', 'label': 'Stock', 'width': '80px', 'format': 'stock', 'class': 'text-center'},
+    {'key': 'created_at', 'label': 'Created', 'width': '120px', 'format': 'date'}
+    ],
+    'filters': [
+    {'value': '1', 'label': 'Category: Note'},
+    {'value': '2', 'label': 'Category: Write'},
+    {'value': '3', 'label': 'Category: Type'},
+    {'value': '4', 'label': 'Category: Essentials'},
+    {'value': 'out_of_stock', 'label': 'Out of Stock'},
+    {'value': 'low_stock', 'label': 'Low Stock (≤10)'},
+    {'value': 'in_stock', 'label': 'In Stock'}
+    ],
+    'actions': [
+    {'key': 'view', 'label': 'View', 'icon': 'View', 'class': 'btn-view'},
+    {'key': 'edit', 'label': 'Edit', 'icon': 'Edit', 'class': 'btn-edit'},
+    {'key': 'stock', 'label': 'Stock', 'icon': 'Stock', 'class': 'btn-secondary'},
+    {'key': 'delete', 'label': 'Delete', 'icon': 'Delete', 'class': 'btn-delete'}
+    ]
+    } %}
+    {% include 'partials/admin_table.html' %}
+
+    <!-- Last updated info -->
+    <p class="last-updated">
+        Last updated: <span id="last-updated">--</span>
+    </p>
+</section>
+{% endblock %}
+
+{% block admin_scripts %}
+<!-- Admin Tables JS -->
+<script src="{{ url_for('static', filename='js/admin/admin_tables.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/button_loading.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize products table
+        initializeTable('products-table', {
+            apiEndpoint: '/api/admin/table/products',
+            deleteEndpoint: '/api/admin/table/products',
+            itemName: 'product',
+            columns: [
+                { key: 'id', label: 'ID', sortable: true },
+                { key: 'name', label: 'Product Name', sortable: true },
+                { key: 'category_description', label: 'Category', sortable: true },
+                { key: 'price', label: 'Price', sortable: true, format: 'currency' },
+                { key: 'stock_quantity', label: 'Stock', sortable: true, format: 'stock' },
+                { key: 'created_at', label: 'Created', sortable: true, format: 'date' }
+            ],
+            actions: [
+                {
+                    key: 'view',
+                    label: 'View',
+                    icon: '',
+                    class: 'btn-view'
+                },
+                {
+                    key: 'edit',
+                    label: 'Edit',
+                    icon: '',
+                    class: 'btn-edit'
+                },
+                {
+                    key: 'stock',
+                    label: 'Stock',
+                    icon: '',
+                    class: 'btn-secondary'
+                },
+                {
+                    key: 'delete',
+                    label: 'Delete',
+                    icon: '',
+                    class: 'btn-delete'
+                }
+            ]
+        });
+
+        // Load product statistics
+        loadProductStats();
+
+        // Update the last updated timestamp
+        updateLastUpdated();
+    });
+
+    // Load product statistics from analytics data
+    async function loadProductStats() {
+        try {
+            const response = await fetch('/static/data/analytics.json');
+            const data = await response.json();
+
+            // Update stat cards with real data
+            if (data.products) {
+                document.getElementById('total-products').textContent = data.products.total_products || 0;
+                document.getElementById('total-categories').textContent = data.products.total_categories || 0;
+                document.getElementById('out-of-stock').textContent = data.products.out_of_stock_count || 0;
+                document.getElementById('low-stock-count').textContent = data.products.low_stock_count || 0;
+            }
+
+        } catch (error) {
+            console.error('Error loading product stats:', error);
+            // Set fallback values if data loading fails
+            document.getElementById('total-products').textContent = '0';
+            document.getElementById('out-of-stock').textContent = '0';
+            document.getElementById('low-stock-count').textContent = '0';
+            document.getElementById('total-categories').textContent = '0';
+        }
+    }
+
+    // Analytics refresh function
+    async function refreshAnalytics() {
+        await withButtonLoading('refreshDataBtn', async () => {
+            loadProductStats();
+            refreshTable('products-table');
+            updateLastUpdated();
+        }, {
+            successNotification: 'Products data refreshed!'
+        });
+    }
+
+    // Add new product function
+    function openAddProductModal() {
+        setButtonLoading('newProductBtn');
+        
+        
+            const modal = document.getElementById('products-table-edit-modal');
+            const titleEl = modal.querySelector('.modal-header h3');
+            const contentEl = modal.querySelector('.form-content');
+            const saveBtn = document.getElementById('products-table-edit-save');
+            
+            restoreButton('newProductBtn');
+        
+
+        if (!modal) return;
+
+        // Update modal for adding new product
+        titleEl.textContent = 'Add New Product';
+        contentEl.innerHTML = `
+        <div class="form-row">
+            <div class="form-group">
+                <label for="new-product-name">Product Name</label>
+                <input type="text" id="new-product-name" name="name" placeholder="Enter product name" required>
+            </div>
+            <div class="form-group">
+                <label for="new-product-price">Price</label>
+                <input type="number" step="0.01" id="new-product-price" name="price" placeholder="0.00" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="new-product-category">Category</label>
+            <select id="new-product-category" name="category_id" required>
+                <option value="">Select Category</option>
+                <option value="1">Note</option>
+                <option value="2">Write</option>
+                <option value="3">Type</option>
+                <option value="4">Essentials</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="new-product-description">Description</label>
+            <textarea id="new-product-description" name="description" placeholder="Enter product description" rows="4"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="new-product-image">Image URL</label>
+                <input type="url" id="new-product-image" name="image" placeholder="https://...">
+                <div class="form-help">Optional: URL to product image</div>
+            </div>
+            <div class="form-group">
+                <label for="new-product-initial-stock">Initial Stock</label>
+                <input type="number" id="new-product-initial-stock" name="initial_stock" value="0" min="0" placeholder="0">
+                <div class="form-help">Starting inventory quantity</div>
+            </div>
+        </div>
+    `;
+
+        modal.style.display = 'flex';
+
+        // Setup save handler for new product
+        saveBtn.onclick = () => saveNewProduct();
+
+        // Focus on the first input
+        document.getElementById('new-product-name').focus();
+    }
+
+    // Save new product function
+    async function saveNewProduct() {
+        const formData = {
+            name: document.getElementById('new-product-name').value.trim(),
+            price: parseFloat(document.getElementById('new-product-price').value),
+            category_id: parseInt(document.getElementById('new-product-category').value),
+            description: document.getElementById('new-product-description').value.trim(),
+            image: document.getElementById('new-product-image').value.trim(),
+            initial_stock: parseInt(document.getElementById('new-product-initial-stock').value) || 0
+        };
+
+        // Validate required fields
+        if (!formData.name || !formData.price || !formData.category_id) {
+            showNotification('Please fill in all required fields', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/admin/table/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success || response.ok) {
+                showNotification('Product created successfully', 'success');
+                closeModal('products-table-edit');
+                refreshTable('products-table');
+            } else {
+                showNotification(result.message || 'Failed to create product', 'error');
+            }
+        } catch (error) {
+            console.error('Error creating product:', error);
+            showNotification('Error creating product', 'error');
+        }
+    }
+
+    // Stock Management Functions
+    async function openStockManagementModal() {
+        await withButtonLoading('manageStockBtn', async () => {
+            // Create or open a bulk stock management modal
+            const modal = document.getElementById('stock-management-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                await loadStockManagementData();
+            } else {
+                // Create modal if it doesn't exist
+                createStockManagementModal();
+            }
+        });
+    }
+
+    function createStockManagementModal() {
+        const modalHTML = `
+        <div id="stock-management-modal" class="action-modal" style="display: flex;">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3>Stock Management</h3>
+                    <button class="modal-close" onclick="closeStockModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="stock-controls">
+                        <div class="form-group">
+                            <label for="stock-filter">Filter Products:</label>
+                            <select id="stock-filter" onchange="filterStockProducts()">
+                                <option value="all">All Products</option>
+                                <option value="low">Low Stock (≤10)</option>
+                                <option value="out">Out of Stock</option>
+                                <option value="category">By Category</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="bulkStockUpdate()">Bulk Update</button>
+                    </div>
+                    <div id="stock-list" class="stock-list">
+                        <div class="loading-spinner"></div>
+                        <p>Loading stock data...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeStockModal()">Close</button>
+                    <button class="btn btn-primary" onclick="saveAllStockChanges()">Save All Changes</button>
+                </div>
+            </div>
+        </div>
+    `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        loadStockManagementData();
+    }
+
+    function closeStockModal() {
+        const modal = document.getElementById('stock-management-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function loadStockManagementData() {
+        const stockList = document.getElementById('stock-list');
+        stockList.innerHTML = '<div class="loading-spinner"></div><p>Loading stock data...</p>';
+
+        // Fetch products with stock data
+        fetch('/api/admin/table/products?include_stock=true')
+            .then(response => response.json())
+            .then(result => {
+                if (result.success && result.data) {
+                    renderStockList(result.data);
+                } else {
+                    stockList.innerHTML = '<p>Error loading stock data</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading stock:', error);
+                stockList.innerHTML = '<p>Error loading stock data</p>';
+            });
+    }
+
+    function renderStockList(products) {
+        const stockList = document.getElementById('stock-list');
+
+        const stockHTML = `
+        <div class="stock-header">
+            <label class="select-all-container">
+                <input type="checkbox" id="select-all-products" onchange="toggleSelectAll()">
+                <span>Select All Products</span>
+            </label>
+        </div>
+        <div class="stock-items">
+            ${products.map(product => `
+                <div class="stock-item" data-product-id="${product.id}">
+                    <div class="stock-select">
+                        <input type="checkbox" class="product-checkbox" data-product-id="${product.id}">
+                    </div>
+                    <div class="stock-info">
+                        <h4>${product.name}</h4>
+                        <span class="stock-category">${product.category_description}</span>
+                        <span class="stock-price">$${parseFloat(product.price).toFixed(2)}</span>
+                    </div>
+                    <div class="stock-controls">
+                        <button class="btn-stock-adjust" onclick="adjustStock(${product.id}, -1)">-</button>
+                        <input type="number" 
+                               id="stock-${product.id}" 
+                               value="${product.stock_quantity || 0}" 
+                               min="0" 
+                               class="stock-input"
+                               onchange="markStockChanged(${product.id})">
+                        <button class="btn-stock-adjust" onclick="adjustStock(${product.id}, 1)">+</button>
+                        <span class="stock-status ${getStockStatusClass(product.stock_quantity)}">
+                            ${getStockStatusText(product.stock_quantity)}
+                        </span>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+        stockList.innerHTML = stockHTML;
+    }
+
+    function toggleSelectAll() {
+        const selectAllCheckbox = document.getElementById('select-all-products');
+        const productCheckboxes = document.querySelectorAll('.product-checkbox');
+
+        productCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+
+    function filterStockProducts() {
+        const filter = document.getElementById('stock-filter').value;
+        const stockItems = document.querySelectorAll('.stock-item');
+
+        stockItems.forEach(item => {
+            const productId = item.dataset.productId;
+            const stockInput = document.getElementById(`stock-${productId}`);
+            const quantity = parseInt(stockInput.value) || 0;
+            const categorySpan = item.querySelector('.stock-category');
+            const category = categorySpan ? categorySpan.textContent.toLowerCase() : '';
+
+            let show = true;
+
+            switch (filter) {
+                case 'low':
+                    show = quantity > 0 && quantity <= 10;
+                    break;
+                case 'out':
+                    show = quantity === 0;
+                    break;
+                case 'category':
+                    // For now, show all - could be extended to filter by specific category
+                    show = true;
+                    break;
+                case 'all':
+                default:
+                    show = true;
+                    break;
+            }
+
+            item.style.display = show ? 'flex' : 'none';
+        });
+    }
+
+    function getStockStatusClass(quantity) {
+        if (quantity === 0) return 'status-out';
+        if (quantity <= 10) return 'status-low';
+        return 'status-good';
+    }
+
+    function getStockStatusText(quantity) {
+        if (quantity === 0) return 'Out of Stock';
+        if (quantity <= 10) return 'Low Stock';
+        return 'In Stock';
+    }
+
+    function adjustStock(productId, change) {
+        const input = document.getElementById(`stock-${productId}`);
+        const currentValue = parseInt(input.value) || 0;
+        const newValue = Math.max(0, currentValue + change);
+        input.value = newValue;
+        markStockChanged(productId);
+        updateStockStatus(productId, newValue);
+    }
+
+    function markStockChanged(productId) {
+        const stockItem = document.querySelector(`.stock-item[data-product-id="${productId}"]`);
+        stockItem.classList.add('changed');
+    }
+
+    function updateStockStatus(productId, quantity) {
+        const stockItem = document.querySelector(`.stock-item[data-product-id="${productId}"]`);
+        const statusSpan = stockItem.querySelector('.stock-status');
+        statusSpan.className = `stock-status ${getStockStatusClass(quantity)}`;
+        statusSpan.textContent = getStockStatusText(quantity);
+    }
+
+    function saveAllStockChanges() {
+        const changedItems = document.querySelectorAll('.stock-item.changed');
+        if (changedItems.length === 0) {
+            showNotification('No changes to save', 'info');
+            return;
+        }
+
+        const updates = Array.from(changedItems).map(item => {
+            const productId = parseInt(item.dataset.productId);
+            const quantity = parseInt(document.getElementById(`stock-${productId}`).value);
+            return { product_id: productId, quantity: quantity };
+        });
+
+        // Send bulk update request
+        fetch('/api/admin/stock/bulk-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ updates })
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showNotification(`Updated stock for ${updates.length} products`, 'success');
+                    closeStockModal();
+                    refreshTable('products-table');
+                } else {
+                    showNotification(result.message || 'Failed to update stock', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating stock:', error);
+                showNotification('Error updating stock', 'error');
+            });
+    }
+
+    function bulkStockUpdate() {
+        // Get all selected items for bulk update
+        const selectedItems = document.querySelectorAll('.stock-item input[type="checkbox"]:checked');
+
+        if (selectedItems.length === 0) {
+            showNotification('Please select products to update', 'warning');
+            return;
+        }
+
+        // Prompt for bulk update values
+        const bulkUpdateHTML = `
+        <div id="bulk-update-modal" class="action-modal" style="display: flex;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Bulk Stock Update</h3>
+                    <button class="close-modal" onclick="closeBulkUpdateModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Update stock for ${selectedItems.length} selected products</p>
+                    <div class="form-group">
+                        <label for="bulk-operation">Operation:</label>
+                        <select id="bulk-operation">
+                            <option value="set">Set to specific value</option>
+                            <option value="add">Add to current stock</option>
+                            <option value="subtract">Subtract from current stock</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulk-quantity">Quantity:</label>
+                        <input type="number" id="bulk-quantity" min="0" placeholder="Enter quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulk-reason">Reason (Optional):</label>
+                        <select id="bulk-reason">
+                            <option value="">Select reason...</option>
+                            <option value="inventory_count">Inventory Count</option>
+                            <option value="supplier_delivery">Supplier Delivery</option>
+                            <option value="damaged_goods">Damaged Goods</option>
+                            <option value="manual_adjustment">Manual Adjustment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeBulkUpdateModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="performBulkUpdate()">Update Stock</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+        document.body.insertAdjacentHTML('beforeend', bulkUpdateHTML);
+        document.getElementById('bulk-quantity').focus();
+    }
+
+    function closeBulkUpdateModal() {
+        const modal = document.getElementById('bulk-update-modal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    function performBulkUpdate() {
+        const operation = document.getElementById('bulk-operation').value;
+        const quantity = parseInt(document.getElementById('bulk-quantity').value);
+        const reason = document.getElementById('bulk-reason').value;
+
+        if (isNaN(quantity) || quantity < 0) {
+            showNotification('Please enter a valid quantity', 'error');
+            return;
+        }
+
+        // Get selected product IDs
+        const selectedItems = document.querySelectorAll('.stock-item input[type="checkbox"]:checked');
+        const productIds = Array.from(selectedItems).map(item => {
+            const stockItem = item.closest('.stock-item');
+            return parseInt(stockItem.dataset.productId);
+        });
+
+        // Send bulk update request
+        fetch('/api/admin/stock/bulk-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_ids: productIds,
+                operation: operation,
+                quantity: quantity,
+                reason: reason
+            })
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showNotification(`Updated stock for ${productIds.length} products`, 'success');
+                    closeBulkUpdateModal();
+                    loadStockManagementData(); // Reload the stock list
+                    refreshTable('products-table'); // Refresh the main table
+                } else {
+                    showNotification(result.message || 'Failed to update stock', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating stock:', error);
+                showNotification('Error updating stock', 'error');
+            });
+    }
+
+    function openProductStockModal(productId) {
+        // Quick stock update for individual product
+        const modal = document.getElementById('products-table-stock-modal');
+        if (!modal) {
+            createProductStockModal();
+        }
+
+        // Load product stock data
+        fetch(`/api/admin/products/${productId}`)
+            .then(response => response.json())
+            .then(result => {
+                if (result.success && result.data) {
+                    populateProductStockModal(result.data);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading product:', error);
+                showNotification('Error loading product data', 'error');
+            });
+    }
+
+    function createProductStockModal() {
+        const modalHTML = `
+        <div id="products-table-stock-modal" class="action-modal" style="display: none;">
+            <div class="modal-content modal-sm">
+                <div class="modal-header">
+                    <h3>Update Stock</h3>
+                    <button class="modal-close" onclick="closeModal('products-table-stock')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="stock-modal-content">Loading...</div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('products-table-stock')">Cancel</button>
+                    <button class="btn btn-primary" id="save-product-stock">Update Stock</button>
+                </div>
+            </div>
+        </div>
+    `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    function populateProductStockModal(product) {
+        const content = document.getElementById('stock-modal-content');
+        content.innerHTML = `
+        <div class="form-group">
+            <label><strong>${product.name}</strong></label>
+            <p>Category: ${product.category_description} | Price: $${parseFloat(product.price).toFixed(2)}</p>
+        </div>
+        <div class="form-group">
+            <label for="product-stock-quantity">Current Stock</label>
+            <div class="stock-adjuster">
+                <button type="button" onclick="adjustProductStock(-1)">-</button>
+                <input type="number" 
+                       id="product-stock-quantity" 
+                       value="${product.stock_quantity || 0}" 
+                       min="0" 
+                       class="stock-input">
+                <button type="button" onclick="adjustProductStock(1)">+</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="stock-reason">Reason for Change (Optional)</label>
+            <select id="stock-reason">
+                <option value="">Select reason...</option>
+                <option value="inventory_count">Inventory Count</option>
+                <option value="damaged_goods">Damaged Goods</option>
+                <option value="supplier_delivery">Supplier Delivery</option>
+                <option value="manual_adjustment">Manual Adjustment</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+    `;
+
+        const modal = document.getElementById('products-table-stock-modal');
+        modal.style.display = 'flex';
+
+        // Setup save handler
+        document.getElementById('save-product-stock').onclick = () => saveProductStock(product.id);
+    }
+
+    function adjustProductStock(change) {
+        const input = document.getElementById('product-stock-quantity');
+        const currentValue = parseInt(input.value) || 0;
+        input.value = Math.max(0, currentValue + change);
+    }
+
+    function saveProductStock(productId) {
+        const quantity = document.getElementById('product-stock-quantity').value;
+        const reason = document.getElementById('stock-reason').value;
+
+        fetch(`/api/admin/stock/${productId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                quantity: parseInt(quantity),
+                reason: reason
+            })
+        })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showNotification('Stock updated successfully', 'success');
+                    closeModal('products-table-stock');
+                    refreshTable('products-table');
+                } else {
+                    showNotification(result.message || 'Failed to update stock', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating stock:', error);
+                showNotification('Error updating stock', 'error');
+            });
+    }
+
+    // Import products function
+    function importProducts() {
+        withButtonLoading('importProductsBtn', async () => {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            showNotification('Import feature coming soon!', 'info');
+        });
+    }
+
+    // Export products function
+    function exportProducts() {
+        withButtonLoading('exportProductsBtn', async () => {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            showNotification('Export feature coming soon!', 'info');
+        });
+    }
+
+    // Update last updated timestamp
+    function updateLastUpdated() {
+        const now = new Date();
+        const timeString = now.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('last-updated').textContent = timeString;
+    }
+</script>
+{% endblock %}

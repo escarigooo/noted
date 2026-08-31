@@ -1,0 +1,321 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ product.name }} | noted;{% endblock %}
+
+{% block body_class %}product-detail{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/categories.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/products_details.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/products_details_update.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/breadcrumb.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="categories-wrapper">
+  <!-- Product Detail Header (matching info pages) -->
+  <div class="pages-header">
+    <h1 class="page-title">{{ product.name.lower() }}</h1>
+    <!-- Breadcrumb dinâmico -->
+    <div class="breadcrumb-wrapper">
+      {% include "partials/breadcrumb.html" with context %}
+    </div>
+  </div>
+  
+  <!-- Product Detail Content -->
+  <div class="product-detail-content">
+    <!-- Main Product Section -->
+    <div class="product-main-section">
+      <!-- Product Image Section (66% width) -->
+      <div class="product-image-section">
+        <div class="product-main-image">
+          <!-- Main product image -->
+          <img src="{{ url_for('static', filename='img/products/' + product.image) if product.image else url_for('static', filename='img/products/placeholder.png') }}" 
+               alt="{{ product.name }}" 
+               id="main-product-image">
+          
+          <!-- Navigation controls -->
+          <div class="image-nav-controls">
+            <button class="nav-btn prev-btn" id="prevImage" aria-label="Previous Image">
+              <img src="{{ url_for('static', filename='img/icons/arrow-left.png') }}" alt="Previous">
+            </button>
+            <button class="nav-btn next-btn" id="nextImage" aria-label="Next Image">
+              <img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="Next">
+            </button>
+          </div>
+        </div>
+        
+        <!-- Thumbnail gallery -->
+        <div class="product-image-gallery" id="image-thumbnails">
+          <!-- Main product image as first thumbnail -->
+          {% if product.image %}
+          <div class="thumbnail-container active" data-index="0" data-src="{{ url_for('static', filename='img/products/' + product.image) }}">
+            <img src="{{ url_for('static', filename='img/products/' + product.image) }}" 
+                 alt="{{ product.name }}" 
+                 class="gallery-thumbnail">
+          </div>
+          {% endif %}
+          
+          <!-- Additional product images sorted by ID -->
+          {% if product.images %}
+            {% for image in product.images|sort(attribute='id') %}
+            <div class="thumbnail-container" data-index="{{ loop.index }}" data-src="{{ url_for('static', filename='img/products/' + image.path) }}">
+              <img src="{{ url_for('static', filename='img/products/' + image.path) }}" 
+                   alt="{{ image.caption or product.name }}" 
+                   class="gallery-thumbnail">
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Product Info Section (34% width) -->
+      <div class="product-info-section">
+        <div class="product-basic-info">
+          <h2 class="product-name">{{ product.name }}</h2>
+          
+          <!-- Price - Most Important Info First -->
+          <div class="product-price">
+            <span class="price-amount">{{ "%.2f"|format(product.price) }}€</span>
+          </div>
+          
+          <p class="product-description">{{ product.description or "Premium quality product designed for your needs." }}</p>
+          
+          <!-- Dynamic Product Features from Database -->
+          {% if product.features %}
+          <div class="product-features">
+            {% set material_features = [] %}
+            {% set color_features = [] %}
+            {% for feature in product.features %}
+              {% if feature.get_feature_type_name().lower() == 'material' %}
+                {% set material_features = material_features + [feature] %}
+              {% endif %}
+              {% if feature.get_feature_type_name().lower() == 'color' %}
+                {% set color_features = color_features + [feature] %}
+              {% endif %}
+            {% endfor %}
+            
+            <!-- Material Selection (if available in DB) -->
+            {% if material_features %}
+            <div class="feature-group">
+              <label class="feature-label">Material</label>
+              <div class="material-options">
+                <div class="material-buttons">
+                  {% for feature in material_features %}
+                  <button class="material-btn {% if loop.first %}active{% endif %}" 
+                          type="button"
+                          data-price="{{ feature.value.split('|')[1] if '|' in feature.value else product.price }}">
+                    {{ feature.value.split('|')[0] if '|' in feature.value else feature.value }}
+                  </button>
+                  {% endfor %}
+                </div>
+                <div class="material-description">
+                  <input type="text" placeholder="Premium quality material" class="material-desc-input" readonly>
+                </div>
+              </div>
+              <div class="price-indicator">{{ "%.0f"|format(product.price) }}€</div>
+            </div>
+            {% endif %}
+            
+            <!-- Color Selection (if available in DB) -->
+            {% if color_features %}
+            <div class="feature-group">
+              <label class="feature-label">Color</label>
+              <span class="color-name">{{ color_features[0].value.split('|')[0] if '|' in color_features[0].value else color_features[0].value }}</span>
+              <div class="color-options">
+                {% for feature in color_features %}
+                {% set color_parts = feature.value.split('|') %}
+                {% set color_name = color_parts[0] %}
+                {% set color_hex = color_parts[1] if color_parts|length > 1 else '#000' %}
+                <div class="color-circle {% if loop.first %}active{% endif %} {% if color_hex in ['#fff', '#ffffff', 'white'] %}white-border{% endif %}" 
+                     data-color="{{ color_name.lower() }}" 
+                     data-color-hex="{{ color_hex }}"></div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+          
+          <!-- Add to Cart Button -->
+          <button class="add-to-cart-btn" data-product-id="{{ product.id }}">
+            add to cart
+          </button>
+          
+          <!-- Quick Product Highlights -->
+          <div class="product-highlights">
+            <div class="highlight-item">
+              <span class="highlight-icon">✓</span>
+              <span>Fast shipping (24-48h)</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">✓</span>
+              <span>Quality guarantee</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">✓</span>
+              <span>Local EU support</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Product Information Sections -->
+    <div class="product-details-sections">
+      
+      <!-- Delivery Times Section -->
+      <div class="detail-section">
+        <h3 class="section-title">Delivery times</h3>
+        <div class="section-content">
+          <p class="delivery-info">Delivery time within Europe 24-48 hours depending on availability</p>
+          
+          <!-- Product Specifications from Database -->
+          <div class="product-specs">
+            {% if product.features %}
+              {% for feature in product.features %}
+                {% set feature_type_name = feature.get_feature_type_name() %}
+                {% if feature_type_name.lower() not in ['material', 'color', 'unknown'] %}
+                <div class="spec-row">
+                  <span class="spec-label">{{ feature_type_name|title }}</span>
+                  <span class="spec-value">{{ feature.value }}</span>
+                </div>
+                {% elif feature_type_name == 'Unknown' %}
+                <!-- Skip features with unknown feature_type -->
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              <!-- Default specifications if no features in DB -->
+              <div class="spec-row">
+                <span class="spec-label">Material</span>
+                <span class="spec-value">Premium Quality</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Weight</span>
+                <span class="spec-value">Lightweight Design</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Compatibility</span>
+                <span class="spec-value">Universal compatibility</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Warranty</span>
+                <span class="spec-value">1 Year International Warranty</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Installation Guide Section -->
+      <div class="detail-section">
+        <h3 class="section-title">Installation Guide</h3>
+        <div class="section-content">
+          <div class="installation-steps">
+            <div class="installation-step">
+              <span class="step-number">1</span>
+              <p>Remove product from packaging carefully. Check all components are included.</p>
+            </div>
+            <div class="installation-step">
+              <span class="step-number">2</span>
+              <p>Follow the quick setup guide included in the package for optimal installation.</p>
+            </div>
+            <div class="installation-step">
+              <span class="step-number">3</span>
+              <p>Test the product functionality before regular use to ensure proper installation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Trust Section -->
+      <div class="trust-section">
+        <h3 class="section-title">Fast, Local & Trusted</h3>
+        <div class="trust-grid">
+          <div class="trust-item">
+            <h4>Local Support</h4>
+            <p>Shipped directly from our EU warehouse with local support.</p>
+          </div>
+          <div class="trust-item">
+            <h4>Universal Compatibility</h4>
+            <p>Applies to all electronic devices.</p>
+          </div>
+          <div class="trust-item">
+            <h4>Fast Shipping</h4>
+            <p>Orders ship within 48h — often same day.</p>
+          </div>
+          <div class="trust-item">
+            <h4>Quality Guarantee</h4>
+            <p>No questions asked. Full refund guarantee.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Related Products Section (same collection) -->
+      {% if product.collection_id %}
+      <div class="related-products-section">
+        <h3 class="section-title">Related Products</h3>
+        
+        <div class="related-products-container">
+          <!-- Navigation Controls -->
+          <button class="related-nav-btn prev-btn" id="prevRelated" aria-label="Previous Related">
+            <img src="{{ url_for('static', filename='img/icons/arrow-left.png') }}" alt="Previous">
+          </button>
+          
+          <!-- Products Wrapper -->
+          <div class="related-products-wrapper" id="relatedProductsWrapper">
+            <!-- We'll query products from the same collection, excluding current product -->
+            <!-- Debug info for troubleshooting -->
+            {% if product.collection_id %}
+              <!-- Collection ID found: {{ product.collection_id }} -->
+              {% set related_products = get_related_products(product.collection_id, product.id, limit=8) %}
+              
+              {% if related_products and related_products|length > 0 %}
+                {% for related in related_products %}
+                <div class="product-card related-product">
+                  <a href="{{ url_for('products.product_details', product_name=related.name) }}">
+                    <div class="product-image">
+                      <img src="{{ url_for('static', filename='img/products/' + related.image) if related.image else url_for('static', filename='img/products/placeholder.png') }}" 
+                           alt="{{ related.name }}" loading="lazy">
+                    </div>
+                    <div class="product-info">
+                      <h3 class="product-title">{{ related.name }}</h3>
+                      <p class="product-price">{{ "%.2f"|format(related.price) }}€</p>
+                    </div>
+                  </a>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="no-related-products">
+                  <p>No related products found in this collection.</p>
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="no-related-products">
+                <p>This product is not part of a collection.</p>
+              </div>
+            {% endif %}
+          </div>
+          
+          <!-- Navigation Controls -->
+          <button class="related-nav-btn next-btn" id="nextRelated" aria-label="Next Related">
+            <img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="Next">
+          </button>
+        </div>
+      </div>
+      {% endif %}
+      
+      
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pages/product_details.js') }}"></script>
+<script>
+  // Código de debugging para verificar o carregamento
+  console.log('Template product_detail.html loaded');
+</script>
+{% endblock %}

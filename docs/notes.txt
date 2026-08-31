@@ -1,0 +1,35 @@
+abrir a pasta e clicar em cima no endereço e escrever "cmd" abre diretamente
+
+python -m venv venv
+
+venv\Scripts\activate
+
+# instalar dependências
+pip install -r requirements.txt
+
+flask run
+
+Running on http://127.0.0.1:5000/
+
+
+
+SE NECESSÁRIO:
+
+rmdir /s /q venv
+
+python -m venv venv
+
+venv\Scripts\activate
+
+pip install -r requirements.txt
+
+flask run
+
+
+$env:FLASK_DEBUG=1
+
+set FLASK_APP=noted.app
+
+python -m pip install flask
+pip install flask_sqlalchemy
+

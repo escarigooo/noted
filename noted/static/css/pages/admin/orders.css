@@ -1,0 +1,218 @@
+/* Orders Admin Page - Specific Styles Only */
+
+/* Order total styling */
+.order-total {
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Orders Table */
+.orders-table-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.table-header h2 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.table-header .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+.table-header .btn-primary {
+    background: var(--color-primary);
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.table-header .btn-primary:hover {
+    background: #e6b600;
+    transform: translateY(-1px);
+}
+
+.orders-table {
+    overflow-x: auto;
+}
+
+.orders-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.orders-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.orders-table td {
+    color: #1e293b;
+}
+
+.orders-table .no-data {
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+    padding: 3rem;
+    font-size: 1rem;
+}
+
+.orders-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Status badges for orders */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.status-badge.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.processing {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-badge.shipped {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.status-badge.delivered,
+.status-badge.completed {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Table improvements */
+.items-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.actions .btn {
+    margin: 0 2px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.actions .btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.actions .btn-warning {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.actions .btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Error styling */
+.no-data.error {
+    color: #ef4444;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .orders-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .orders-table {
+        font-size: 0.875rem;
+    }
+    
+    .orders-table th,
+    .orders-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 480px) {
+    .orders-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .orders-stats .stat-card {
+        padding: 1rem;
+    }
+    
+    .orders-stats .stat-card h3 {
+        font-size: 1.5rem;
+    }
+}

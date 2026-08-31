@@ -1,0 +1,196 @@
+.cart-item-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+  gap: 1rem;
+}
+
+.cart-thumb {
+  max-width: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cart-info {
+  flex-grow: 1;
+}
+
+.cart-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* atualmente não usada, era no p antigo debaixo do título do artigo*/
+.cart-subtitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.cart-variant {
+  font-size: 0.85rem;
+  color: #777;
+  margin: 0.2rem 0;
+}
+
+.cart-price {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #000;
+  margin: 0;
+}
+
+.cart-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.qty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.qty-btn {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.cart-qty {
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 0 2rem 0 0;
+}
+
+
+.remove-item {
+  border: none;
+  background: none;
+  color: #000;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.cart-total {
+  border-top: 1px solid #ddd;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.cart-total .subtotal-line,
+.cart-total .shipping-line {
+  margin-bottom: 0.5rem;
+  color: var(--color-text-muted, #666);
+}
+
+.cart-total .total-line {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #ddd;
+  font-size: 1.1rem;
+}
+
+.cart-total button {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  font-weight: bold;
+  border: 1px solid #000;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cart-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.cart-link:hover {
+  text-decoration: underline;
+  color: var(--color-primary); /* or any highlight color */
+}
+
+
+.checkout-btn {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #000;
+  background: transparent;
+  text-decoration: none;
+  color: #000;
+  margin-top: 0.5rem;
+}
+
+.checkout-btn:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* Remove discount button styling */
+.remove-discount-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 8px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  vertical-align: middle;
+}
+
+.remove-discount-btn:hover {
+  opacity: 1;
+}
+
+
+.discount-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.discount-text {
+  flex-grow: 1;
+}
+
+.discount-details {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #666);
+  margin: 0 0.5rem 0 0;
+}
+
+.remove-discount-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-discount-btn img {
+  max-width: none;
+}
+
+.remove-discount-btn:hover img {
+  opacity: 1;
+}

@@ -1,0 +1,77 @@
+<header>
+    <nav class="mobile-bottom-navbar">
+      <button id="mobileMenuToggle" class="mobile-nav-btn none-mobile">
+        <img src="{{ url_for('static', filename='img/icons/menu.png') }}" alt="Menu">
+      </button>
+      
+      <button id="mobileAccountToggle" class="mobile-nav-btn none-mobile">
+        <img src="{{ url_for('static', filename='img/icons/user.png') }}" alt="Account">
+      </button>
+      
+      <button id="mobileCartToggle" class="mobile-nav-btn none-mobile">
+        <img src="{{ url_for('static', filename='img/icons/cart.png') }}" alt="Cart">
+      </button>
+    </nav>
+  </header>
+  
+  <!-- Overlay for closing menu/cart by clicking outside -->
+  <div id="overlay" class="overlay"></div>
+  
+  <!-- Slide-in Cart Sidebar -->
+  <aside id="cartSidebar" class="cart-sidebar">
+    <div class="cart-header">
+      <h2>your cart</h2>
+      <button id="closeCart"><img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" /></button>
+    </div>
+    <div class="cart-content">
+      <!-- Cart items will be dynamically inserted here via JavaScript -->
+    </div>
+  </aside>
+  
+  <!-- Slide-in Menu Sidebar -->
+  <aside id="navMenuSidebar" class="nav-menu-sidebar">
+  
+    <div class="nav-menu-header">
+      <h2 class="menu-title">menu</h2>
+      <button id="closeMenu" class="icon-button">
+        <img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" />
+      </button>
+      <button id="backButton" class="icon-button" style="display: none;">
+        <img src="{{ url_for('static', filename='img/icons/undo.png') }}" alt="Back" />
+      </button>
+    </div>
+  
+    <!-- Main Menu -->
+    <ul id="mainMenu" class="nav-menu-links" style="display: block;">
+      {% if current_user and current_user.role == 1 %}
+        <li><a href="{{ url_for('admin.dashboard') }}" class="admin-menu">dashboard</a></li>
+      {% endif %}
+      <li><a href="#" class="menu-link" data-target="products">products
+          <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span></a></li>
+      <li><a href="{{ url_for('misc.about') }}">about</a></li>
+      <li><a href="{{ url_for('misc.support') }}">support</a></li>
+    </ul>
+  
+    <!-- Products Menu - Shows Categories -->
+    <ul id="menu-products" class="nav-menu-links" style="display: none;">
+      {% for category in categories %}
+      <li>
+        <a href="#" class="menu-link" data-target="category-{{ category.id }}">
+          {{ category.description }}
+          <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  
+    <!-- Category Menus - Shows Products in Each Category -->
+    {% for category in categories %}
+    <ul id="menu-category-{{ category.id }}" class="nav-menu-links" style="display: none;">
+      {% for product in category.products %}
+      <li>
+        <a href="{{ url_for('products.product_details', product_name=product.name) }}">{{ product.name }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endfor %}
+  </aside>

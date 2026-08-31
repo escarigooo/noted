@@ -1,0 +1,65 @@
+/* Responsive design improvements */
+@media (max-width: 768px) {
+  .order-details-wrapper {
+    padding: 2rem 1rem;
+  }
+  
+  .order-details-container {
+    padding: 1.5rem;
+  }
+  
+  .order-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .order-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .order-item {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .item-image {
+    width: 100%;
+    height: 180px;
+  }
+  
+  .summary-row.total {
+    font-size: 1.1rem;
+  }
+  
+  .order-section h2 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .navbar, .footer, .back-link {
+    display: none;
+  }
+  
+  .order-details-wrapper {
+    padding: 0;
+  }
+  
+  .order-details-container {
+    box-shadow: none;
+    padding: 0;
+  }
+  
+  .order-header h1 {
+    font-size: 18pt;
+  }
+  
+  body {
+    font-size: 12pt;
+  }
+  
+  .invoice-section .btn {
+    display: none;
+  }
+}

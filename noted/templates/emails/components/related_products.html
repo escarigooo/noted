@@ -1,0 +1,68 @@
+{% macro related_products_section(products, title="You May Also Like", max_display=4) %}
+{% if products and products|length > 0 %}
+<div class="related-products-section" style="margin: 40px 0 20px 0; border-top: 2px solid #f0f0f0; padding-top: 30px;">
+    <h3 style="color: #000; font-size: 20px; font-weight: 600; margin: 0 0 25px 0; text-align: center; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+        {{ title }}
+    </h3>
+    
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 0 0 20px 0;">
+        <tr>
+            {% set products_to_show = products[:max_display] %}
+            {% set cols = 2 if max_display == 2 else 4 %}
+            {% set col_width = (100 / cols)|int %}
+            
+            {% for product in products_to_show %}
+            <td width="{{ col_width }}%" style="padding: 0 10px 20px 10px; vertical-align: top;">
+                <div style="border: 1px solid #f0f0f0; border-radius: 8px; overflow: hidden; background: #fff; transition: all 0.3s ease;">
+                    <a href="{{ site_url }}/product/{{ product.slug or product.id }}" style="text-decoration: none; color: inherit; display: block;">
+                        {% if product.image_url or product.image %}
+                        <img src="{{ site_url }}{{ product.image_url or ('/static/img/products/' + product.image) }}" 
+                             alt="{{ product.name }}" 
+                             style="width: 100%; height: 120px; object-fit: cover; display: block; border: none;">
+                        {% else %}
+                        <div style="width: 100%; height: 120px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #999; font-size: 12px;">No Image</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div style="padding: 15px;">
+                            <h4 style="margin: 0 0 8px 0; color: #000; font-size: 14px; font-weight: 600; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                {{ product.name }}
+                            </h4>
+                            <p style="color: #4a6fdc; font-weight: 600; margin: 0 0 10px 0; font-size: 16px;">
+                                €{{ "%.2f"|format(product.price) }}
+                            </p>
+                            <div style="background-color: #000; color: #fff; padding: 8px 12px; border-radius: 4px; font-size: 12px; text-align: center; font-weight: 600;">
+                                View Product
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </td>
+            
+            {# Fill empty columns if needed #}
+            {% if loop.index % cols == 0 and not loop.last %}
+        </tr>
+        <tr>
+            {% endif %}
+            {% endfor %}
+            
+            {# Fill remaining empty columns #}
+            {% set remaining = cols - (products_to_show|length % cols) %}
+            {% if remaining < cols %}
+                {% for i in range(remaining) %}
+                <td width="{{ col_width }}%" style="padding: 0 10px;"></td>
+                {% endfor %}
+            {% endif %}
+        </tr>
+    </table>
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="{{ site_url }}/products" 
+           style="display: inline-block; background-color: transparent; color: #4a6fdc; border: 2px solid #4a6fdc; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
+            Browse All Products
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,135 @@
+{% set is_auth_page = 'auth-page' in body_class if body_class is defined else False %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}noted;{% endblock %}</title>
+
+  <!-- Core CSS (always loaded) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/breadcrumb.css') }}">
+  
+  <!-- Common functionality CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+  
+  <!-- Authentication CSS (loaded on all pages for auth components) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+
+  <!-- Page-specific CSS -->
+  {% if request.endpoint == 'misc.index' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/index.css') }}">
+  {% endif %}
+
+  {% if request.endpoint == 'auth.account' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/account.css') }}">
+  {% endif %}
+  
+  {% if request.endpoint == 'orders.order_details' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/account.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/order_details.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/order_details_responsive.css') }}">
+  {% endif %}
+
+  {% if request.endpoint in ['products.categories', 'products.category_products'] %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/categories.css') }}">
+  {% endif %}
+
+  {% if request.endpoint == 'products.product_details' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/categories.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/products_details.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/products_details_update.css') }}">
+  {% endif %}
+
+  {% if request.endpoint in ['misc.about', 'misc.support', 'misc.terms'] %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/categories.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/info.css') }}">
+  {% endif %}
+
+  {% if request.endpoint == 'checkout.checkout' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/checkout.css') }}">
+  {% endif %}
+  
+  {% if request.endpoint == 'checkout.thank_you' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/categories.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/info.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/thank-you.css') }}">
+  {% endif %}
+
+  <!-- Admin section CSS and global JS -->
+  {% if request.endpoint in ['admin.dashboard', 'admin.analytics', 'admin.orders', 'admin.categories', 'admin.products', 'admin.users'] %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_layout.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_table.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/notifications.css') }}">
+  <!-- Only include global admin JS here (notifications) -->
+  <script src="{{ url_for('static', filename='js/admin/notifications.js') }}"></script>
+  <!-- admin_tables.js and analytics.js should be included in specific admin pages -->
+  {% endif %}
+
+  {% if request.endpoint == 'admin.dashboard' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/dashboard.css') }}">
+  {% endif %}
+
+  {% if request.endpoint == 'admin.analytics' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/analytics.css') }}">
+  {% endif %}
+
+  {% if request.endpoint == 'admin.users' %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/users.css') }}">
+  {% endif %}
+  
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+  {% if not is_auth_page %}
+  {% include 'partials/navbar.html' %}
+  {% endif %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if auth_page %}
+  {% include 'partials/footer_auth.html' %}
+  {% else %}
+  {% include 'partials/footer.html' %}
+  {% endif %}
+
+  <!-- Scripts globais -->
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+
+  <!-- Script dashboard (não defer para garantir carregamento certo do Chart.js) -->
+  {% if request.endpoint == 'admin.dashboard' %}
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  {% endif %}
+
+  {% if request.endpoint == 'checkout.checkout' %}
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@17/build/js/intlTelInput.min.js"></script>
+
+  <script src="{{ url_for('static', filename='js/checkout/core.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/checkout/validation.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/checkout/ui.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/checkout/order.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/checkout/checkout.js') }}" defer></script>
+  {% endif %}
+
+  {% if request.endpoint in ['admin.orders', 'admin.products', 'admin.categories', 'admin.users'] %}
+  <script src="{{ url_for('static', filename='js/admin/analytics.js') }}" defer></script>
+  {% endif %}
+
+  <!-- Product details page specific script -->
+  {% if request.endpoint == 'products.product_details' %}
+  <script src="{{ url_for('static', filename='js/pages/product_details.js') }}"></script>
+  {% endif %}
+
+  {% include 'partials/navbar_mobile.html' %}
+  {% block extra_js %}{% endblock %}
+
+</body>
+
+</html>

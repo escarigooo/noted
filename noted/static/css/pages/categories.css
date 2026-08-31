@@ -1,0 +1,120 @@
+/* RESET E BASE */
+* {
+    box-sizing: border-box;
+}
+body.categories-page,
+body.category-products-page {
+    background-color: var(--color-white);
+    font-family: var(--font-secondary);
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* CONTAINER PRINCIPAL */
+.categories-wrapper {
+  padding: 0 2rem 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 1  rem 1rem 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: calc(100vh - 408px);
+}
+
+/* CONTAINER DO TÍTULO 
+.pages-header {
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center; /* centra horizontalmente 
+    flex-direction: column;
+}
+
+/* TÍTULO 
+.page-title {
+    font-size: 2rem;
+    margin: 0 auto;
+    text-transform: lowercase;
+    color: var(--color-black);
+    text-align: center;
+}*/
+
+/* GRELHA FIXA 4 / 2x2 */
+.categories-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, max-content));
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+}
+
+@media (max-width: 1200px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+
+/* CARTÕES */
+.category-card {
+    background-color: var(--color-white);
+    border: 1px solid #eee;
+    border-radius: 10px;
+    text-align: center;
+    padding: 1rem;
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 500px;
+}
+
+@media (max-width: 1200px) {
+  .category-card {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .category-card {
+    max-width: 200px;
+  }
+}
+
+.category-card:hover {
+  transform: scale(1.05);
+}
+
+.category-card img {
+    width: 100%;
+    max-height: 350px;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+}
+
+.category-card {
+    font-size: 2rem;
+    text-transform: lowercase;
+    color: var(--color-black);
+}
+
+.category-name {
+    font-size: 1.2rem;
+    color: var(--color-primary);
+}
+
+.product-name{
+    font-size: 1.3rem;
+    color: var(--color-primary);
+}
+
+.product-price {
+  font-weight: 600;
+    font-size: 1rem;
+    text-transform: lowercase;
+    color: var(--color-black);
+}

@@ -1,0 +1,157 @@
+{% extends "pages/admin/base.html" %}
+
+{% block admin_page_title %}reviews{% endblock %}
+{% block page_title %}reviews{% endblock %}
+
+{% block admin_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/reviews.css') }}">
+{% endblock %}
+
+{% block admin_scripts %}
+<script src="{{ url_for('static', filename='js/admin/reviews.js') }}"></script>
+{% endblock %}
+
+{% block admin_content %}
+
+<!-- Email Templates Section -->
+<div class="dashboard-section">
+
+    <div class="tittle-section">
+        <h2>Email Templates</h2>
+    </div>
+
+    <!-- Email Category Selector -->
+    <div class="email-category-selector">
+        <button class="category-btn active" data-category="all">All Templates</button>
+        <button class="category-btn" data-category="order">Order Emails</button>
+        <button class="category-btn" data-category="account">Account Emails</button>
+    </div>
+    
+    <!-- Email Templates Grid -->
+    <div class="email-templates-grid">
+        <!-- Order Status Emails -->
+        <div class="email-template-card" data-category="order">
+            <div class="email-template-header">
+                <div class="email-template-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 12.25C7.58579 12.25 7.25 12.5858 7.25 13C7.25 13.4142 7.58579 13.75 8 13.75H16C16.4142 13.75 16.75 13.4142 16.75 13C16.75 12.5858 16.4142 12.25 16 12.25H8Z" fill="#FFCB05"/>
+<path d="M7.25 9C7.25 8.58579 7.58579 8.25 8 8.25H12C12.4142 8.25 12.75 8.58579 12.75 9C12.75 9.41421 12.4142 9.75 12 9.75H8C7.58579 9.75 7.25 9.41421 7.25 9Z" fill="#FFCB05"/>
+<path d="M8 16.25C7.58579 16.25 7.25 16.5858 7.25 17C7.25 17.4142 7.58579 17.75 8 17.75H16C16.4142 17.75 16.75 17.4142 16.75 17C16.75 16.5858 16.4142 16.25 16 16.25H8Z" fill="#FFCB05"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9 2.25C6.37665 2.25 4.25 4.37665 4.25 7V17C4.25 19.6234 6.37665 21.75 9 21.75H15C17.6234 21.75 19.75 19.6234 19.75 17V8.65685C19.75 7.39708 19.2496 6.1889 18.3588 5.2981L16.7019 3.64124C15.8111 2.75045 14.6029 2.25 13.3431 2.25H9ZM5.75 7C5.75 5.20507 7.20507 3.75 9 3.75H13.3431C14.2051 3.75 15.0317 4.09241 15.6412 4.7019L17.2981 6.35876C17.9076 6.96825 18.25 7.7949 18.25 8.65685V17C18.25 18.7949 16.7949 20.25 15 20.25H9C7.20507 20.25 5.75 18.7949 5.75 17V7Z" fill="#FFCB05"/>
+</svg>
+
+                </div>
+                <div class="email-template-info">
+                    <h4>Order Status Updates</h4>
+                    <p>Order confirmation, shipping, and delivery notifications</p>
+                </div>
+                <div class="email-template-badge">5 Variations</div>
+            </div>
+            
+            <div class="order-status-selector">
+                <label for="order-status-select">Select Status:</label>
+                <select id="order-status-select" class="status-dropdown">
+                    <option value="pending">Order Received</option>
+                    <option value="processing">Being Processed</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            
+            <div class="email-template-actions">
+                <button class="btn-review btn-review-primary" onclick="previewOrderStatusEmail()">Preview Email</button>
+            </div>
+        </div>
+        
+        <!-- Order Confirmation -->
+        <div class="email-template-card" data-category="order">
+            <div class="email-template-header">
+                <div class="email-template-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M3 3.25C2.58579 3.25 2.25 3.58579 2.25 4C2.25 4.41421 2.58579 4.75 3 4.75C3.81705 4.75 4.52448 5.31748 4.70172 6.11507L5.13165 8.04975C5.13477 8.09674 5.14235 8.14372 5.15449 8.19008L5.20944 8.39979L5.26786 8.6627C5.27935 8.7144 5.29592 8.76366 5.31693 8.81006L6.9921 15.2039C7.53947 17.293 9.42732 18.75 11.587 18.75H16.7506C19.3739 18.75 21.5006 16.6234 21.5006 14V11.2907C21.5006 10.7268 21.4193 10.0465 21.0367 9.44622C20.1758 8.0956 18.674 7.25 17.0314 7.25H6.49052L6.166 5.78968C5.83625 4.30578 4.5201 3.25 3 3.25ZM8.44313 14.8237L6.85182 8.75H17.0314C18.1549 8.75 19.1827 9.32834 19.7718 10.2525C19.931 10.5023 20.0006 10.8465 20.0006 11.2907V14C20.0006 15.7949 18.5455 17.25 16.7506 17.25H11.587C10.1093 17.25 8.81764 16.2531 8.44313 14.8237Z" fill="#FFCB05"/>
+<path d="M17 22C17.5523 22 18 21.5523 18 21C18 20.4477 17.5523 20 17 20C16.4477 20 16 20.4477 16 21C16 21.5523 16.4477 22 17 22Z" fill="#FFCB05"/>
+<path d="M10 21C10 21.5523 9.55228 22 9 22C8.44772 22 8 21.5523 8 21C8 20.4477 8.44772 20 9 20C9.55228 20 10 20.4477 10 21Z" fill="#FFCB05"/>
+</svg>
+
+                </div>
+                <div class="email-template-info">
+                    <h4>Order Confirmation</h4>
+                    <p>Email sent immediately after order placement</p>
+                </div>
+                <div class="email-template-badge">Standard</div>
+            </div>
+            
+            <div class="email-template-actions">
+                <button class="btn-review btn-review-primary" onclick="previewEmail('order_confirmation')">Preview Email</button>
+            </div>
+        </div>
+        
+        <!-- Invoice Email -->
+        <div class="email-template-card" data-category="order">
+            <div class="email-template-header">
+                <div class="email-template-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 12.25C8.48122 12.25 7.25 13.4812 7.25 15C7.25 16.5188 8.48122 17.75 10 17.75H11C11.4142 17.75 11.75 17.4142 11.75 17C11.75 16.5858 11.4142 16.25 11 16.25H10C9.30964 16.25 8.75 15.6904 8.75 15C8.75 14.3096 9.30964 13.75 10 13.75H11C11.4142 13.75 11.75 13.4142 11.75 13C11.75 12.5858 11.4142 12.25 11 12.25H10Z" fill="#FFCB05"/>
+<path d="M12.25 13C12.25 12.5858 12.5858 12.25 13 12.25H14C15.5188 12.25 16.75 13.4812 16.75 15C16.75 16.5188 15.5188 17.75 14 17.75H13C12.5858 17.75 12.25 17.4142 12.25 17C12.25 16.5858 12.5858 16.25 13 16.25H14C14.6904 16.25 15.25 15.6904 15.25 15C15.25 14.3096 14.6904 13.75 14 13.75H13C12.5858 13.75 12.25 13.4142 12.25 13Z" fill="#FFCB05"/>
+<path d="M11 14.25C10.5858 14.25 10.25 14.5858 10.25 15C10.25 15.4142 10.5858 15.75 11 15.75H13C13.4142 15.75 13.75 15.4142 13.75 15C13.75 14.5858 13.4142 14.25 13 14.25H11Z" fill="#FFCB05"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9 2.25C6.37665 2.25 4.25 4.37665 4.25 7V17C4.25 19.6234 6.37665 21.75 9 21.75H15C17.6234 21.75 19.75 19.6234 19.75 17V8.65685C19.75 7.39708 19.2496 6.1889 18.3588 5.2981L16.7019 3.64124C15.8111 2.75045 14.6029 2.25 13.3431 2.25H9ZM5.75 7C5.75 5.20507 7.20507 3.75 9 3.75H13.3431C14.2051 3.75 15.0317 4.09241 15.6412 4.7019L17.2981 6.35876C17.9076 6.96825 18.25 7.7949 18.25 8.65685V17C18.25 18.7949 16.7949 20.25 15 20.25H9C7.20507 20.25 5.75 18.7949 5.75 17V7Z" fill="#FFCB05"/>
+</svg>
+
+                </div>
+                <div class="email-template-info">
+                    <h4>Invoice Email</h4>
+                    <p>Order confirmation with invoice attachment</p>
+                </div>
+                <div class="email-template-badge">With Invoice</div>
+            </div>
+            
+            <div class="email-template-actions">
+                <button class="btn-review btn-review-primary" onclick="previewEmail('invoice_email')">Preview Email</button>
+            </div>
+        </div>
+        
+        <!-- Registration Email -->
+        <div class="email-template-card" data-category="account">
+            <div class="email-template-header">
+                <div class="email-template-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7C17 9.76142 14.7614 12 12 12C9.23858 12 7 9.76142 7 7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7ZM15.5 7C15.5 8.933 13.933 10.5 12 10.5C10.067 10.5 8.5 8.933 8.5 7C8.5 5.067 10.067 3.5 12 3.5C13.933 3.5 15.5 5.067 15.5 7Z" fill="#FFCB05"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M20 17.5C20 19.9853 16.4183 22 12 22C7.58172 22 4 19.9853 4 17.5C4 15.0147 7.58172 13 12 13C16.4183 13 20 15.0147 20 17.5ZM18.5 17.5C18.5 17.96 18.1527 18.6821 16.9215 19.3746C15.7373 20.0407 14.0003 20.5 12 20.5C9.99969 20.5 8.26273 20.0407 7.07854 19.3746C5.84733 18.6821 5.5 17.96 5.5 17.5C5.5 17.04 5.84733 16.3179 7.07854 15.6254C8.26273 14.9593 9.99969 14.5 12 14.5C14.0003 14.5 15.7373 14.9593 16.9215 15.6254C18.1527 16.3179 18.5 17.04 18.5 17.5Z" fill="#FFCB05"/>
+                    </svg>
+                </div>
+                <div class="email-template-info">
+                    <h4>Registration Welcome</h4>
+                    <p>Welcome email sent to new users</p>
+                </div>
+                <div class="email-template-badge">Welcome</div>
+            </div>
+            
+            <div class="email-template-actions">
+                <button class="btn-review btn-review-primary" onclick="previewEmail('registration')">Preview Email</button>
+            </div>
+        </div>
+        
+        <!-- Password Reset -->
+        <div class="email-template-card" data-category="account">
+            <div class="email-template-header">
+                <div class="email-template-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.75 14.6615C12.9056 14.4852 13 14.2536 13 14C13 13.4477 12.5523 13 12 13C11.4477 13 11 13.4477 11 14C11 14.2536 11.0944 14.4852 11.25 14.6615V18C11.25 18.4142 11.5858 18.75 12 18.75C12.4142 18.75 12.75 18.4142 12.75 18V14.6615Z" fill="#FFCB05"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.25 8V6C7.25 3.37665 9.37665 1.25 12 1.25C14.6234 1.25 16.75 3.37665 16.75 6V8H17C19.2091 8 21 9.79086 21 12V18C21 20.2091 19.2091 22 17 22H7C4.79086 22 3 20.2091 3 18V12C3 9.79086 4.79086 8 7 8H7.25ZM8.75 6C8.75 4.20507 10.2051 2.75 12 2.75C13.7949 2.75 15.25 4.20507 15.25 6V8H8.75V6ZM4.5 12C4.5 10.6193 5.61929 9.5 7 9.5H17C18.3807 9.5 19.5 10.6193 19.5 12V18C19.5 19.3807 18.3807 20.5 17 20.5H7C5.61929 20.5 4.5 19.3807 4.5 18V12Z" fill="#FFCB05"/>
+                    </svg>
+                </div>
+                <div class="email-template-info">
+                    <h4>Password Reset</h4>
+                    <p>Security email for password recovery</p>
+                </div>
+                <div class="email-template-badge">Security</div>
+            </div>
+            
+            <div class="email-template-actions">
+                <button class="btn-review btn-review-primary" onclick="previewEmail('password_reset')">Preview Email</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

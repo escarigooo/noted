@@ -1,0 +1,348 @@
+# 5. Estrutura e organização do website
+
+## 5.1 Estrutura de pastas e ficheiros
+
+### Organização principal do projeto
+
+```
+noted/
+├── __init__.py                # Inicialização da aplicação Flask
+├── app.py                     # Ponto de entrada da aplicação
+├── config.py                  # Configurações da aplicação
+├── models.py                  # Modelos de dados SQLAlchemy
+├── routes/                    # Organização modular das rotas
+│   ├── admin.py               # Rotas de administração
+│   ├── auth.py                # Rotas de autenticação
+│   ├── cart.py                # Rotas do carrinho de compras
+│   ├── checkout.py            # Rotas do processo de checkout
+│   ├── orders.py              # Gestão de encomendas
+│   └── products.py            # Rotas de produtos
+├── services/                  # Camada de serviços para lógica de negócio
+│   └── email_service.py       # Serviço de envio de emails
+├── static/                    # Recursos estáticos
+│   ├── css/                   # Folhas de estilo
+│   ├── js/                    # Scripts JavaScript
+│   ├── img/                   # Imagens
+│   └── data/                  # Ficheiros JSON para dados estáticos
+└── templates/                 # Templates Jinja2
+    ├── layout.html            # Template base
+    ├── partials/              # Componentes reutilizáveis
+    └── pages/                 # Templates específicos de páginas
+        ├── account/           # Páginas de conta
+        ├── admin/             # Páginas de administração
+        ├── products/          # Páginas de produtos
+        └── checkout/          # Páginas de checkout
+```
+
+### Separação entre frontend e backend
+
+**Frontend**:
+- `static/` - Contém todos os recursos estáticos (CSS, JavaScript, imagens)
+- `templates/` - Contém todos os templates HTML usando Jinja2
+
+**Backend**:
+- `routes/` - Controladores que definem endpoints e lógica de roteamento
+- `models.py` - Definições de modelos de dados
+- `services/` - Lógica de negócios encapsulada em serviços
+- `config.py` - Configurações da aplicação
+- `__init__.py` - Inicialização da aplicação Flask
+
+### Organização dos assets
+
+**CSS**:
+```
+static/css/
+├── globals.css               # Estilos globais, variáveis, utilitários
+├── layout.css                # Componentes de layout do site
+├── account.css               # Estilos específicos para páginas de conta
+├── index.css                 # Estilos da página inicial
+├── products_details.css      # Estilos para páginas de detalhes de produtos
+└── admin/                    # Estilos específicos para administração
+    ├── dashboard.css
+    └── tables.css
+```
+
+**JavaScript**:
+```
+static/js/
+├── script.js                 # Funcionalidade JavaScript principal
+├── product_details.js        # Scripts específicos para detalhes de produto
+├── index.js                  # Scripts da página inicial
+├── admin/                    # Scripts de administração
+│   ├── analytics.js
+│   └── admin_tables.js
+└── checkout/                 # Scripts de checkout
+    ├── core.js
+    ├── validation.js
+    ├── ui.js
+    └── order.js
+```
+
+**Imagens**:
+```
+static/img/
+├── logo/                     # Logo da marca em diferentes formatos
+├── products/                 # Imagens de produtos
+├── banners/                  # Banners promocionais
+├── icons/                    # Ícones da interface
+└── backgrounds/              # Imagens de fundo
+```
+
+### Vantagens desta organização
+
+- **Clareza**: Estrutura previsível e intuitiva que facilita a localização de ficheiros
+- **Manutenção**: Separação clara entre responsabilidades, tornando as alterações mais seguras
+- **Escalabilidade**: Fácil adição de novos módulos e funcionalidades sem afetar o código existente
+- **Reutilização**: Componentes modulares que podem ser reutilizados em todo o projeto
+- **Colaboração**: Múltiplos desenvolvedores podem trabalhar em módulos diferentes simultaneamente
+- **Testabilidade**: Unidades independentes facilitam os testes automatizados
+
+## 5.2 Templates HTML e componentes reutilizáveis
+
+### Uso do sistema de templates do Flask
+
+```
+templates/
+├── layout.html               # Template base com estrutura HTML comum
+├── partials/                 # Componentes reutilizáveis
+│   ├── navbar.html
+│   ├── footer.html
+│   ├── footer_auth.html      # Versão simplificada para páginas de autenticação
+│   ├── product_card.html
+│   ├── pagination.html
+│   └── alerts.html
+└── pages/                    # Templates específicos de páginas
+    ├── index.html            # {% extends "layout.html" %}
+    ├── products/
+    │   ├── listing.html
+    │   └── details.html
+    └── account/
+        ├── login.html
+        ├── register.html
+        └── dashboard.html
+```
+
+**Exemplo de layout.html**:
+```html
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}noted;{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/globals.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include "partials/navbar.html" %}
+    
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% include "partials/footer.html" %}
+    
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+```
+
+**Exemplo de uma página específica**:
+```html
+{% extends "layout.html" %}
+
+{% block title %}Produtos | noted;{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+{% endblock %}
+
+{% block content %}
+<h1>Nossos Produtos</h1>
+<div class="products-grid">
+    {% for product in products %}
+        {% include "partials/product_card.html" %}
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/products.js') }}"></script>
+{% endblock %}
+```
+
+### Componentes reutilizáveis
+
+1. **Navbar** (`partials/navbar.html`)
+   - Menu de navegação principal
+   - Adaptativo para utilizadores autenticados/não autenticados
+   - Inclui pesquisa e menu de categorias
+
+2. **Footer** (`partials/footer.html`)
+   - Links para páginas institucionais
+   - Informações de contacto
+   - Subscrição de newsletter
+
+3. **Product Card** (`partials/product_card.html`)
+   - Representação consistente de produtos em diferentes páginas
+   - Inclui imagem, título, preço e botão de adicionar ao carrinho
+
+4. **Pagination** (`partials/pagination.html`)
+   - Controles de paginação para listas de produtos
+
+5. **Alert Messages** (`partials/alerts.html`)
+   - Sistema de mensagens flash para feedback ao utilizador
+
+### Garantia de consistência visual e redução de código
+
+- **Sistema de design unificado**: Definição de variáveis CSS para cores, espaçamentos e tipografia
+- **Classes utilitárias**: Conjunto de classes CSS reutilizáveis para layouts comuns
+- **Macros Jinja**: Criação de macros para elementos de UI repetitivos como formulários
+- **Controle de versão de componentes**: Nomenclatura consistente de componentes
+- **Documentação de componentes**: Comentários detalhando o uso correto de cada componente
+
+## 5.3 Modularização do backend
+
+### Uso de Blueprints para dividir funcionalidades
+
+```python
+# __init__.py
+from flask import Flask
+from .config import Config
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+    
+    db.init_app(app)
+    
+    # Registrar blueprints
+    from .routes.auth import auth_bp
+    from .routes.admin import admin_bp
+    from .routes.products import products_bp
+    from .routes.cart import cart_bp
+    from .routes.checkout import checkout_bp
+    
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(products_bp)
+    app.register_blueprint(cart_bp)
+    app.register_blueprint(checkout_bp)
+    
+    return app
+```
+
+**Exemplo de Blueprint** (auth.py):
+```python
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from noted.models import User
+from noted.forms import LoginForm, RegisterForm
+from noted import db
+
+auth_bp = Blueprint('auth', __name__)
+
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    # Lógica de login
+    pass
+
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    # Lógica de registo
+    pass
+
+@auth_bp.route('/logout')
+def logout():
+    # Lógica de logout
+    pass
+```
+
+### Separação de rotas, modelos e controladores
+
+**Modelos** (models.py):
+```python
+from noted import db
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+    # Outros campos e relações
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    # Outros campos e relações
+```
+
+**Serviços** (services/email_service.py):
+```python
+from flask_mail import Message
+from flask import current_app, render_template
+from noted import mail
+
+class EmailService:
+    @staticmethod
+    def send_order_confirmation(user, order):
+        msg = Message("Confirmação da sua encomenda",
+                      recipients=[user.email])
+        msg.html = render_template('emails/order_confirmation.html',
+                                   user=user, order=order)
+        mail.send(msg)
+```
+
+**Rotas com lógica de controlador** (routes/products.py):
+```python
+from flask import Blueprint, render_template, request, abort
+from noted.models import Product, Category
+
+products_bp = Blueprint('products', __name__)
+
+@products_bp.route('/products')
+def list_products():
+    category_id = request.args.get('category', type=int)
+    page = request.args.get('page', 1, type=int)
+    
+    query = Product.query
+    if category_id:
+        query = query.filter_by(category_id=category_id)
+    
+    products = query.paginate(page=page, per_page=12)
+    categories = Category.query.all()
+    
+    return render_template('pages/products/listing.html',
+                           products=products,
+                           categories=categories)
+```
+
+### Benefícios para testes, manutenção e organização
+
+1. **Testes mais focados**:
+   - Cada blueprint pode ser testado independentemente
+   - Modelos isolados facilitam testes unitários
+   - Serviços encapsulados permitem mocking mais simples
+
+2. **Manutenção simplificada**:
+   - Localização fácil de código específico
+   - Alterações isoladas reduzem efeitos colaterais
+   - Atualização de funcionalidades sem afetar outros módulos
+
+3. **Organização otimizada**:
+   - Responsabilidade única para cada componente
+   - Código mais limpo e legível
+   - Facilita a integração de novos desenvolvedores
+   - Implementação de padrões de design consistentes
+   - Reutilização de lógica entre diferentes partes da aplicação
+
+4. **Escalabilidade**:
+   - Novos recursos podem ser adicionados como novos blueprints
+   - Crescimento orgânico sem redesenho significativo
+   - Facilita a migração para microserviços no futuro

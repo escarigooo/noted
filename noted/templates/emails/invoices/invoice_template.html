@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice_number }}</title>
+    <style>
+        @page {
+            margin: 2cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .invoice-header {
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .logo {
+            max-width: 200px;
+        }
+        .invoice-title {
+            text-align: right;
+            font-size: 24px;
+            color: #333;
+        }
+        .invoice-details {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .invoice-details-col {
+            width: 48%;
+        }
+        .invoice-meta {
+            margin-bottom: 20px;
+        }
+        .meta-item {
+            margin-bottom: 5px;
+        }
+        .meta-label {
+            font-weight: bold;
+        }
+        .address-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .invoice-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .invoice-items th {
+            background-color: #f5f5f5;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .invoice-items td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .totals {
+            width: 100%;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .totals-label {
+            width: 70%;
+            text-align: right;
+            font-weight: normal;
+        }
+        .totals-value {
+            width: 30%;
+            text-align: right;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .notes {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <img src="https://example.com/logo.png" alt="Noted Logo" class="logo">
+                    </td>
+                    <td class="invoice-title">
+                        <h1>INVOICE</h1>
+                        <p>{{ invoice_number }}</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="invoice-details">
+            <div class="invoice-details-col">
+                <div class="invoice-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Invoice Date:</span> {{ invoice_date }}
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Order #:</span> {{ order_id }}
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Order Date:</span> {{ order_date }}
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Payment Method:</span> {{ payment_method }}
+                    </div>
+                </div>
+                
+                <h3>From:</h3>
+                <div class="address-box">
+                    <p><strong>{{ company.name }}</strong></p>
+                    <p>VAT: {{ company.vat }}</p>
+                    <p>{{ company.address }}</p>
+                </div>
+            </div>
+            
+            <div class="invoice-details-col">
+                <h3>Bill To:</h3>
+                <div class="address-box">
+                    <p><strong>{{ billing_address.name }}</strong></p>
+                    <p>{{ billing_address.street }}</p>
+                    <p>{{ billing_address.city }}, {{ billing_address.state }} {{ billing_address.zip }}</p>
+                    <p>{{ billing_address.country }}</p>
+                </div>
+                
+                <h3>Ship To:</h3>
+                <div class="address-box">
+                    <p><strong>{{ shipping_address.name }}</strong></p>
+                    <p>{{ shipping_address.street }}</p>
+                    <p>{{ shipping_address.city }}, {{ shipping_address.state }} {{ shipping_address.zip }}</p>
+                    <p>{{ shipping_address.country }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <table class="invoice-items">
+            <thead>
+                <tr>
+                    <th width="10%">Qty</th>
+                    <th width="50%">Description</th>
+                    <th width="20%" class="text-right">Unit Price</th>
+                    <th width="20%" class="text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.quantity }}</td>
+                    <td>
+                        <strong>{{ item.name }}</strong>
+                        {% if item.description %}
+                        <br>
+                        <small>{{ item.description }}</small>
+                        {% endif %}
+                    </td>
+                    <td class="text-right">€{{ "%.2f"|format(item.unit_price) }}</td>
+                    <td class="text-right">€{{ "%.2f"|format(item.total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="totals">
+            <div class="totals-row">
+                <div class="totals-label">Subtotal:</div>
+                <div class="totals-value">€{{ "%.2f"|format(subtotal) }}</div>
+            </div>
+            
+            {% if discount_amount > 0 %}
+            <div class="totals-row">
+                <div class="totals-label">Discount:</div>
+                <div class="totals-value">-€{{ "%.2f"|format(discount_amount) }}</div>
+            </div>
+            {% endif %}
+            
+            {% if shipping_cost > 0 %}
+            <div class="totals-row">
+                <div class="totals-label">Shipping:</div>
+                <div class="totals-value">€{{ "%.2f"|format(shipping_cost) }}</div>
+            </div>
+            {% endif %}
+            
+            <div class="totals-row">
+                <div class="totals-label">VAT ({{ "%.0f"|format(tax_rate) }}%):</div>
+                <div class="totals-value">€{{ "%.2f"|format(tax_amount) }}</div>
+            </div>
+            
+            <div class="totals-row total">
+                <div class="totals-label">Total:</div>
+                <div class="totals-value">€{{ "%.2f"|format(total) }}</div>
+            </div>
+        </div>
+        
+        <div class="notes">
+            <h3>Payment Terms</h3>
+            <p>{{ company.payment_terms }}</p>
+            
+            <h3>Notes</h3>
+            <p>Thank you for your business! If you have any questions about this invoice, please contact our customer service at help@noted.pt</p>
+        </div>
+        
+        <div class="footer">
+            <p>{{ company.name }} | {{ company.vat }} | {{ company.address }}</p>
+        </div>
+    </div>
+</body>
+</html>

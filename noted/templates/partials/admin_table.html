@@ -1,0 +1,164 @@
+<!-- Reusable Admin Table Component -->
+<div class="admin-table-container" id="{{ table_config.table_id }}">
+    <!-- Table Controls -->
+    <div class="table-controls">
+        <div class="table-controls-left">
+            <div class="search-container">
+                <input type="text" id="{{ table_config.table_id }}-search" class="table-search" placeholder="Search...">
+                <span class="search-icon">⌕</span>
+            </div>
+            
+            {% if table_config.filters %}
+            <div class="filter-container">
+                <select id="{{ table_config.table_id }}-filter" class="table-filter">
+                    <option value="all">All {{ table_config.table_name }}</option>
+                    {% for filter in table_config.filters %}
+                    <option value="{{ filter.value }}">{{ filter.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="table-controls-right">
+            <div class="entries-selector">
+                <label for="{{ table_config.table_id }}-entries">Show:</label>
+                <select id="{{ table_config.table_id }}-entries" class="entries-select">
+                    <option value="10">10</option>
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span>entries</span>
+            </div>
+            
+            <button class="btn btn-refresh" onclick="refreshTable('{{ table_config.table_id }}')">
+                Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="{{ table_config.table_id }}-loading" class="table-loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Loading {{ table_config.table_name }}...</p>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table id="{{ table_config.table_id }}-table" class="admin-table">
+            <thead>
+                <tr>
+                    {% for column in table_config.columns %}
+                    <th class="sortable{% if column.sortable == false %} non-sortable{% endif %}" 
+                        data-column="{{ column.key }}"
+                        {% if column.width %}style="width: {{ column.width }}"{% endif %}>
+                        {{ column.label }}
+                        <span class="sort-indicator"></span>
+                    </th>
+                    {% endfor %}
+                    {% if table_config.actions %}
+                    <th class="actions-column non-sortable">Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody id="{{ table_config.table_id }}-tbody">
+                <!-- Data will be loaded here -->
+                <tr class="no-data" style="display: none;">
+                    <td colspan="{{ table_config.columns|length + (1 if table_config.actions else 0) }}" class="text-center">
+                        No {{ table_config.table_name.lower() }} found
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table Footer -->
+    <div class="table-footer">
+        <div class="table-info">
+            <span id="{{ table_config.table_id }}-info">Showing 0 to 0 of 0 entries</span>
+        </div>
+        
+        <div class="table-pagination">
+            <button id="{{ table_config.table_id }}-prev" class="pagination-btn" onclick="changePage('{{ table_config.table_id }}', 'prev')" disabled>
+                ← Previous
+            </button>
+            
+            <div id="{{ table_config.table_id }}-pagination-numbers" class="pagination-numbers">
+                <!-- Page numbers will be generated here -->
+            </div>
+            
+            <button id="{{ table_config.table_id }}-next" class="pagination-btn" onclick="changePage('{{ table_config.table_id }}', 'next')" disabled>
+                Next →
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Action Modals (if actions are enabled) -->
+{% if table_config.actions %}
+<!-- Edit Modal -->
+<div id="{{ table_config.table_id }}-edit-modal" class="action-modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit {{ table_config.table_name|lower|title }}</h3>
+            <button class="modal-close" onclick="closeModal('{{ table_config.table_id }}-edit')">&times;</button>
+        </div>
+        <div class="modal-body" id="{{ table_config.table_id }}-edit-body">
+            <form id="{{ table_config.table_id }}-edit-form">
+                <div class="form-loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading data...</p>
+                </div>
+                <div class="form-content">
+                    <!-- Form fields will be populated dynamically -->
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('{{ table_config.table_id }}-edit')">Cancel</button>
+            <button class="btn btn-primary" id="{{ table_config.table_id }}-edit-save">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- View Modal -->
+<div id="{{ table_config.table_id }}-view-modal" class="action-modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>View {{ table_config.table_name|lower|title }}</h3>
+            <button class="modal-close" onclick="closeModal('{{ table_config.table_id }}-view')">&times;</button>
+        </div>
+        <div class="modal-body" id="{{ table_config.table_id }}-view-body">
+            <div class="view-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p>Loading data...</p>
+            </div>
+            <div class="view-content">
+                <!-- View content will be populated dynamically -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('{{ table_config.table_id }}-view')">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="{{ table_config.table_id }}-delete-modal" class="action-modal" style="display: none;">
+    <div class="modal-content modal-sm">
+        <div class="modal-header">
+            <h3>Confirm Delete</h3>
+            <button class="modal-close" onclick="closeModal('{{ table_config.table_id }}-delete')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete this {{ table_config.table_name|lower|replace('s', '') }}?</p>
+            <p class="text-warning"><strong>This action cannot be undone.</strong></p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('{{ table_config.table_id }}-delete')">Cancel</button>
+            <button class="btn btn-danger" id="{{ table_config.table_id }}-delete-confirm">Delete</button>
+        </div>
+    </div>
+</div>
+{% endif %}

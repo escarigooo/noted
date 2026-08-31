@@ -1,0 +1,122 @@
+<header>
+  <nav class="navbar nav-mob">
+    <div class="nav-container cont">
+      <div class="menu-toggle-container none">
+        <button class="menu-toggle" id="menuToggle">
+          <img id="menuTitleIcon" src="{{ url_for('static', filename='img/icons/menu.png') }}" alt="Menu" />
+        </button>
+      </div>
+
+      <div class="logo">
+        <a href="{{ url_for('misc.index') }}"> <!--  ALTERADO: rota está no blueprint misc_bp -->
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" />
+        </a>
+      </div>
+
+      {% if request.endpoint in ['admin.dashboard', 'admin.analytics', 'admin.orders', 'admin.categories', 'admin.products', 'admin.users', 'admin.reviews'] %}
+      <!-- Admin Dashboard Navbar -->
+      <ul class="navbar-menu admin-navbar none" id="navLinks">
+        <li><a href="{{ url_for('admin.analytics') }}" class="admin-nav-link {% if request.endpoint == 'admin.analytics' %}active{% endif %}">analytics</a></li>
+        <li><a href="{{ url_for('admin.orders') }}" class="admin-nav-link {% if request.endpoint == 'admin.orders' %}active{% endif %}">orders</a></li>
+        <li><a href="{{ url_for('admin.categories') }}" class="admin-nav-link {% if request.endpoint == 'admin.categories' %}active{% endif %}">categories</a></li>
+        <li><a href="{{ url_for('admin.products') }}" class="admin-nav-link {% if request.endpoint == 'admin.products' %}active{% endif %}">products</a></li>
+        <li><a href="{{ url_for('admin.users') }}" class="admin-nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}">users</a></li>
+        <li><a href="{{ url_for('admin.reviews') }}" class="admin-nav-link {% if request.endpoint == 'admin.reviews' %}active{% endif %}">reviews</a></li>
+        <li><a href="{{ url_for('products.categories') }}" class="admin-nav-link {% if request.endpoint in ['products.categories', 'products.category_products', 'products.product_details'] %}active{% endif %}">store</a></li>
+      </ul>
+      {% else %}
+      <!-- Regular Navbar -->
+      <ul class="navbar-menu none" id="navLinks">
+        <li><a href="{{ url_for('misc.index') }}" {% if request.endpoint == 'misc.index' %}class="active"{% endif %}>home</a></li>
+        <li><a href="{{ url_for('products.categories') }}" {% if request.endpoint in ['products.categories', 'products.category_products', 'products.product_details'] %}class="active"{% endif %}>products</a></li>
+        <li><a href="{{ url_for('misc.about') }}" {% if request.endpoint == 'misc.about' %}class="active"{% endif %}>about</a></li>
+        <li><a href="{{ url_for('misc.support') }}" {% if request.endpoint == 'misc.support' %}class="active"{% endif %}>support</a></li>
+        {% if current_user and current_user.role == 1 %}
+          <li><a href="{{ url_for('admin.dashboard') }}" class="admin-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">dashboard</a></li>
+        {% endif %}
+      </ul>
+      {% endif %}
+
+      <div class="navbar-right none">
+        <a href="{{ url_for('auth.account') }}"> <!--  ALTERADO: esta rota também vem de auth_bp -->
+          <img src="{{ url_for('static', filename='img/icons/user.png') }}" alt="user" class="icon" />
+        </a>
+        <button class="cart-toggle" id="cartToggle">
+          <img src="{{ url_for('static', filename='img/icons/cart.png') }}" alt="cart" class="icon" />
+        </button>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Slide-in Cart Sidebar -->
+<aside id="cartSidebar" class="cart-sidebar">
+  <div class="cart-header">
+    <h2>your cart</h2>
+    <button id="closeCart"><img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" /></button>
+  </div>
+  <div class="cart-content">
+    <!-- Cart items will be dynamically inserted here via JavaScript -->
+  </div>
+</aside>
+
+<!-- Slide-in Menu Sidebar -->
+<aside id="navMenuSidebar" class="nav-menu-sidebar">
+
+  <div class="nav-menu-header">
+    <h2 class="menu-title">menu</h2>
+    <button id="closeMenu" class="icon-button">
+      <img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" />
+    </button>
+    <button id="backButton" class="icon-button" style="display: none;">
+      <img src="{{ url_for('static', filename='img/icons/undo.png') }}" alt="Back" />
+    </button>
+  </div>
+
+  <!-- Submenu: Main Menu or Admin Menu based on current page -->
+  {% if request.endpoint in ['admin.dashboard', 'admin.analytics', 'admin.orders', 'admin.categories', 'admin.products', 'admin.users', 'admin.reviews'] %}
+  <!-- Admin Dashboard Mobile Menu -->
+  <ul id="mainMenu" class="nav-menu-links">
+    <li><a href="{{ url_for('admin.analytics') }}" class="admin-menu-link {% if request.endpoint == 'admin.analytics' %}active{% endif %}">analytics</a></li>
+    <li><a href="{{ url_for('admin.orders') }}" class="admin-menu-link {% if request.endpoint == 'admin.orders' %}active{% endif %}">orders</a></li>
+    <li><a href="{{ url_for('admin.categories') }}" class="admin-menu-link {% if request.endpoint == 'admin.categories' %}active{% endif %}">categories</a></li>
+    <li><a href="{{ url_for('admin.products') }}" class="admin-menu-link {% if request.endpoint == 'admin.products' %}active{% endif %}">products</a></li>
+    <li><a href="{{ url_for('admin.users') }}" class="admin-menu-link {% if request.endpoint == 'admin.users' %}active{% endif %}">users</a></li>
+    <li><a href="{{ url_for('admin.reviews') }}" class="admin-menu-link {% if request.endpoint == 'admin.reviews' %}active{% endif %}">reviews</a></li>
+    <li><a href="{{ url_for('products.categories') }}" class="admin-menu-link {% if request.endpoint in ['products.categories', 'products.category_products', 'products.product_details'] %}active{% endif %}">store</a></li>
+  </ul>
+  {% else %}
+  <!-- Regular Main Menu -->
+  <ul id="mainMenu" class="nav-menu-links">
+    <li><a href="{{ url_for('misc.index') }}" {% if request.endpoint == 'misc.index' %}class="active"{% endif %}>home</a></li>
+    <li><a href="#" class="menu-link {% if request.endpoint in ['products.categories', 'products.category_products', 'products.product_details'] %}active{% endif %}" data-target="products">products
+        <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span></a></li>
+    <li><a href="{{ url_for('misc.about') }}" {% if request.endpoint == 'misc.about' %}class="active"{% endif %}>about</a></li>
+    <li><a href="{{ url_for('misc.support') }}" {% if request.endpoint == 'misc.support' %}class="active"{% endif %}>support</a></li>
+    {% if current_user and current_user.role == 1 %}
+      <li><a href="{{ url_for('admin.dashboard') }}" class="admin-menu {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">dashboard</a></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+
+  <ul id="menu-products" class="nav-menu-links hidden">
+    {% for category in categories %}
+    <li>
+      <a href="#" class="menu-link" data-target="category-{{ category.id }}">
+        {{ category.description }}
+        <span><img src="{{ url_for('static', filename='img/icons/arrow-right.png') }}" alt="arrow" /></span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+
+  {% for category in categories %}
+  <ul id="menu-category-{{ category.id }}" class="nav-menu-links hidden">
+    {% for product in category.products %}
+    <li>
+      <a href="{{ url_for('products.product_details', product_name=product.name) }}">{{ product.name }}</a> <!--  ALTERADO -->
+    </li>
+    {% endfor %}
+  </ul>
+  {% endfor %}
+</aside>

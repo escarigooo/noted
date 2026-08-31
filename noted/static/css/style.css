@@ -1,0 +1,117 @@
+/* ===================== */
+/* INDEX (HOMEPAGE) STYLES */
+/* ===================== */
+.hero-section {
+  padding-top: 4rem;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.hero-text {
+  flex: 1 1 50%;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.hero-text p {
+  font-size: 1.2rem;
+  margin: 1rem 0 2rem;
+  color: var(--color-text-muted);
+}
+
+.hero-image {
+  flex: 1 1 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-wrapper {
+  max-width: 520px;
+  width: 100%;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.hero-stats .stat h2 {
+  font-size: 2rem;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.hero-stats .stat p {
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.hero-unique {
+  font-size: 1.5rem;
+}
+
+.advantages-section {
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+.icon-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.icon-feature img {
+  width: 40px;
+  height: 40px;
+}
+
+.models-section h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.models .model {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.models .model img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.models .model h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-transform: lowercase;
+}
+
+.models .model p {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}

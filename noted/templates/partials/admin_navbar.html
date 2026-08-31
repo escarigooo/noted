@@ -1,0 +1,44 @@
+<header>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="menu-toggle-container">
+        <button class="menu-toggle" id="menuToggle">
+          <img id="menuTitleIcon" src="{{ url_for('static', filename='img/icons/menu.png') }}" alt="Menu" />
+        </button>
+      </div>
+
+      <div class="logo">
+        <a href="{{ url_for('admin.dashboard') }}">
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" />
+        </a>
+      </div>
+
+      <ul class="navbar-menu" id="navLinks">
+        <li><a href="{{ url_for('admin.dashboard') }}" class="admin-dashboard">dashboard</a></li>
+        <li><a href="{{ url_for('misc.index') }}" class="view-store">view store</a></li>
+      </ul>
+
+      <div class="navbar-right">
+        <a href="{{ url_for('auth.account') }}">
+          <img src="{{ url_for('static', filename='img/icons/user.png') }}" alt="user" class="icon" />
+        </a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Slide-in Menu Sidebar -->
+<aside id="navMenuSidebar" class="nav-menu-sidebar">
+  <div class="nav-menu-header">
+    <div class="nav-menu-logo">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Noted;" />
+    </div>
+    <button id="closeNavMenu">
+      <img src="{{ url_for('static', filename='img/icons/close.png') }}" alt="Close" />
+    </button>
+  </div>
+  <ul class="nav-menu-list">
+    <li><a href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('misc.index') }}">View Store</a></li>
+  </ul>
+</aside>

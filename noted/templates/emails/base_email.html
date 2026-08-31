@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block email_title %}{{ subject }} - noted;{% endblock %}</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        /* Import Inter font for email clients that support it */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* Reset and base styles */
+        body, table, td, p, h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #F5F5F5;
+            color: #000000;
+            line-height: 1.6;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        table {
+            border-collapse: collapse;
+        }
+        
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+        
+        /* noted; brand colors */
+        .brand-primary { color: #FFCB05; }
+        .brand-black { color: #000000; }
+        .brand-white { color: #FFFFFF; }
+        .brand-grey { color: #666666; }
+        
+        /* Background colors */
+        .bg-primary { background-color: #FFCB05; }
+        .bg-black { background-color: #000000; }
+        .bg-white { background-color: #FFFFFF; }
+        .bg-grey-light { background-color: #F8F9FA; }
+        
+        /* Button styles */
+        .btn-primary {
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 16px;
+            line-height: 1.2;
+            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #333333 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary {
+            background-color: transparent !important;
+            color: #000000 !important;
+            text-decoration: none;
+            padding: 13px 28px;
+            border: 2px solid #000000;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 16px;
+            line-height: 1.2;
+            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        /* Preview text styling */
+        .preheader {
+            display: none !important;
+            font-size: 1px;
+            line-height: 1px;
+            max-height: 0;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            mso-hide: all;
+        }
+        
+        /* Common utility classes */
+        .text-center { text-align: center !important; }
+        .text-left { text-align: left !important; }
+        .text-right { text-align: right !important; }
+        .mb-20 { margin-bottom: 20px !important; }
+        .mt-20 { margin-top: 20px !important; }
+        .pb-20 { padding-bottom: 20px !important; }
+        .pt-20 { padding-top: 20px !important; }
+        
+        /* Responsive styles */
+        @media only screen and (max-width: 620px) {
+            .email-container {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+            }
+            
+            .btn-primary, .btn-secondary {
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+                margin: 10px 0 !important;
+            }
+            
+            .mobile-hide {
+                display: none !important;
+            }
+            
+            .mobile-center {
+                text-align: center !important;
+            }
+        }
+        
+        /* Status badges */
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-pending { background-color: #FFC107; color: #000000; }
+        .badge-processing { background-color: #2196F3; color: #FFFFFF; }
+        .badge-shipped { background-color: #4CAF50; color: #FFFFFF; }
+        .badge-delivered { background-color: #4CAF50; color: #FFFFFF; }
+        .badge-cancelled { background-color: #F44336; color: #FFFFFF; }
+        
+        /* Card styles */
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            background-color: #FFFFFF;
+            margin-bottom: 24px;
+        }
+        
+        /* Responsive styles */
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                padding: 10px !important;
+            }
+            .content {
+                padding: 20px !important;
+            }
+            .btn-primary, .btn-secondary {
+                width: 100% !important;
+                text-align: center !important;
+                margin: 10px 0 !important;
+                box-sizing: border-box !important;
+            }
+            .mobile-stack {
+                display: block !important;
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #FFFFFF; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+    
+    <!-- Preview text (hidden) -->
+    <div class="preheader">
+        {% block preheader %}{% endblock %}
+    </div>
+    
+    <!-- Email wrapper -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F8F9FA;">
+        <tr>
+            <td style="padding: 40px 20px;">
+                <!-- Main container -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" class="container email-container" style="margin: 0 auto; background-color: #FFFFFF; border-radius: 12px; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);">
+                    <!-- Header with logo -->
+                    <tr>
+                        <td style="padding: 40px 40px 30px 40px; text-align: center; border-bottom: 1px solid #F0F0F0;">
+                            {% block email_header %}
+                            <!-- Logo -->
+                            <a href="{{ site_url or 'https://noted.com' }}" style="text-decoration: none;">
+                                <img src="{{ site_url or 'https://noted.com' }}/static/img/logo.png" 
+                                     alt="{{ company_name or 'noted;' }}" 
+                                     width="120" 
+                                     height="auto" 
+                                     style="display: block; margin: 0 auto; max-width: 120px;">
+                            </a>
+                            {% endblock %}
+                        </td>
+                    
+                    <!-- Main content -->
+                    <tr>
+                        <td class="content" style="padding: 40px;">
+                            {% block email_content %}
+                            <p style="font-size: 16px; line-height: 1.6; color: #000000; margin: 0 0 20px 0; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+                                Content goes here...
+                            </p>
+                            {% endblock %}
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 30px 40px; border-top: 1px solid #F0F0F0; background-color: #F8F9FA;">
+                            {% block email_footer %}
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td style="text-align: center; padding-bottom: 20px;">
+                                        <!-- Social Media Icons -->
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; padding-bottom: 15px;">
+                                            <tr>
+                                                <td style="padding: 0 10px;">
+                                                    <a href="https://facebook.com/notedstationery" style="text-decoration: none;">
+                                                        <img src="{{ url_for('static', filename='img/icons/facebook.png', _external=True) }}" width="24" height="24" alt="Facebook" style="display: block; border: 0;">
+                                                    </a>
+                                                </td>
+                                                <td style="padding: 0 10px;">
+                                                    <a href="https://instagram.com/noted.stationery" style="text-decoration: none;">
+                                                        <img src="{{ url_for('static', filename='img/icons/instagram.png', _external=True) }}" width="24" height="24" alt="Instagram" style="display: block; border: 0;">
+                                                    </a>
+                                                </td>
+                                                <td style="padding: 0 10px;">
+                                                    <a href="https://twitter.com/notedstationery" style="text-decoration: none;">
+                                                        <img src="{{ url_for('static', filename='img/icons/twitter.png', _external=True) }}" width="24" height="24" alt="Twitter" style="display: block; border: 0;">
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <!-- Contact Links -->
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto; padding-bottom: 20px;">
+                                            <tr>
+                                                <td style="padding: 0 15px; text-align: center;">
+                                                    <a href="{{ url_for('misc.support', _external=True) }}" style="color: #666666; text-decoration: none; font-size: 13px; font-weight: 500;">
+                                                        Support
+                                                    </a>
+                                                </td>
+                                                <td style="padding: 0 15px; text-align: center;">
+                                                    <a href="{{ url_for('misc.about', _external=True) }}" style="color: #666666; text-decoration: none; font-size: 13px; font-weight: 500;">
+                                                        About Us
+                                                    </a>
+                                                </td>
+                                                <td style="padding: 0 15px; text-align: center;">
+                                                    <a href="{{ url_for('misc.terms', _external=True) }}" style="color: #666666; text-decoration: none; font-size: 13px; font-weight: 500;">
+                                                        Terms
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <p style="font-size: 14px; color: #666666; margin: 0 0 15px 0; line-height: 1.5; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+                                            © {{ now.year if now else '2025' }} {{ company_name or 'noted;' }} - Premium Stationery & Digital Notebooks
+                                        </p>
+                                        <p style="font-size: 12px; color: #999999; margin: 0; line-height: 1.4; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+                                            This email was sent because you have an account with {{ company_name or 'noted;' }}<br>
+                                            If you have any questions, please contact our support team at
+                                            <a href="mailto:{{ support_email or 'support@noted.pt' }}" style="color: #666666; text-decoration: underline;">{{ support_email or 'support@noted.pt' }}</a>
+                                        </p>
+                                        
+                                        <!-- Company Address -->
+                                        <p style="font-size: 12px; color: #999999; margin-top: 15px; line-height: 1.4; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+                                            {{ company_name or 'noted; Stationery, Lda.' }}<br>
+                                            {{ company_address or 'Rua da Inovação, 123<br>1000-001 Lisboa, Portugal' }}
+                                        </p>
+                                        
+                                        {% if unsubscribe_link %}
+                                        <p style="font-size: 11px; color: #999999; margin-top: 20px; line-height: 1.4; font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+                                            <a href="{{ unsubscribe_link }}" style="color: #999999; text-decoration: underline;">Unsubscribe</a> from marketing emails
+                                        </p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                            {% endblock %}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

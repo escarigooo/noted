@@ -1,0 +1,172 @@
+<style>
+  /* Footer Auth Styling */
+.footer-auth {
+  background-color: var(--color-white);
+  border-top: 1px solid var(--color-light-gray);
+  padding: 1.5rem 1rem;
+  width: 100%;
+}
+
+.footer-auth-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-auth-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.footer-auth-icons img {
+  height: 32px;
+  width: 32px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.footer-auth-icons img:hover {
+  opacity: 1;
+}
+
+.footer-auth-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  text-align: center;
+}
+
+.footer-auth-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.footer-auth-links a {
+  color: var(--color-dark-gray);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footer-auth-links a:hover {
+  color: var(--color-black);
+}
+
+.footer-auth-center p {
+  color: var(--color-medium-gray);
+  font-size: 0.8rem;
+}
+
+.footer-auth-logo img {
+  height: 48px;
+}
+
+/* Responsive adjustments for footer-auth */
+@media (max-width: 768px) {
+  .footer-auth-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .footer-auth-logo {
+    order: 1;
+  }
+  
+  .footer-auth-center {
+    order: 2;
+  }
+  
+  .footer-auth-icons {
+    order: 3;
+  }
+}
+
+</style>
+
+<footer class="footer-auth">
+  <div class="footer-auth-container">
+
+    <!-- Ícones à esquerda -->
+    <div class="footer-auth-icons">
+         <a href="https://www.instagram.com/andreescarigo/" target="_blank" rel="noopener">
+          <img src="{{ url_for('static', filename='img/icons/instagram.png') }}" alt="Instagram" />
+        </a>
+        <a href="mailto:aluno223142@epad.edu.pt" target="_blank" rel="noopener">
+          <img src="{{ url_for('static', filename='img/icons/google.png') }}" alt="Google" />
+        </a>
+        <a href="https://github.com/escarigooo" target="_blank" rel="noopener">
+          <img src="{{ url_for('static', filename='img/icons/github.png') }}" alt="GitHub" />
+        </a>
+        <div class="footer-discord" onclick="copyDiscordTag()" title="Click to copy">
+          <img src="{{ url_for('static', filename='img/icons/discord.png') }}" alt="Discord" />
+          <span id="discord-tooltip" style="display: none;">copied!</span>
+        </div>
+      </div>
+
+    <!-- Centro com links e aviso -->
+    <div class="footer-auth-center">
+      <div class="footer-auth-links">
+        <a href="{{ url_for('misc.about') }}">about us</a>
+        <a href="{{ url_for('misc.terms') }}">terms & privacy</a>
+      </div>
+      <p>we do not sell or share your personal information</p>
+    </div>
+
+    <!-- Logo à direita -->
+    <div class="footer-auth-logo">
+      <img src="{{ url_for('static', filename='img/logo-n.png') }}" alt="noted; logo" />
+    </div>  </div>
+</footer>
+<script>
+  let tooltipStyled = false;
+
+  function copyDiscordTag() {
+    const tag = "escarigo";
+    const tooltip = document.getElementById("discord-tooltip");
+    const container = document.querySelector(".footer-discord");
+
+    // Apply styles only once
+    if (!tooltipStyled && tooltip && container) {
+      // Tooltip styles (right side)
+      Object.assign(tooltip.style, {
+        display: "none",
+        position: "absolute",
+        top: "50%",
+        left: "calc(100% + 8px)", // puts it just to the right
+        transform: "translateY(-50%)",
+        backgroundColor: "#5865F2",
+        color: "white",
+        padding: "4px 8px",
+        borderRadius: "6px",
+        fontSize: "0.75rem",
+        whiteSpace: "nowrap",
+        zIndex: "10",
+        fontFamily: "sans-serif",
+        boxShadow: "0 0 6px rgba(0,0,0,0.2)",
+      });
+
+      // Only this — do NOT touch icon size!
+      container.style.position = "relative";
+      container.style.cursor = "pointer";
+
+      tooltipStyled = true;
+    }
+
+    navigator.clipboard.writeText(tag).then(() => {
+      if (tooltip) {
+        tooltip.textContent = "escarigo copied!";
+        tooltip.style.display = "block";
+        setTimeout(() => {
+          tooltip.style.display = "none";
+        }, 1800);
+      }
+    });
+  }
+</script>

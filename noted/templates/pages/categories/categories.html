@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}categories | noted;{% endblock %}
+
+{% block body_class %}categories{% endblock %}
+
+{% block content %}
+
+<section class="categories-wrapper">
+
+  <!-- Título da página -->
+  <div class="pages-header">
+    <h1 class="page-title">categories</h1>
+    <!-- Breadcrumb dinâmico -->
+    {% include "partials/breadcrumb.html" with context %}
+  </div>
+
+  <!-- Grelha de categorias -->
+  <div class="categories-grid">
+    {% for category in categories %}
+    <div class="category-card">
+      <a href="{{ url_for('products.category_products', category_name=category.description) }}">
+        <img src="{{ url_for('static', filename='img/categories/' + category.description + '.png') }}" alt="{{ category.description }}">
+        <p class="category-name">{{ category.description }}</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,658 @@
+{% extends "pages/admin/base.html" %}
+
+{% block admin_page_title %}orders{% endblock %}
+{% block page_title %}Orders{% endblock %}
+
+{% block admin_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/orders.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages/admin/order_edit_modal.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin_table.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/notifications.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/button_loading.css') }}">
+<style>
+    .update-note {
+        color: #ff6b6b;
+        font-size: 0.9em;
+        margin-left: 5px;
+    }
+
+    /* Invoice styles */
+    .invoice-actions-container {
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+    
+    .action-group {
+        margin-bottom: 10px;
+    }
+    
+    .action-group h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .sent-status {
+        color: #28a745;
+        font-size: 0.9em;
+        margin: 5px 0 0 0;
+    }
+    
+    .sent-status i {
+        margin-right: 5px;
+    }
+    
+    .muted-text {
+        color: #6c757d;
+        font-style: italic;
+        font-size: 0.9em;
+        margin: 5px 0 0 0;
+    }
+    
+    .loading-spinner {
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        border: 3px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: #000;
+        animation: spin 1s ease-in-out infinite;
+        margin: 10px;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .error-message {
+        color: #dc3545;
+        padding: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<section class="admin-wrapper">
+    <!-- Loading state removed - using only notifications -->
+
+    <div class="admin-stats">
+        <div class="stat-card">
+            <h3 id="total-orders">--</h3>
+            <p>Total Orders</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="monthly-orders">--</h3>
+            <p>Monthly Orders</p>
+        </div>
+        <div class="stat-card">
+            <h3 id="total-revenue">--</h3>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <button id="refreshDataBtn" class="btn btn-primary" onclick="refreshAnalytics()">Refresh Data</button>
+        <button id="addOrderBtn" class="btn btn-secondary" onclick="addNewOrder()">New Order</button>
+        <button id="exportOrdersBtn" class="btn btn-secondary" onclick="exportOrders()">Export</button>
+    </div>
+
+    <!-- Table Section -->
+    {% set table_config = {
+    'table_id': 'orders-table',
+    'table_name': 'Orders',
+    'columns': [
+    {'key': 'id', 'label': 'Order ID', 'width': '100px'},
+    {'key': 'customer_name', 'label': 'Customer'},
+    {'key': 'order_date', 'label': 'Date', 'width': '120px', 'format': 'date'},
+    {'key': 'item_count', 'label': 'Items', 'width': '80px', 'class': 'text-center'},
+    {'key': 'total', 'label': 'Total', 'width': '100px', 'format': 'currency', 'class': 'text-right'},
+    {'key': 'payment_method', 'label': 'Payment', 'width': '120px'},
+    {'key': 'status', 'label': 'Status', 'width': '100px', 'format': 'status'}
+    ],
+    'filters': [
+    {'value': 'pending', 'label': 'Pending'},
+    {'value': 'processing', 'label': 'Processing'},
+    {'value': 'shipped', 'label': 'Shipped'},
+    {'value': 'delivered', 'label': 'Delivered'},
+    {'value': 'cancelled', 'label': 'Cancelled'}
+    ],
+    'actions': [
+    {'key': 'view', 'label': 'View', 'icon': 'View', 'class': 'btn-view'},
+    {'key': 'edit', 'label': 'Edit', 'icon': 'Edit', 'class': 'btn-edit'}
+    ]
+    } %}
+    {% include 'partials/admin_table.html' %}
+
+    <!-- Last updated info -->
+    <p class="last-updated">
+        Last updated: <span id="last-updated">--</span>
+    </p>
+</section>
+{% endblock %}
+
+{% block admin_scripts %}
+<!-- Admin Tables JS -->
+<script src="{{ url_for('static', filename='js/admin/admin_tables.js') }}"></script>
+<!-- Analytics JS -->
+<script src="{{ url_for('static', filename='js/admin/analytics.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/button_loading.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize orders table
+        initializeTable('orders-table', {
+            apiEndpoint: '/api/admin/table/orders',
+            deleteEndpoint: '/api/admin/table/orders',
+            itemName: 'order',
+            columns: [
+                { key: 'id', label: 'Order ID', sortable: true },
+                { key: 'customer_name', label: 'Customer', sortable: true },
+                { key: 'order_date', label: 'Date', sortable: true, format: 'date' },
+                { key: 'item_count', label: 'Items', sortable: true },
+                { key: 'total', label: 'Total', sortable: true, format: 'currency' },
+                { key: 'payment_method', label: 'Payment', sortable: true },
+                { key: 'status', label: 'Status', sortable: true, format: 'status' }
+            ],
+            actions: [
+                {
+                    key: 'view',
+                    label: 'View',
+                    icon: 'View',
+                    class: 'btn-view'
+                    // Uses default view handler
+                },
+                {
+                    key: 'edit',
+                    label: 'Edit',
+                    icon: 'Edit',
+                    class: 'btn-edit',
+                    handler: openOrderEditModal // Custom handler for orders
+                }
+            ]
+        });
+
+        // Initialize analytics handler if not already done
+        if (typeof AdminAnalytics !== 'undefined' && !window.analyticsHandler) {
+            window.analyticsHandler = new AdminAnalytics();
+        }
+
+        // Load order statistics
+        loadOrderStats();
+
+        // Update the last updated timestamp
+        updateLastUpdated();
+    });
+
+    // Load order statistics from analytics data
+    async function loadOrderStats() {
+        try {
+            const response = await fetch('/static/data/analytics.json');
+            const data = await response.json();
+
+            const totalOrdersEl = document.getElementById('total-orders');
+            const monthlyOrdersEl = document.getElementById('monthly-orders');
+            const totalRevenueEl = document.getElementById('total-revenue');
+
+            // Update stat cards with real data
+            if (data.orders && totalOrdersEl) {
+                totalOrdersEl.textContent = data.orders.total_orders || 0;
+            }
+
+            if (data.orders && monthlyOrdersEl) {
+                monthlyOrdersEl.textContent = data.orders.monthly_orders || 0;
+            }
+
+            if (data.dashboard && totalRevenueEl) {
+                totalRevenueEl.textContent = '€' + (data.dashboard.total_sales || 0).toFixed(2);
+            }
+
+        } catch (error) {
+            console.error('Error loading order stats:', error);
+
+            // Safely set fallback values
+            const elements = {
+                'total-orders': '0',
+                'monthly-orders': '0',
+                'total-revenue': '€0.00'
+            };
+
+            for (const [id, value] of Object.entries(elements)) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = value;
+                }
+            }
+        }
+    }
+
+    // Analytics refresh function
+    function refreshAnalytics() {
+        withButtonLoading('refreshDataBtn', async () => {
+            try {
+                // Use analytics.js refresh if available
+                if (window.analyticsHandler && typeof window.analyticsHandler.refreshAnalytics === 'function') {
+                    await window.analyticsHandler.refreshAnalytics();
+                }
+
+                // Update local data
+                await loadOrderStats();
+                refreshTable('orders-table');
+                updateLastUpdated();
+                return true;
+            } catch (error) {
+                console.error('Refresh failed:', error);
+                updateLastUpdated('(refresh failed)');
+                throw error;
+            }
+        }, {
+            loadingText: 'Refreshing...',
+            successNotification: 'Orders data refreshed!',
+            errorNotification: 'Failed to refresh data. See console for details.'
+        });
+    }
+
+    // Print order function
+    function printOrder(orderId) {
+        // Get selected print options
+        const selectedOptions = [];
+        document.querySelectorAll('input[name="print_options[]"]:checked').forEach(checkbox => {
+            selectedOptions.push(checkbox.value);
+        });
+        
+        if (selectedOptions.length === 0) {
+            showNotification('Please select at least one print option', 'error');
+            return;
+        }
+        
+        // Open a print-friendly version in a new window
+        window.open(`/admin/orders/${orderId}/print?options=${selectedOptions.join(',')}`, '_blank');
+    }
+    
+    // Generate invoice PDF
+    async function generateInvoicePDF(orderId, event) {
+        try {
+            const generateBtn = event ? event.target : document.querySelector(`button[onclick*="generateInvoicePDF(${orderId})"]`);
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            
+            const response = await fetch(`/api/admin/orders/${orderId}/generate-invoice`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification('Invoice generated successfully!', 'success');
+                // Refresh modal to show invoice details
+                openOrderEditModal(orderId);
+            } else {
+                // Check for specific errors
+                if (result.message && result.message.includes('PDF generation tools are not installed')) {
+                    // Show more helpful error message
+                    const errorMessage = `PDF Generation Error: Missing required software. 
+                        To fix this issue: 
+                        1. Run the install_wkhtmltopdf.bat script in the noted folder 
+                        2. Run 'pip install pdfkit weasyprint reportlab' in your terminal 
+                        3. Restart the application server`;
+                    showNotification(errorMessage, 'error', 10000); // 10 seconds display
+                } else {
+                    showNotification(result.message || 'Failed to generate invoice', 'error');
+                }
+            }
+        } catch (error) {
+            console.error('Error generating invoice:', error);
+            showNotification('Error generating invoice: ' + error.message, 'error');
+        } finally {
+            const generateBtn = event ? event.target : document.querySelector(`button[onclick*="generateInvoicePDF(${orderId})"]`);
+            if (generateBtn) {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-file-invoice"></i> Generate Invoice';
+            }
+        }
+    }
+    
+    // Preview invoice PDF
+    function previewInvoicePDF(orderId) {
+        window.open(`/admin/orders/${orderId}/invoice`, '_blank');
+    }
+    
+    // Show invoice error details
+    function showInvoiceErrorDetails(errorMsg) {
+        try {
+            const decodedError = decodeURIComponent(errorMsg);
+            showNotification(`Error details: ${decodedError}`, 'error', 10000);
+        } catch (e) {
+            showNotification(`Error details could not be decoded`, 'error', 5000);
+        }
+    }
+    
+    // Send invoice by email
+    async function sendInvoiceEmail(orderId) {
+        try {
+            const sendBtn = event.target;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            
+            const response = await fetch(`/api/admin/orders/${orderId}/send-invoice`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification('Invoice sent successfully!', 'success');
+                // Refresh modal to update invoice sent status
+                openOrderEditModal(orderId);
+            } else {
+                // Check for specific errors
+                if (result.message && result.message.includes('PDF generation')) {
+                    showNotification(`Email not sent: ${result.message}. Please generate the invoice first.`, 'error', 8000);
+                } else {
+                    showNotification(result.message || 'Failed to send invoice', 'error');
+                }
+            }
+        } catch (error) {
+            console.error('Error sending invoice:', error);
+            showNotification(`Error sending invoice: ${error.message}`, 'error', 8000);
+        } finally {
+            const sendBtn = event.target;
+            if (sendBtn) {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send to Customer';
+            }
+        }
+    }
+    
+    // Add new order function
+    function addNewOrder() {
+        withButtonLoading('addOrderBtn', async () => {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            showNotification('Add new order feature coming soon!', 'info');
+        });
+    }
+
+    // Export orders function
+    function exportOrders() {
+        withButtonLoading('exportOrdersBtn', async () => {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            showNotification('Export feature coming soon!', 'info');
+        });
+    }
+
+    // Update last updated timestamp
+    function updateLastUpdated(message = null) {
+        const now = new Date();
+        const timeString = now.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        const lastUpdatedEl = document.getElementById('last-updated');
+        if (!lastUpdatedEl) return;
+
+        if (message) {
+            lastUpdatedEl.innerHTML = `${timeString} <span class="update-note">${message}</span>`;
+        } else {
+            lastUpdatedEl.textContent = timeString;
+        }
+    }
+    
+    // Custom order edit modal handler - restricts editable fields
+    function openOrderEditModal(orderId) {
+        const tableId = 'orders-table';
+        const table = adminTables[tableId];
+        if (!table) return;
+        
+        const modal = document.getElementById(`${tableId}-edit-modal`);
+        const loadingEl = modal.querySelector('.form-loading');
+        const contentEl = modal.querySelector('.form-content');
+        const saveBtn = document.getElementById(`${tableId}-edit-save`);
+        
+        if (!modal) return;
+        
+        // Show modal and loading state
+        modal.style.display = 'flex';
+        loadingEl.style.display = 'block';
+        contentEl.innerHTML = '';
+        
+        // Fetch order data
+        fetch(`/api/admin/orders/${orderId}`)
+            .then(response => response.json())
+            .then(result => {
+                loadingEl.style.display = 'none';
+                
+                if (result.success || result.data) {
+                    const data = result.data || result;
+                    
+                    // Start with order summary section
+                    let html = '<div class="order-summary">';
+                    html += '<div class="order-summary-row">';
+                    html += '<span class="order-summary-label">Order #:</span>';
+                    html += `<span class="order-summary-value">${data.id}</span>`;
+                    html += '</div>';
+                    html += '<div class="order-summary-row">';
+                    html += '<span class="order-summary-label">Customer:</span>';
+                    html += `<span class="order-summary-value">${data.customer_name}</span>`;
+                    html += '</div>';
+                    html += '<div class="order-summary-row">';
+                    html += '<span class="order-summary-label">Date:</span>';
+                    html += `<span class="order-summary-value">${new Date(data.order_date).toLocaleDateString()}</span>`;
+                    html += '</div>';
+                    html += '<div class="order-summary-row">';
+                    html += '<span class="order-summary-label">Total:</span>';
+                    html += `<span class="order-summary-value">€${parseFloat(data.total).toFixed(2)}</span>`;
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    // Order status section
+                    html += '<div class="order-edit-section">';
+                    html += '<h4>Order Status</h4>';
+                    html += '<div class="form-group">';
+                    html += `<label for="${tableId}-status">Status</label>`;
+                    html += `<select id="${tableId}-status" name="status">`;
+                    const statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+                    statuses.forEach(status => {
+                        const selected = data.status === status ? 'selected' : '';
+                        html += `<option value="${status}" ${selected}>${status.charAt(0).toUpperCase() + status.slice(1)}</option>`;
+                    });
+                    html += '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    // Shipping & Tracking section
+                    html += '<div class="order-edit-section">';
+                    html += '<h4>Shipping Information</h4>';
+                    html += '<div class="form-group">';
+                    html += `<label for="${tableId}-tracking">Tracking Number</label>`;
+                    html += `<input type="text" id="${tableId}-tracking" name="tracking_number" value="${data.tracking_number || ''}">`;
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    // Admin notes section
+                    html += '<div class="order-edit-section">';
+                    html += '<h4>Administrative Notes</h4>';
+                    html += '<div class="form-group">';
+                    html += `<label for="${tableId}-notes">Notes (internal only)</label>`;
+                    html += `<textarea id="${tableId}-notes" name="admin_notes" rows="3">${data.admin_notes || ''}</textarea>`;
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    // Invoice section
+                    html += '<div class="order-edit-section">';
+                    html += '<h4>Invoice Management</h4>';
+                    html += '<div id="invoice-actions" class="invoice-actions-container">';
+                    html += '<div class="loading-spinner"></div>';
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    // Order actions section
+                    html += '<div class="order-edit-section">';
+                    html += '<h4>Order Actions</h4>';
+                    html += '<div class="action-buttons">';
+                    html += '<div class="btn-group">';
+                    html += `<a href="/admin/orders/${data.id}/print" target="_blank" class="btn btn-secondary"><i class="fas fa-print"></i> Print Order</a>`;
+                    html += `<button class="btn btn-primary" onclick="printOrderWithOptions(${data.id})"><i class="fas fa-print"></i> Print with Options</button>`;
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    contentEl.innerHTML = html;
+                    
+                    // Setup save handler
+                    saveBtn.onclick = () => saveOrderEdit(orderId);
+                    
+                    // Check and update invoice options
+                    checkInvoiceOptions(orderId);
+                } else {
+                    contentEl.innerHTML = '<p class="text-danger">Failed to load order data</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading order:', error);
+                loadingEl.style.display = 'none';
+                contentEl.innerHTML = '<p class="text-danger">Error loading order data</p>';
+            });
+    }
+    
+    // Check and update invoice options
+    async function checkInvoiceOptions(orderId) {
+        const invoiceActionsContainer = document.getElementById('invoice-actions');
+        if (!invoiceActionsContainer) return;
+        
+        try {
+            // Show loading state
+            invoiceActionsContainer.innerHTML = '<div class="loading-spinner"></div>';
+            
+            // Fetch invoice info
+            const response = await fetch(`/api/admin/orders/${orderId}/invoice-info`);
+            const result = await response.json();
+            
+            let html = '';
+            
+            if (result.success && result.has_invoice) {
+                // Invoice exists - show view, send options
+                html = `
+                    <div class="action-group">
+                        <h4>Invoice #${result.invoice.invoice_number}</h4>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="previewInvoicePDF(${orderId})">
+                                <i class="fas fa-eye"></i> View Invoice
+                            </button>
+                            <button class="btn btn-primary" onclick="sendInvoiceEmail(${orderId})">
+                                <i class="fas fa-paper-plane"></i> Send to Customer
+                            </button>
+                        </div>
+                        ${result.invoice.invoice_sent ? 
+                            `<p class="sent-status"><i class="fas fa-check-circle"></i> Invoice sent on ${new Date(result.invoice.invoice_sent_date).toLocaleDateString()}</p>` : 
+                            ''}
+                    </div>
+                `;
+            } else {
+                // Invoice doesn't exist - show generate option
+                html = `
+                    <div class="action-group">
+                        <h4>Invoice Actions</h4>
+                        <button id="generateInvoiceBtn" class="btn btn-primary" onclick="generateInvoicePDF(${orderId}, event)">
+                            <i class="fas fa-file-invoice"></i> Generate Invoice
+                        </button>
+                        <p class="muted-text">No invoice has been generated yet.</p>
+                    </div>
+                `;
+            }
+            
+            invoiceActionsContainer.innerHTML = html;
+            
+        } catch (error) {
+            console.error('Error checking invoice options:', error);
+            invoiceActionsContainer.innerHTML = `
+                <div class="error-message">
+                    <p>Failed to load invoice options.</p>
+                    <p>
+                        <button class="btn btn-sm btn-secondary" onclick="checkInvoiceOptions(${orderId})">
+                            <i class="fas fa-sync-alt"></i> Retry
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="showInvoiceErrorDetails('${encodeURIComponent(error.toString())}')">
+                            <i class="fas fa-info-circle"></i> Show Error Details
+                        </button>
+                    </p>
+                </div>
+            `;
+        }
+    }
+    
+    // Save order edit
+    async function saveOrderEdit(orderId) {
+        const tableId = 'orders-table';
+        const modal = document.getElementById(`${tableId}-edit-modal`);
+        const saveBtn = document.getElementById(`${tableId}-edit-save`);
+        
+        if (!modal) return;
+        
+        // Get form data
+        const status = document.getElementById(`${tableId}-status`).value;
+        const tracking = document.getElementById(`${tableId}-tracking`).value;
+        const notes = document.getElementById(`${tableId}-notes`).value;
+        
+        // Get print options
+        const printOptions = [];
+        document.querySelectorAll('input[name="print_options[]"]:checked').forEach(checkbox => {
+            printOptions.push(checkbox.value);
+        });
+        
+        // Prepare data object
+        const data = {
+            status: status,
+            tracking_number: tracking,
+            admin_notes: notes,
+            print_options: printOptions
+        };
+        
+        // Disable button and show loading state
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+        
+        try {
+            const response = await fetch(`/api/admin/orders/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success || response.ok) {
+                showNotification('Order updated successfully', 'success');
+                
+                // Close modal and refresh table
+                modal.style.display = 'none';
+                adminTables[tableId].refresh();
+            } else {
+                showNotification(result.message || 'Failed to update order', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating order:', error);
+            showNotification('Error updating order', 'error');
+        } finally {
+            // Restore button state
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Changes';
+        }
+    }
+</script>
+{% endblock %}

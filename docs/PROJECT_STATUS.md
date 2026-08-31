@@ -1,6 +1,6 @@
 # Project status
 
-Last reviewed: 2026-08-31
+Last reviewed: 2026-09-01
 
 ## Purpose and ownership
 
@@ -32,7 +32,7 @@ These statements describe inspected source code. End-to-end behaviour still need
 - Email delivery needs an external SMTP service; local development can use Mailpit or a similar mail catcher.
 - Some admin/email preview routes overlap and need consolidation.
 - The current smoke/critical-flow suite establishes a 25% coverage floor; broader route and failure-path coverage is still needed.
-- The current visual assets have documented provenance. The repository remains private until the historical unknown assets are removed by the planned Git history rewrite.
+- The current visual assets have documented provenance. Historical unknown assets were removed from reachable Git history; GitHub-side legacy pull-request references and cached views still require cleanup before public visibility.
 
 ## Technology actually present
 
@@ -42,8 +42,15 @@ Python, Flask, Flask-SQLAlchemy, SQLAlchemy, PyMySQL, Flask-Mail, Werkzeug, Jinj
 
 Do not make the repository public or advertise a live demo until all of these are complete:
 
-1. asset provenance and licence records pass final review;
-2. Git history is rewritten to remove historical personal PDFs and large unredistributable archives;
-3. tests, CI, build, and secret scans pass;
-4. a clean demo starts from documented commands with synthetic data only;
-5. README, screenshots, links, licence notices, and portfolio claims receive a final factual review.
+Completed gates:
+
+- asset provenance and licence records were reviewed;
+- reachable Git history was rewritten and independently cloned for verification;
+- tests, CI, dependency audit, container build, and complete-history secret scans pass;
+- the documented Compose demo starts from deterministic synthetic data.
+
+Remaining gates:
+
+- GitHub Support handles the affected pull-request refs and cached views;
+- a disposable hosting platform and managed database are selected and tested;
+- README, screenshots, public links, licence notices, and portfolio claims receive one final cross-review.

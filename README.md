@@ -8,7 +8,7 @@ The inspected source includes catalogue browsing, accounts, a database-backed ca
 
 ## Current state
 
-The repository is temporarily private until historical personal and unknown-provenance files are removed from Git history. The current tree has tests, CI, a containerized demo, and documented deployment boundaries, but no public deployment is enabled yet.
+The publication history has been rewritten and independently verified. The repository remains temporarily private while GitHub-hosted legacy pull-request references and cached views are handled and the final public-content audit is completed. The current tree has tests, CI, a containerized demo, and documented deployment boundaries, but no public deployment is enabled yet.
 
 ## Stack
 

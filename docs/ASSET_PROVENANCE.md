@@ -2,7 +2,7 @@
 
 Last reviewed: 2026-08-31
 
-Only the files listed here are approved for publication. The previous image/font set had unknown provenance and was removed in issue #4. Git history still contains those files until the planned history rewrite is complete, so the repository must remain private.
+Only the files listed here are approved for publication. The previous image/font set had unknown provenance and was removed in issue #4. The publication history was rewritten on 2026-08-31 to remove those historical files; see `HISTORY_REWRITE.md`. The repository remains private pending GitHub-side cleanup of legacy pull-request references and cached views.
 
 ## AI-generated catalogue images
 

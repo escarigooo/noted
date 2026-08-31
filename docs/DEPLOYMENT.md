@@ -40,7 +40,7 @@ Deploy the `Dockerfile` to a container platform with a managed MySQL service. Co
 
 The container runs as a non-root user and starts Gunicorn through `wsgi.py`. The platform should use `/health` as its readiness probe. Do not expose MySQL or Mailpit publicly.
 
-No automatic production deployment is enabled yet. Deployment remains gated on the Git-history rewrite, public-content audit, and an explicit platform choice. CI validates tests, dependency vulnerabilities, secret history, and the container build on every pull request.
+No automatic production deployment is enabled yet. The Git-history rewrite is complete; deployment remains gated on GitHub-side cleanup of legacy references, the final public-content audit, and an explicit platform choice. CI validates tests, dependency vulnerabilities, complete reachable secret history, and the container build on pull requests and pushes to `main`.
 
 ## Limitations
 

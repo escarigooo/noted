@@ -1,35 +1,21 @@
 ## Estrutura do Projeto
 
-```
+```text
 noted/
-├── __init__.py        # Configuração da aplicação e inicialização
-├── app.py             # Ponto de entrada da aplicação
-├── config.py          # Configurações e variáveis de ambiente
-├── forms.py           # Classes de validação de formulários
-├── models.py          # Modelos SQLAlchemy para a base de dados
 ├── requirements.txt   # Dependências do projeto
-├── notebooks/         # Notebooks Jupyter para análise de dados
-├── routes/            # Blueprints e rotas da aplicação
-│   ├── __init__.py
-│   ├── admin.py       # Painel de administração
-│   ├── auth.py        # Autenticação e gestão de utilizadores
-│   ├── cart.py        # Funcionalidades do carrinho de compras
-│   ├── checkout.py    # Processo de finalização de compra
-│   ├── misc.py        # Páginas diversas (início, sobre, etc.)
-│   ├── products.py    # Catálogo de produtos e categorias
-│   └── api/           # Endpoints da API REST
-├── services/          # Serviços da aplicação
-│   ├── __init__.py
-│   └── email_service.py  # Serviço de envio de emails
-├── static/            # Ficheiros estáticos
-│   ├── css/
-│   ├── js/
-│   ├── img/
-│   └── fonts/
-└── templates/         # Templates HTML
-    ├── emails/        # Templates de email
-    ├── pages/         # Páginas principais
-    └── partials/      # Componentes reutilizáveis
+├── database/          # Esquema e dados de teste MySQL
+├── docs/              # Documentação e notas
+├── notebooks/         # Análises Jupyter
+├── scripts/           # Scripts de configuração e arranque
+└── noted/             # Pacote da aplicação Flask
+    ├── __init__.py
+    ├── app.py
+    ├── config.py
+    ├── models.py
+    ├── routes/
+    ├── services/
+    ├── static/
+    └── templates/
 ```
 
 ## Ideia do Produto 
@@ -127,24 +113,24 @@ A noted; é uma plataforma de cadernos digitais open source que oferece sincroni
 
 4. Inicializar a base de dados:
    ```
-   python ../init_sample_data.py
+   Execute `database/db_noted.sql` in MySQL Workbench and then `database/test-content.sql` for sample data.
    ```
 
 5. Executar a aplicação:
    
    Usando o script incluído (também inicia o WAMP):
    ```
-   start_project.bat
+   scripts\start_project.bat
    ```
    
    Ou manualmente:
    ```
-   python app.py
+   python -m noted.app
    ```
    
    Ou usando Flask CLI:
    ```
-   set FLASK_APP=app.py
+   set FLASK_APP=noted.app
    set FLASK_ENV=development
    flask run
    ```
@@ -248,8 +234,8 @@ Os notebooks Jupyter são utilizados para análises avançadas:
 - Tokens temporários para links de verificação (1 hora)
 
 ### Scripts de Utilitário
-- `setup_venv.bat`: Configuração automática do ambiente virtual
-- `start_project.bat`: Inicialização do projeto e serviços necessários
+- `scripts\setup_venv.bat`: Configuração automática do ambiente virtual
+- `scripts\start_project.bat`: Inicialização do projeto e serviços necessários
   
 ## Recursos Adicionais
 

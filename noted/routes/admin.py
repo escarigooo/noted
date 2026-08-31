@@ -10,6 +10,7 @@ from ..services.email_service import EmailService
 from ..models import Order
 
 admin_bp = Blueprint('admin', __name__)
+REPOSITORY_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Move the admin_required decorator directly into this file
 def admin_required(f):
@@ -133,10 +134,7 @@ def refresh_analytics():
             
         # Find the notebook path if we want to try running it
         possible_notebook_paths = [
-            os.path.join(os.getcwd(), 'noted', 'notebooks', 'analytics.ipynb'),
-            os.path.join(os.getcwd(), 'notebooks', 'analytics.ipynb'),
-            os.path.join(os.path.dirname(__file__), '..', 'notebooks', 'analytics.ipynb'),
-            os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'analytics.ipynb')
+            os.path.join(REPOSITORY_ROOT, 'notebooks', 'analytics.ipynb')
         ]
         
         notebook_path = None
@@ -319,10 +317,7 @@ def refresh_graphics():
         
         # Find the notebook path
         possible_notebook_paths = [
-            os.path.join(os.getcwd(), 'noted', 'notebooks', 'graphics.ipynb'),
-            os.path.join(os.getcwd(), 'notebooks', 'graphics.ipynb'),
-            os.path.join(os.path.dirname(__file__), '..', 'notebooks', 'graphics.ipynb'),
-            os.path.join(os.path.dirname(__file__), '..', '..', 'notebooks', 'graphics.ipynb')
+            os.path.join(REPOSITORY_ROOT, 'notebooks', 'graphics.ipynb')
         ]
         
         notebook_path = None

@@ -14,7 +14,6 @@ __pycache__/
 .env
 
 # IDEs e editores
-.vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
@@ -40,4 +39,7 @@ instance/
 *.tmp
 
 # Testes e cache
-pytest_cache/
+.pytest_cache/
+
+# Ficheiros gerados pela aplicação
+noted/static/invoices/*.pdf

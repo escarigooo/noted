@@ -422,16 +422,16 @@ def preview_email(email_type):
             'id': 3,
             'name': 'Leather Portfolio',
             'price': 45.00,
-            'image': 'portfolio-leather.jpg',
-            'image_url': '/static/img/products/portfolio-leather.jpg',
+            'image': 'folio.png',
+            'image_url': '/static/img/products/folio.png',
             'description': 'Professional leather portfolio for documents'
         },
         {
             'id': 4,
             'name': 'Desk Organizer',
             'price': 28.00,
-            'image': 'organizer-desk.jpg',
-            'image_url': '/static/img/products/organizer-desk.jpg',
+            'image': 'essentials.png',
+            'image_url': '/static/img/products/essentials.png',
             'description': 'Bamboo desk organizer with multiple compartments'
         }
     ]
@@ -507,8 +507,8 @@ def preview_email(email_type):
     context.update({
         'now': datetime.now(),
         'company_name': 'noted;',
-        'support_email': 'support@noted.pt',
-        'site_url': 'https://noted.pt',
+        'support_email': 'support@example.com',
+        'site_url': 'http://localhost:5000',
         'company_address': 'Rua da Inovação, 123<br>1000-001 Lisboa, Portugal'
     })
     

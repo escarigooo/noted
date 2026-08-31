@@ -20,7 +20,7 @@
     {% for category in categories %}
     <div class="category-card">
       <a href="{{ url_for('products.category_products', category_name=category.description) }}">
-        <img src="{{ url_for('static', filename='img/categories/' + category.description + '.png') }}" alt="{{ category.description }}">
+        <img src="{{ url_for('static', filename='img/categories/' + category.description + '.svg') }}" alt="{{ category.description }}">
         <p class="category-name">{{ category.description }}</p>
       </a>
     </div>

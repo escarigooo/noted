@@ -521,7 +521,7 @@ function loadCart() {
               <button class="increase-qty qty-btn" data-product-id="${item.id}">+</button>
             </div>
             <button class="remove-item">
-              <img src="/static/img/icons/close.png" alt="remove" />
+              <img src="/static/img/icons/close.svg" alt="remove" />
             </button>
           </div>
         </div>
@@ -579,7 +579,7 @@ function loadCart() {
           <span class="discount-text">discount: -${discountValue.toFixed(2)}€</span>
           <span class="discount-details">(${isPercentage ? discountAmount + '%' : discountAmount.toFixed(2) + '€'})</span>
           <button class="remove-discount-btn" title="Remove discount">
-            <img src="/static/img/icons/close.png" alt="remove discount" />
+            <img src="/static/img/icons/close.svg" alt="remove discount" />
           </button>
         </p>`;
     }

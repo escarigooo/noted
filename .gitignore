@@ -43,3 +43,6 @@ instance/
 
 # Ficheiros gerados pela aplicação
 noted/static/invoices/*.pdf
+
+# Generated analytics exports
+noted/static/data/*.json

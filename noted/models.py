@@ -1,8 +1,23 @@
 from datetime import datetime
 from noted import db
 from flask import current_app
-import mysql.connector
+import pymysql
 from sqlalchemy.engine import make_url
+
+class RawConnectionAdapter:
+    """Keep the legacy dictionary=True cursor API while using PyMySQL."""
+
+    def __init__(self, connection):
+        self._connection = connection
+
+    def cursor(self, dictionary=False):
+        if dictionary:
+            return self._connection.cursor(pymysql.cursors.DictCursor)
+        return self._connection.cursor()
+
+    def __getattr__(self, name):
+        return getattr(self._connection, name)
+
 
 def get_db_connection():
     """Open a raw MySQL connection using the configured SQLAlchemy URL."""
@@ -10,13 +25,14 @@ def get_db_connection():
     if not database_url.drivername.startswith("mysql"):
         raise RuntimeError("Raw SQL features require a MySQL DATABASE_URI")
 
-    return mysql.connector.connect(
+    connection = pymysql.connect(
         host=database_url.host or "localhost",
         port=database_url.port or 3306,
         user=database_url.username,
         password=database_url.password or "",
         database=database_url.database,
     )
+    return RawConnectionAdapter(connection)
 
 
 class Category(db.Model):

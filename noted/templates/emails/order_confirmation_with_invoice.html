@@ -9,10 +9,10 @@
 {% block email_header %}
 <!-- Logo -->
 <a href="{{ site_url }}" style="text-decoration: none;">
-    <img src="{{ site_url }}/static/img/logo.png" 
-         alt="{{ company_name }}" 
-         width="120" 
-         height="auto" 
+    <img src="{{ site_url }}/static/img/logo.svg"
+         alt="{{ company_name }}"
+         width="120"
+         height="auto"
          style="display: block; margin: 0 auto 20px auto; max-width: 120px;">
 </a>
 
@@ -44,7 +44,7 @@
         Your invoice has been attached to this email as a PDF file.<br>
         You can also view it online using the secure link below:
     </p>
-    <a href="{{ invoice_link }}" 
+    <a href="{{ invoice_link }}"
        style="display: inline-block; background-color: #000; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">
         View Invoice Online
     </a>

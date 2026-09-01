@@ -1,8 +1,8 @@
 # Asset provenance
 
-Last reviewed: 2026-08-31
+Last reviewed: 2026-09-01
 
-Only the files listed here are approved for publication. The previous image/font set had unknown provenance and was removed in issue #4. The publication history was rewritten on 2026-08-31 to remove those historical files; see `HISTORY_REWRITE.md`. The repository remains private pending GitHub-side cleanup of legacy pull-request references and cached views.
+Only the files listed here are approved for publication. The previous third-party image/font set had unknown provenance and was removed in issue #4. The publication history was rewritten on 2026-08-31 to remove those historical files; see `HISTORY_REWRITE.md`.
 
 ## AI-generated catalogue images
 
@@ -26,9 +26,18 @@ All prompts used `product-mockup`, a square catalogue composition, a warm off-wh
 - Folio: “an original generic keyboard folio for a digital paper notebook tablet”; blank keys and an empty support panel in recycled woven fabric.
 - Essentials: “an original generic desk accessory set for digital note-taking”; exactly one coiled USB-C cable, one protective sleeve, and one blank recycled-paper planner.
 
+## Author-designed Noted identity
+
+André Escarigo designed and created the original Noted wordmark and mark for the school project. He confirmed his authorship on 2026-09-01. The original PNG files were restored from the verified local backup after the conservative asset cleanup and are covered by the repository MIT licence.
+
+| File | Purpose | SHA-256 |
+|---|---|---|
+| `noted/static/img/logo.png` | primary Noted wordmark | `50b0275df46959f9e0f346a18920e5b16c18f35d9552a82781bef070fd612b8f` |
+| `noted/static/img/logo-n.png` | compact Noted mark | `bdb9e119d3f074ee08778e9339ad410ac8aa5a0603af6d86b9f97d1d844cc431` |
+
 ## Repository-authored SVG assets
 
-`logo.svg`, `logo-mark.svg`, the seven navigation icons, the four category illustrations, and `products/placeholder.svg` were authored directly as simple SVG markup for this repository on 2026-08-31. They contain only geometric shapes and system-font text. They are covered by the repository MIT licence.
+The seven navigation icons, four category illustrations, and `products/placeholder.svg` were authored directly as simple SVG markup for this repository on 2026-08-31. They contain only geometric shapes and system-font text. They are covered by the repository MIT licence.
 
 ## Fonts
 

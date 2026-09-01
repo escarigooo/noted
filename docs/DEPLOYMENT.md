@@ -40,13 +40,13 @@ Deploy the `Dockerfile` to a container platform with a private, persistent MySQL
 
 The container runs as a non-root user and starts Gunicorn through `wsgi.py`. The platform should use `/health` as its readiness probe. Do not expose MySQL or Mailpit publicly.
 
-No automatic production deployment is enabled yet. The Git-history rewrite is complete; deployment remains gated on GitHub-side cleanup of legacy references, the final public-content audit, and an explicit platform choice. CI validates tests, dependency vulnerabilities, complete reachable secret history, and the container build on pull requests and pushes to `main`.
+No automatic production deployment is enabled. The owner has chosen to defer hosting until a personal VPS is available. CI validates tests, dependency vulnerabilities, complete reachable secret history, and the container build on pull requests and pushes to `main`.
 
 ## Hosting assessment (2026-09-01)
 
 A hosted demo is optional for this portfolio project. The verified local Compose demo and factual case study remain valid without a permanent public environment.
 
-If a live demo is wanted, **Railway Hobby is the recommended fit**:
+If a separate hosted demo is wanted before the VPS exists, **Railway Hobby is the assessed fallback**:
 
 - Railway automatically builds a root `Dockerfile` and provides private networking between services.
 - Its MySQL template is quick to provision and private by default, but Railway explicitly classifies database templates as **unmanaged**. Backups, maintenance, security, and recovery remain the owner's responsibility.
@@ -59,7 +59,7 @@ The alternatives add more work for this particular application:
 
 Official references: [Railway plans](https://docs.railway.com/pricing/plans), [Railway Dockerfiles](https://docs.railway.com/builds/dockerfiles), [Railway MySQL](https://docs.railway.com/databases/mysql), [Render free services](https://render.com/docs/free), [Render MySQL](https://render.com/docs/deploy-mysql), and [Fly.io MySQL](https://fly.io/docs/app-guides/mysql-on-fly/).
 
-Do not create provider resources until the repository owner has approved the provider and recurring-spend ceiling. Do not deploy at all until GitHub-side history cleanup in issue #6 is complete.
+Do not create provider resources until the repository owner has approved the provider and recurring-spend ceiling. For the planned VPS, keep the web application and MySQL on a private container network, expose only the reverse proxy over HTTPS, store secrets outside Compose, configure backups and a firewall, and verify `/health` after deployment.
 
 ## Limitations
 

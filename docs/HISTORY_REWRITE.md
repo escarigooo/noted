@@ -1,12 +1,19 @@
 # History rewrite notice
 
 Noted's Git history was rewritten on 2026-08-31 before public release. The
-rewrite removed generated invoice PDFs, realistic legacy fixture identities,
+rewrite removed generated invoice PDFs, fictional but realistic-looking legacy fixture identities,
 an approximately 93 MB image archive, duplicate legacy source trees, and every
 historical image or font that was not approved for redistribution. The current
 synthetic fixture and the assets listed in `ASSET_PROVENANCE.md` were restored
-after the cleanup. A personal author email was also replaced with the
-repository owner's GitHub `noreply` address.
+after the cleanup. The original author-designed Noted logo was restored after
+its provenance was confirmed. A personal author email was also replaced with
+the repository owner's GitHub `noreply` address as a privacy preference.
+
+The removed order and identity records were fictional school-project fixtures,
+not real customer data. No exposed credential requires rotation. The rewrite
+is retained as preventive publication hygiene and to remove material without
+confirmed redistribution rights; it is not being treated as a customer-data
+security incident.
 
 ## Coordination rule
 
@@ -18,8 +25,10 @@ patch and applied to a fresh clone.
 The pre-rewrite `main` tip was `9b69a2f8c0692b54cff0e906f1799f5b1a22a6c7`.
 The first changed commit reported by `git-filter-repo` was
 `16288a7c01d4fd2b0b56835b4df10e1f9c5f4e5c`. Pull requests #1, #8, #9, and
-#10 referenced the old history. The repository must remain private until the
-GitHub-hosted pull-request refs and cached views have been handled.
+#10 reference the old history. Because the removed records were fictional and
+there is no active secret or real customer-data exposure, a GitHub Support
+sensitive-data purge is not required. Those legacy pull-request diffs remain
+an expected limitation of the rewrite.
 
 ## Validation performed
 

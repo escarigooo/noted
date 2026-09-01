@@ -1,15 +1,28 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from flask import current_app  # necessário para usar o get_serializer
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Blueprint, current_app, redirect, render_template, request, session, url_for
 from itsdangerous import URLSafeTimedSerializer
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from ..models import db, User, Cart, get_db_connection
+from ..security import password_error
 from ..services import EmailService
 
 auth_bp = Blueprint('auth', __name__)
+PASSWORD_RESET_MAX_AGE = 24 * 60 * 60
+
 
 # Serializer com current_app (funciona dentro de contexto Flask)
 def get_serializer():
     return URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+
+
+def start_user_session(user):
+    """Replace the current session with the authenticated user identity."""
+    session.clear()
+    session.permanent = True
+    session["user_id"] = user.id
+    session["user_email"] = user.email
+    session["user_name"] = user.name
+
 
 # ---------------------- LOGIN ---------------------- #
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -17,17 +30,15 @@ def login():
     success = request.args.get("success")
 
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form["email"].strip().lower()
         password = request.form["password"]
         user = User.query.filter_by(email=email).first()
 
         if user and user.email_verified and check_password_hash(user.password, password):
-            session['user_id'] = user.id
-            session['user_email'] = user.email
-            session['user_name'] = user.name
-
             # integrar carrinho de guest
-            guest_cart = session.pop('cart', {})
+            guest_cart = session.get('cart', {})
+            next_page = session.get("next_after_login")
+            start_user_session(user)
             for product_id_str, quantity in guest_cart.items():
                 product_id = int(product_id_str)
                 existing = Cart.query.filter_by(user_id=user.id, product_id=product_id).first()
@@ -37,7 +48,6 @@ def login():
                     db.session.add(Cart(user_id=user.id, product_id=product_id, quantity=quantity))
             db.session.commit()
 
-            next_page = session.pop("next_after_login", None)
             if user.role == 1:
                 return redirect(url_for("admin.dashboard"))
             elif next_page:
@@ -52,13 +62,17 @@ def login():
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
+        name = request.form["name"].strip()
+        email = request.form["email"].strip().lower()
         password = request.form["password"]
         confirm = request.form["confirm"]
 
         if password != confirm:
             return render_template("pages/auth/register.html", error="passwords do not match")
+
+        validation_error = password_error(password)
+        if validation_error:
+            return render_template("pages/auth/register.html", error=validation_error)
 
         if User.query.filter_by(email=email).first():
             return render_template("pages/auth/register.html", error="email already registered")
@@ -143,7 +157,7 @@ def account():
     if 'user_id' not in session:
         return redirect(url_for("auth.login"))
     
-    user = User.query.get(session['user_id'])
+    user = db.session.get(User, session['user_id'])
     if not user:
         session.pop('user_id', None)
         return redirect(url_for("auth.login"))
@@ -228,26 +242,77 @@ def account():
         success=success
     )
 
+
+@auth_bp.route("/account/password", methods=["GET", "POST"])
+def change_password():
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    user = db.session.get(User, session["user_id"])
+    if not user:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    if request.method == "POST":
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("password", "")
+        confirm = request.form.get("confirm", "")
+
+        if not check_password_hash(user.password, current_password):
+            return render_template(
+                "pages/account/change_password.html",
+                error="current password is incorrect.",
+            )
+        if new_password != confirm:
+            return render_template(
+                "pages/account/change_password.html",
+                error="passwords do not match.",
+            )
+
+        validation_error = password_error(new_password)
+        if validation_error:
+            return render_template(
+                "pages/account/change_password.html",
+                error=validation_error,
+            )
+        if check_password_hash(user.password, new_password):
+            return render_template(
+                "pages/account/change_password.html",
+                error="new password must be different from the current password.",
+            )
+
+        user.password = generate_password_hash(new_password, method="pbkdf2:sha256")
+        db.session.commit()
+        start_user_session(user)
+        return redirect(
+            url_for("auth.account", success="password updated successfully.")
+        )
+
+    return render_template("pages/account/change_password.html")
+
+
 # ---------------------- ESQUECI A SENHA ---------------------- #
 @auth_bp.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
-        email = request.form["email"]
+        email = request.form["email"].strip().lower()
         user = User.query.filter_by(email=email).first()
 
         if user:
-            token = get_serializer().dumps(user.email, salt="reset-password")
-            reset_link = url_for("auth.reset_password", token=token, _external=True)
-            
-            # Send password reset email
-            email_sent = EmailService.send_password_reset_email(user.email, user.name, token)
-            
-            if email_sent:
-                return render_template("pages/auth/forgot_password.html", success="check your email for the reset link.")
-            else:
-                return render_template("pages/auth/forgot_password.html", error="failed to send reset email. please try again.")
-        else:
-            return render_template("pages/auth/forgot_password.html", error="email not found.")
+            token = get_serializer().dumps(
+                {"user_id": user.id, "email": user.email},
+                salt="reset-password",
+            )
+            if not EmailService.send_password_reset_email(user.email, user.name, token):
+                current_app.logger.warning(
+                    "Password reset email could not be sent for user %s",
+                    user.id,
+                )
+
+        return render_template(
+            "pages/auth/forgot_password.html",
+            success="if that account exists, a reset link has been sent.",
+        )
 
     return render_template("pages/auth/forgot_password.html")
 
@@ -255,28 +320,48 @@ def forgot_password():
 @auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     try:
-        email = get_serializer().loads(token, salt="reset-password", max_age=3600)
+        data = get_serializer().loads(
+            token,
+            salt="reset-password",
+            max_age=PASSWORD_RESET_MAX_AGE,
+        )
     except Exception:
         current_app.logger.info("Invalid or expired password reset token")
         return render_template("pages/auth/login.html", error="invalid or expired reset link.")
 
+    if isinstance(data, dict):
+        user = User.query.filter_by(
+            id=data.get("user_id"),
+            email=data.get("email"),
+        ).first()
+    else:
+        # Accept reset links created before structured tokens were introduced.
+        user = User.query.filter_by(email=data).first()
+
+    if not user:
+        current_app.logger.info("Password reset token references a missing user")
+        return render_template("pages/auth/login.html", error="invalid or expired reset link.")
+
     if request.method == "POST":
-        new_password = request.form["password"]
-        confirm = request.form["confirm"]
+        new_password = request.form.get("password", "")
+        confirm = request.form.get("confirm", "")
         if new_password != confirm:
             return render_template("pages/auth/reset_password.html", token=token, error="passwords do not match")
 
-        user = User.query.filter_by(email=email).first()
+        validation_error = password_error(new_password)
+        if validation_error:
+            return render_template(
+                "pages/auth/reset_password.html",
+                token=token,
+                error=validation_error,
+            )
+
         user.password = generate_password_hash(new_password, method="pbkdf2:sha256")
         db.session.commit()
-        
-        # Automatically log in the user after password reset
-        session['user_id'] = user.id
-        session['user_email'] = user.email
-        session['user_name'] = user.name
-        
+
         # Integrate cart items if there are any in the guest session
-        guest_cart = session.pop('cart', {})
+        guest_cart = session.get('cart', {})
+        start_user_session(user)
         for product_id_str, quantity in guest_cart.items():
             product_id = int(product_id_str)
             existing = Cart.query.filter_by(user_id=user.id, product_id=product_id).first()

@@ -28,7 +28,7 @@
         </div>
         <div class="account-actions">
           <a href="{{ url_for('auth.edit_profile') if 'edit_profile' in url_for.__globals__ else '#' }}" class="btn btn-outline">edit profile</a>
-          <a href="{{ url_for('auth.forgot_password') }}" class="btn btn-outline">change password</a>
+          <a href="{{ url_for('auth.change_password') }}" class="btn btn-outline">change password</a>
           <a href="{{ url_for('auth.logout') }}" class="btn btn-outline">log out</a>
         </div>
       </div>

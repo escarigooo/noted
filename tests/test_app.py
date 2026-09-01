@@ -1,3 +1,14 @@
+from datetime import datetime, timezone
+from pathlib import Path
+
+from werkzeug.security import check_password_hash
+
+from noted.models import User
+from noted.routes.auth import get_serializer
+from noted.services.analytics_service import analytics_data, graphics_data
+from noted.services.invoice_service import InvoiceService, resolve_invoice_path
+
+
 def test_health_reports_database_ready(client):
     response = client.get("/health")
     assert response.status_code == 200
@@ -116,8 +127,111 @@ def test_simulated_checkout_uses_server_total_and_clears_cart(customer_client, m
     assert response.status_code == 200
     assert response.get_json()["success"] is True
     assert customer_client.get("/cart_data").get_json()["items"] == []
-from datetime import datetime, timezone
-from pathlib import Path
 
-from noted.services.analytics_service import analytics_data, graphics_data
-from noted.services.invoice_service import InvoiceService, resolve_invoice_path
+
+def test_account_links_to_authenticated_password_change(customer_client, monkeypatch):
+    class EmptyCursor:
+        def execute(self, *args, **kwargs):
+            return None
+
+        def fetchall(self):
+            return []
+
+        def close(self):
+            return None
+
+    class EmptyConnection:
+        def cursor(self, **kwargs):
+            return EmptyCursor()
+
+        def close(self):
+            return None
+
+    monkeypatch.setattr(
+        "noted.routes.auth.get_db_connection",
+        lambda: EmptyConnection(),
+    )
+    response = customer_client.get("/account")
+    assert response.status_code == 200
+    assert b'href="/account/password"' in response.data
+
+
+def test_password_change_requires_login(client):
+    response = client.get("/account/password")
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/login")
+
+
+def test_password_change_rejects_wrong_current_password(customer_client, app):
+    response = customer_client.post(
+        "/account/password",
+        data={
+            "current_password": "WrongPassword!2026",
+            "password": "FreshDemo!2026",
+            "confirm": "FreshDemo!2026",
+        },
+    )
+    assert response.status_code == 200
+    assert b"current password is incorrect" in response.data
+    with app.app_context():
+        user = User.query.filter_by(email="demo@example.com").one()
+        assert check_password_hash(user.password, "DemoOnly!2026")
+
+
+def test_password_change_updates_hash_and_keeps_session(customer_client, app):
+    response = customer_client.post(
+        "/account/password",
+        data={
+            "current_password": "DemoOnly!2026",
+            "password": "FreshDemo!2026",
+            "confirm": "FreshDemo!2026",
+        },
+    )
+    assert response.status_code == 302
+    assert "/account?success=" in response.headers["Location"]
+    with customer_client.session_transaction() as user_session:
+        assert user_session["user_email"] == "demo@example.com"
+    with app.app_context():
+        user = User.query.filter_by(email="demo@example.com").one()
+        assert check_password_hash(user.password, "FreshDemo!2026")
+
+
+def test_forgot_password_does_not_reveal_account_existence(client, monkeypatch):
+    sent_to = []
+    monkeypatch.setattr(
+        "noted.routes.auth.EmailService.send_password_reset_email",
+        lambda email, name, token: sent_to.append(email) or True,
+    )
+    known = client.post("/forgot-password", data={"email": "demo@example.com"})
+    unknown = client.post("/forgot-password", data={"email": "nobody@example.com"})
+    message = b"if that account exists, a reset link has been sent."
+    assert known.status_code == unknown.status_code == 200
+    assert message in known.data
+    assert message in unknown.data
+    assert sent_to == ["demo@example.com"]
+
+
+def test_reset_token_for_missing_user_fails_cleanly(client, app):
+    with app.app_context():
+        token = get_serializer().dumps(
+            {"user_id": 9999, "email": "missing@example.com"},
+            salt="reset-password",
+        )
+    response = client.get(f"/reset-password/{token}")
+    assert response.status_code == 200
+    assert b"invalid or expired reset link" in response.data
+
+
+def test_weak_password_is_rejected_during_reset(client, app):
+    with app.app_context():
+        user = User.query.filter_by(email="demo@example.com").one()
+        token = get_serializer().dumps(
+            {"user_id": user.id, "email": user.email},
+            salt="reset-password",
+        )
+    response = client.post(
+        f"/reset-password/{token}",
+        data={"password": "too-short", "confirm": "too-short"},
+    )
+    assert response.status_code == 200
+    assert b"password must be at least 12 characters" in response.data

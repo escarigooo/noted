@@ -53,7 +53,7 @@ def create_app(test_config=None):
         from flask import session
         from noted.models import User
 
-        user = User.query.get(session["user_id"]) if "user_id" in session else None
+        user = db.session.get(User, session["user_id"]) if "user_id" in session else None
         return {"current_user": user}
 
     @app.context_processor

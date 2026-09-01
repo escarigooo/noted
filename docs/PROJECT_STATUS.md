@@ -39,20 +39,17 @@ These statements describe inspected source code. End-to-end behaviour still need
 
 Python, Flask, Flask-SQLAlchemy, SQLAlchemy, PyMySQL, Flask-Mail, Werkzeug, Jinja, HTML, CSS, browser JavaScript, ReportLab, optional Jupyter/nbconvert/pandas, Gunicorn, Docker, Pytest, Ruff, and MySQL.
 
-## Publication gate
+## Publication status
 
-Do not make the repository public or advertise a live demo until all of these are complete:
+The repository was made public on 2026-09-01 after the owner approved the final cross-review.
 
-Completed gates:
+Completed publication gates:
 
 - asset provenance and licence records were reviewed;
 - reachable Git history was rewritten and independently cloned for verification;
 - tests, CI, dependency audit, container build, and complete-history secret scans pass;
 - the documented Compose demo starts from deterministic synthetic data.
-
-Remaining gates:
-
 - README, screenshots, public links, licence notices, and portfolio claims receive one final cross-review.
-- the owner explicitly approves changing repository visibility.
+- the owner explicitly approved public repository visibility.
 
-Hosted deployment is not a publication requirement. The verified local Compose demo is the supported demonstration until the owner has a personal VPS.
+The source repository may now be linked publicly. Hosted deployment is not a publication requirement: the verified local Compose demo remains the supported demonstration until the owner has a personal VPS. Do not advertise a live-demo URL until that deployment exists and has been verified.

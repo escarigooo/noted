@@ -8,7 +8,7 @@ The inspected source includes catalogue browsing, accounts, a database-backed ca
 
 ## Current state
 
-The publication history has been rewritten and independently verified. The repository remains temporarily private only until its final public-content audit and the owner's visibility decision. The current tree has tests, CI, a containerized local demo, and documented deployment boundaries. Hosting is intentionally deferred until the owner operates a personal VPS.
+The publication history was rewritten and independently verified before the repository was made public on 2026-09-01. The current tree has tests, CI, a containerized local demo, documented asset provenance, and explicit deployment boundaries. Hosting is intentionally deferred until the owner operates a personal VPS.
 
 ## Stack
 

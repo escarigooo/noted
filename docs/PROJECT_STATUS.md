@@ -32,7 +32,8 @@ These statements describe inspected source code. End-to-end behaviour still need
 - Email delivery needs an external SMTP service; local development can use Mailpit or a similar mail catcher.
 - Some admin/email preview routes overlap and need consolidation.
 - The current smoke/critical-flow suite establishes a 25% coverage floor; broader route and failure-path coverage is still needed.
-- The current visual assets have documented provenance. Historical unknown assets were removed from reachable Git history; GitHub-side legacy pull-request references and cached views still require cleanup before public visibility.
+- The current visual assets have documented provenance, including the original Noted identity designed by André Escarigo. Historical third-party assets without confirmed redistribution rights were removed from reachable branch history.
+- Legacy pull requests #1, #8, #9, and #10 reference the old history. The removed identities and orders were fictional school-project fixtures, so no GitHub Support sensitive-data purge is required.
 
 ## Technology actually present
 
@@ -51,6 +52,7 @@ Completed gates:
 
 Remaining gates:
 
-- GitHub Support handles the affected pull-request refs and cached views;
-- a disposable hosting platform and managed database are selected and tested;
 - README, screenshots, public links, licence notices, and portfolio claims receive one final cross-review.
+- the owner explicitly approves changing repository visibility.
+
+Hosted deployment is not a publication requirement. The verified local Compose demo is the supported demonstration until the owner has a personal VPS.
